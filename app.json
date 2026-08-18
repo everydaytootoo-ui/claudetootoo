@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "PackWith",
+    "slug": "packwith",
+    "scheme": "packwith",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.packwith.app" },
+    "android": {
+      "package": "com.packwith.app",
+      "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"]
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "실물 사진을 등록해 가족이 짐을 한눈에 알아볼 수 있게 해줘요.",
+          "cameraPermission": "출발 전 필수품 인증샷을 촬영하려면 카메라 접근 권한이 필요해요."
+        }
+      ],
+      [
+        "expo-media-library",
+        { "photosPermission": "캐꾸 카드를 갤러리에 저장하려면 사진 접근 권한이 필요해요." }
+      ],
+      [
+        "expo-notifications",
+        { "color": "#FF8A5B" }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ],
+    "extra": {
+      "SUPABASE_URL": "https://YOUR-PROJECT.supabase.co",
+      "SUPABASE_ANON_KEY": "YOUR-ANON-KEY",
+      "eas": { "projectId": "" }
+    }
+  }
+}
