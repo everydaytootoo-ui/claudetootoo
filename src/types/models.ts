@@ -58,6 +58,14 @@ export type SectionKind =
   | 'essentials' // 필수 지참품 — 이름은 유저가 바꿀 수 있어도 이 kind로 항상 식별한다
   | 'custom';
 
+/**
+ * 가방 내부 그림 위에서 이 구역이 자리잡는 위치. 왼쪽/오른쪽 큰 칸, 위/아래 작은 포켓 —
+ * 유저가 구역을 추가/수정할 때 직접 고른다. 같은 자리를 다른 구역에 새로 배정하면
+ * 원래 있던 구역은 자리를 비우고(null) 목록으로 내려간다. null이면 그림 위엔 안 나타나고
+ * 그림 아래 여분 구역 목록에 칩으로 표시된다.
+ */
+export type SectionSlot = 'left' | 'right' | 'pocket-top' | 'pocket-bottom';
+
 export interface BagSection {
   id: string;
   bagId: string;
@@ -66,6 +74,7 @@ export interface BagSection {
   icon: string; // 이모지 아이콘
   baggageMode: BaggageMode;
   isCustom: boolean;
+  slot: SectionSlot | null;
 }
 
 export interface Bag {
@@ -180,6 +189,7 @@ export interface PackTemplateSection {
   icon: string;
   baggageMode: BaggageMode;
   isCustom: boolean;
+  slot: SectionSlot | null;
 }
 
 /** 템플릿에 저장되는 물품 — 섹션은 id 대신 이름으로 참조해, 적용 시 새 섹션에 다시 매칭한다 */

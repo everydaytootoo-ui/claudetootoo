@@ -17,6 +17,7 @@ export function buildTemplateFromBag(bag: Bag, items: PackItem[], name: string):
       icon: s.icon,
       baggageMode: s.baggageMode,
       isCustom: s.isCustom,
+      slot: s.slot,
     })),
     items: bagItems.map((item) => {
       const section = sectionById.get(item.sectionId) as BagSection;
@@ -43,5 +44,6 @@ export function expandTemplateSections(template: PackTemplate, bagId: string): B
     icon: section.icon,
     baggageMode: section.baggageMode,
     isCustom: section.isCustom,
+    slot: section.slot,
   }));
 }

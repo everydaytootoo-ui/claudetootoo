@@ -9,13 +9,21 @@ import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar
 import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
 import { BagSwitcher } from '../components/packing/BagSwitcher';
 import { BagInteriorView } from '../components/packing/BagInteriorView';
-import { BaggageMode, BagSection, DecorationAsset, StickerPlacement } from '../types/models';
+import { BaggageMode, BagSection, DecorationAsset, SectionSlot, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
 import { AppNavigationProp } from '../navigation/RootNavigator';
 import { QuickPickItem } from '../data/quickPickCatalog';
 
 const SECTION_ICON_OPTIONS = ['🧦', '💻', '🧢', '🥾', '🧴', '🎮', '📚', '🪴'];
+
+const SLOT_OPTIONS: Array<{ slot: SectionSlot | null; label: string; icon: string }> = [
+  { slot: 'left', label: '왼쪽 큰 칸', icon: '◧' },
+  { slot: 'right', label: '오른쪽 큰 칸', icon: '◨' },
+  { slot: 'pocket-top', label: '위쪽 포켓', icon: '👝' },
+  { slot: 'pocket-bottom', label: '아래쪽 포켓', icon: '🎀' },
+  { slot: null, label: '안 정함', icon: '—' },
+];
 
 const ASSET_CATALOG: DecorationAsset[] = [
   { id: 'flag-jp', type: 'sticker', emoji: '🇯🇵', label: '일본 국기', isPremium: false },
@@ -58,6 +66,7 @@ export function PackingScreen() {
   const [newSectionName, setNewSectionName] = useState('');
   const [newSectionIcon, setNewSectionIcon] = useState(SECTION_ICON_OPTIONS[0]);
   const [newSectionMode, setNewSectionMode] = useState<BaggageMode>('checked');
+  const [newSectionSlot, setNewSectionSlot] = useState<SectionSlot | null>(null);
   const sheetRef = useRef<BottomSheet>(null);
 
   // 다른 가방으로 전환하면 이전 가방의 구역이 열려 있던 하단 시트를 닫는다.
@@ -114,11 +123,12 @@ export function PackingScreen() {
     );
   };
 
-  const openAddSectionModal = () => {
+  const openAddSectionModal = (presetSlot: SectionSlot | null = null) => {
     setEditingSectionId(null);
     setNewSectionName('');
     setNewSectionIcon(SECTION_ICON_OPTIONS[0]);
     setNewSectionMode('checked');
+    setNewSectionSlot(presetSlot);
     setSectionModalVisible(true);
   };
 
@@ -127,6 +137,7 @@ export function PackingScreen() {
     setNewSectionName(section.name);
     setNewSectionIcon(section.icon);
     setNewSectionMode(section.baggageMode);
+    setNewSectionSlot(section.slot);
     setSectionModalVisible(true);
   };
 
@@ -137,9 +148,10 @@ export function PackingScreen() {
         name: newSectionName.trim(),
         icon: newSectionIcon,
         baggageMode: newSectionMode,
+        slot: newSectionSlot,
       });
     } else {
-      addSection(bag.id, newSectionName.trim(), newSectionIcon, newSectionMode);
+      addSection(bag.id, newSectionName.trim(), newSectionIcon, newSectionMode, newSectionSlot);
     }
     setSectionModalVisible(false);
   };
@@ -305,6 +317,21 @@ export function PackingScreen() {
                 </Text>
               </Pressable>
             </View>
+            <Text style={styles.slotPickerLabel}>가방 그림 속 위치</Text>
+            <View style={styles.slotRow}>
+              {SLOT_OPTIONS.map((opt) => (
+                <Pressable
+                  key={opt.label}
+                  style={[styles.slotChip, newSectionSlot === opt.slot && styles.slotChipSelected]}
+                  onPress={() => setNewSectionSlot(opt.slot)}
+                >
+                  <Text style={styles.slotChipIcon}>{opt.icon}</Text>
+                  <Text style={[styles.slotChipText, newSectionSlot === opt.slot && styles.slotChipTextSelected]}>
+                    {opt.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
             <View style={styles.sectionModalActions}>
               <Pressable style={styles.modalCancel} onPress={() => setSectionModalVisible(false)}>
                 <Text style={styles.modalCancelText}>취소</Text>
@@ -374,6 +401,21 @@ const styles = StyleSheet.create({
   sectionModeChipSelected: { backgroundColor: '#FDE9DD' },
   sectionModeText: { fontSize: 12, fontWeight: '600', color: '#4A4A4E' },
   sectionModeTextSelected: { color: '#C1560B' },
+  slotPickerLabel: { fontSize: 12, fontWeight: '700', color: '#8A8A8E', marginTop: 2 },
+  slotRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  slotChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: '#F3F1EC',
+  },
+  slotChipSelected: { backgroundColor: '#FDE9DD' },
+  slotChipIcon: { fontSize: 14 },
+  slotChipText: { fontSize: 11, color: '#4A4A4E', fontWeight: '600' },
+  slotChipTextSelected: { color: '#C1560B' },
   sectionModalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 4 },
   modalCancel: { paddingHorizontal: 12, paddingVertical: 8 },
   modalCancelText: { color: '#8A8A8E', fontSize: 13 },

@@ -6,6 +6,7 @@ import {
   CalendarEvent,
   PackItem,
   PackTemplate,
+  SectionSlot,
   StickerPlacement,
   Trip,
   TripMember,
@@ -40,12 +41,21 @@ interface TripContextValue {
   /** 가방이 최소 1개는 남아야 하므로 마지막 남은 가방은 삭제되지 않는다(무시됨) */
   deleteBag: (bagId: string) => void;
   /** 가방에 유저가 원하는 이름의 커스텀 구역(상단 지퍼 포켓, 노트북 슬롯 등)을 추가한다 */
-  addSection: (bagId: string, name: string, icon: string, baggageMode: Bag['sections'][number]['baggageMode']) => void;
-  /** 기본 제공 구역을 포함해 이름·아이콘·수하물 모드를 자유롭게 수정할 수 있다 */
+  addSection: (
+    bagId: string,
+    name: string,
+    icon: string,
+    baggageMode: Bag['sections'][number]['baggageMode'],
+    slot: SectionSlot | null
+  ) => void;
+  /**
+   * 기본 제공 구역을 포함해 이름·아이콘·수하물 모드·가방 그림 속 위치(slot)를 자유롭게 수정할 수 있다.
+   * 이미 다른 구역이 쓰고 있는 slot을 지정하면, 그 구역은 자리를 비우고(null) 목록으로 내려간다.
+   */
   updateSection: (
     bagId: string,
     sectionId: string,
-    updates: Partial<Pick<BagSection, 'name' | 'icon' | 'baggageMode'>>
+    updates: Partial<Pick<BagSection, 'name' | 'icon' | 'baggageMode' | 'slot'>>
   ) => void;
   /** 커스텀 구역만 삭제할 수 있다 — 그 구역에 있던 물품도 함께 정리된다 */
   deleteSection: (bagId: string, sectionId: string) => void;
@@ -79,11 +89,16 @@ const MOCK_TRIP: Trip = {
  */
 function createDefaultSections(bagId: string): BagSection[] {
   return [
-    { id: `sec-left-${bagId}`, bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
-    { id: `sec-right-${bagId}`, bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
-    { id: `sec-hidden-${bagId}`, bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
-    { id: `sec-essentials-${bagId}`, bagId, kind: 'essentials', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: false },
+    { id: `sec-left-${bagId}`, bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false, slot: 'left' },
+    { id: `sec-right-${bagId}`, bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false, slot: 'right' },
+    { id: `sec-hidden-${bagId}`, bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false, slot: 'pocket-top' },
+    { id: `sec-essentials-${bagId}`, bagId, kind: 'essentials', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: false, slot: 'pocket-bottom' },
   ];
+}
+
+/** slot은 가방 그림 위에 한 번에 하나의 구역만 차지할 수 있다 — 이미 그 자리를 쓰던 구역은 비운다 */
+function clearSlotFromOtherSections(sections: BagSection[], slot: SectionSlot, exceptSectionId: string | null): BagSection[] {
+  return sections.map((s) => (s.slot === slot && s.id !== exceptSectionId ? { ...s, slot: null } : s));
 }
 
 function createInitialBags(): Bag[] {
@@ -208,7 +223,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => prev.filter((item) => !sectionIds.has(item.sectionId)));
   };
 
-  const addSection: TripContextValue['addSection'] = (bagId, name, icon, baggageMode) => {
+  const addSection: TripContextValue['addSection'] = (bagId, name, icon, baggageMode, slot) => {
     const newSection: BagSection = {
       id: `sec-custom-${Date.now()}`,
       bagId,
@@ -217,17 +232,26 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       icon,
       baggageMode,
       isCustom: true,
+      slot: null,
     };
-    setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, sections: [...b.sections, newSection] } : b)));
+    setBags((prev) =>
+      prev.map((b) => {
+        if (b.id !== bagId) return b;
+        // 새 구역이 이미 다른 구역이 쓰고 있는 자리를 원하면, 그 구역은 자리를 비운다.
+        const sections = slot ? clearSlotFromOtherSections(b.sections, slot, null) : b.sections;
+        return { ...b, sections: [...sections, { ...newSection, slot }] };
+      })
+    );
   };
 
   const updateSection: TripContextValue['updateSection'] = (bagId, sectionId, updates) => {
     setBags((prev) =>
-      prev.map((b) =>
-        b.id === bagId
-          ? { ...b, sections: b.sections.map((s) => (s.id === sectionId ? { ...s, ...updates } : s)) }
-          : b
-      )
+      prev.map((b) => {
+        if (b.id !== bagId) return b;
+        const sections =
+          updates.slot != null ? clearSlotFromOtherSections(b.sections, updates.slot, sectionId) : b.sections;
+        return { ...b, sections: sections.map((s) => (s.id === sectionId ? { ...s, ...updates } : s)) };
+      })
     );
   };
 
