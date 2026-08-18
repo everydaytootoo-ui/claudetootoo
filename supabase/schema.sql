@@ -4,6 +4,8 @@
 create extension if not exists "pgcrypto";
 create extension if not exists "pg_trgm";
 
+-- families/family_members는 이름과 달리 혈연 가족으로 제한하지 않는다.
+-- 6자리 invite_code 하나로 가족이든 친구든 동일하게 합류하는 "여행 크루" 단위다.
 create table if not exists families (
   id uuid primary key default gen_random_uuid(),
   invite_code char(6) not null unique,
@@ -14,7 +16,8 @@ create table if not exists family_members (
   id uuid primary key default gen_random_uuid(),
   family_id uuid not null references families(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
-  display_name text not null, -- "엄마", "아빠" 등
+  display_name text not null, -- "엄마", "민지" 등
+  relation text not null default 'friend' check (relation in ('family', 'friend', 'me')),
   joined_at timestamptz not null default now(),
   unique (family_id, user_id)
 );
@@ -63,6 +66,8 @@ create table if not exists items (
   restriction text not null default 'none' check (
     restriction in ('spare_battery','lighter','liquid_over_100ml','liquid_under_100ml','sharp_object','aerosol','none')
   ),
+  is_essential boolean not null default false, -- 여권/지갑처럼 놓치면 출발이 막히는 필수 지참품
+  confirmed_by uuid[] not null default '{}', -- is_essential 품목을 "확인했어요"로 검증한 user_id 목록
   created_by uuid not null references auth.users(id),
   created_at timestamptz not null default now()
 );

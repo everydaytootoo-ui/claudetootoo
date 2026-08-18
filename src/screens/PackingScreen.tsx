@@ -5,7 +5,7 @@ import { DecorationCanvas } from '../components/decoration/DecorationCanvas';
 import { BagSectionSheet, buildPackItemDraft } from '../components/packing/BagSectionSheet';
 import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
 import { BagSection, DecorationAsset, StickerPlacement } from '../types/models';
-import { useTripContext } from '../state/TripContext';
+import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
 
 const ASSET_CATALOG: DecorationAsset[] = [
@@ -116,7 +116,7 @@ export function PackingScreen() {
           setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, checked: !i.checked } : i)))
         }
         onAddQuickPickItem={(section, quickPick) => {
-          const draft = buildPackItemDraft(section, quickPick, '나');
+          const draft = buildPackItemDraft(section, quickPick, CURRENT_USER_NAME);
           setItems((prev) => [...prev, { ...draft, id: `${quickPick.id}-${Date.now()}` }]);
         }}
         onAttachPhoto={(itemId, localUri) =>

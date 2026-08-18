@@ -97,17 +97,38 @@ export interface PackItem {
   quantity: number;
   restriction: RestrictionCategory;
   createdBy: string;
+  /** 여권/지갑/신분증 등 — 놓치면 출발 자체가 막히는 필수 지참품 여부 */
+  isEssential: boolean;
+  /** isEssential 품목을 그룹원이 "확인했어요"로 상호 검증한 표시명 목록 */
+  confirmedBy: string[];
 }
 
+/**
+ * 여행을 함께 준비하는 사람들의 공간(Crew). 가족뿐 아니라 친구끼리도
+ * 6자리 초대 코드로 동일한 공간에 합류해 같은 trip을 공유할 수 있다.
+ * (DB 테이블명은 하위 호환을 위해 families/family_members를 유지하지만
+ * 실제로는 "가족 또는 친구로 구성된 여행 크루" 전체를 의미한다.)
+ */
 export interface Trip {
   id: string;
-  familyId: string;
+  familyId: string; // = crewId
   name: string;
   destinationCountry: string;
   season: 'spring' | 'summer' | 'autumn' | 'winter';
   startDate: string; // ISO date
   endDate: string; // ISO date
   inviteCode: string; // 6자리 초대 코드
+}
+
+export type TripMemberRelation = 'family' | 'friend' | 'me';
+
+/** 여행 크루 구성원 — 가족/친구 구분 없이 동일하게 취급 */
+export interface TripMember {
+  id: string;
+  tripId: string;
+  displayName: string; // "엄마", "민지" 등
+  relation: TripMemberRelation;
+  joinedAt: string; // ISO datetime
 }
 
 /** 통합 검색 결과 — "약" 검색 시 정확한 위치 + 사진 반환 */

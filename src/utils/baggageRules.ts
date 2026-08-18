@@ -114,6 +114,7 @@ export async function searchFamilyItems(
     .select(
       `
       id, section_id, name, emoji, photo_url, checked, quantity, restriction, created_by,
+      is_essential, confirmed_by,
       section:sections!inner (
         id, name, kind, baggage_mode,
         bag:bags!inner (
@@ -138,6 +139,8 @@ export async function searchFamilyItems(
       quantity: row.quantity,
       restriction: row.restriction,
       createdBy: row.created_by,
+      isEssential: row.is_essential,
+      confirmedBy: row.confirmed_by ?? [],
     },
     bagLabel: row.section.bag.label,
     sectionName: row.section.name,

@@ -1,11 +1,11 @@
 import React, { forwardRef, useCallback, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from '@gorhom/bottom-sheet';
-import * as ImagePicker from 'expo-image-picker';
 import { BagSection, PackItem } from '../../types/models';
 import { QuickPickItem } from '../../data/quickPickCatalog';
 import { guessRestrictionCategory } from '../../data/restrictedItems';
 import { collectBaggageWarnings, validateBaggagePlacement } from '../../utils/baggageRules';
+import { pickItemPhoto } from '../../utils/photoPicker';
 import { QuickPickBar } from './QuickPickBar';
 
 interface Props {
@@ -41,17 +41,8 @@ export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectio
 
   const pickPhoto = useCallback(
     async (itemId: string) => {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) return;
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        allowsEditing: true,
-        aspect: [1, 1],
-      });
-      if (!result.canceled && result.assets[0]) {
-        onAttachPhoto(itemId, result.assets[0].uri);
-      }
+      const uri = await pickItemPhoto();
+      if (uri) onAttachPhoto(itemId, uri);
     },
     [onAttachPhoto]
   );
@@ -99,9 +90,16 @@ export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectio
               </Pressable>
 
               <View style={styles.itemInfo}>
-                <Text style={[styles.itemName, item.checked && styles.itemNameChecked]}>
-                  {item.name} {item.quantity > 1 ? `x${item.quantity}` : ''}
-                </Text>
+                <View style={styles.nameRow}>
+                  <Text style={[styles.itemName, item.checked && styles.itemNameChecked]}>
+                    {item.name} {item.quantity > 1 ? `x${item.quantity}` : ''}
+                  </Text>
+                  {item.isEssential && (
+                    <View style={styles.essentialBadge}>
+                      <Text style={styles.essentialBadgeText}>⭐ 필수</Text>
+                    </View>
+                  )}
+                </View>
                 {validation.level !== 'none' && (
                   <View
                     style={[
@@ -138,6 +136,8 @@ export function buildPackItemDraft(section: BagSection, quickPick: QuickPickItem
     quantity: 1,
     restriction: quickPick.restriction ?? guessRestrictionCategory(quickPick.name),
     createdBy,
+    isEssential: quickPick.isEssential ?? false,
+    confirmedBy: [] as string[],
   };
 }
 
@@ -169,8 +169,11 @@ const styles = StyleSheet.create({
   photoImage: { width: '100%', height: '100%' },
   photoPlaceholder: { fontSize: 20 },
   itemInfo: { flex: 1, gap: 4 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   itemName: { fontSize: 14, color: '#2A2A2E', fontWeight: '500' },
   itemNameChecked: { color: '#B0B0B4', textDecorationLine: 'line-through' },
+  essentialBadge: { backgroundColor: '#FFF3CD', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  essentialBadgeText: { fontSize: 10, color: '#8A6D00', fontWeight: '700' },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   badgeWarning: { backgroundColor: '#FFF1E6' },
   badgeDanger: { backgroundColor: '#FDE2E1' },

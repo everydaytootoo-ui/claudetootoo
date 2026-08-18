@@ -12,7 +12,7 @@ export function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.heading}>🔍 가족 짐 통합 검색</Text>
+      <Text style={styles.heading}>🔍 우리 크루 짐 통합 검색</Text>
       <TextInput
         style={styles.input}
         placeholder="예) 약, 돼지코, 카메라..."
@@ -31,7 +31,7 @@ export function SearchScreen() {
           keyword.trim().length > 0 ? (
             <Text style={styles.emptyText}>"{keyword}"에 해당하는 물건을 찾지 못했어요.</Text>
           ) : (
-            <Text style={styles.emptyText}>가족이 챙긴 물건을 검색해보세요.</Text>
+            <Text style={styles.emptyText}>가족이나 친구가 챙긴 물건을 검색해보세요.</Text>
           )
         }
         renderItem={({ item: result }) => {
