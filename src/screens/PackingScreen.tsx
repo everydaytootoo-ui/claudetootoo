@@ -1,12 +1,17 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useNavigation } from '@react-navigation/native';
 import { DecorationCanvas } from '../components/decoration/DecorationCanvas';
 import { BagSectionSheet, buildPackItemDraft } from '../components/packing/BagSectionSheet';
 import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
+import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar';
+import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
 import { BagSection, DecorationAsset, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
+import { AppNavigationProp } from '../navigation/RootNavigator';
+import { QuickPickItem } from '../data/quickPickCatalog';
 
 const ASSET_CATALOG: DecorationAsset[] = [
   { id: 'flag-jp', type: 'sticker', emoji: '🇯🇵', label: '일본 국기', isPremium: false },
@@ -19,8 +24,9 @@ const ASSET_CATALOG: DecorationAsset[] = [
 
 /** 잠긴 스티커는 아직 unlockedPremiumIds에 없으면 보상형 광고 시청을 유도한다. */
 export function PackingScreen() {
-  const { trip, bags, items, setItems, updateBagDecoration } = useTripContext();
+  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit } = useTripContext();
   const bag = bags[0]; // MVP: 가족의 첫 번째 가방부터 시작 (가방 여러 개는 스와이프 탭으로 확장 가능)
+  const navigation = useNavigation<AppNavigationProp>();
 
   const [activeSection, setActiveSection] = useState<BagSection | null>(null);
   const [shareVisible, setShareVisible] = useState(false);
@@ -46,6 +52,12 @@ export function PackingScreen() {
     [unlockedPremiumIds]
   );
 
+  const handleAddWeatherItem = (quickPick: QuickPickItem) => {
+    const targetSection = bag.sections[0];
+    const draft = buildPackItemDraft(targetSection, quickPick, CURRENT_USER_NAME);
+    setItems((prev) => [...prev, { ...draft, id: `${quickPick.id}-${Date.now()}` }]);
+  };
+
   const handleRequestUnlock = (asset: DecorationAsset) => {
     Alert.alert(
       '한정판 스티커 🔒',
@@ -68,7 +80,18 @@ export function PackingScreen() {
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.heading}>🎒 캐꾸 & 짐싸기</Text>
+        <View style={styles.headingRow}>
+          <Text style={styles.headingRowText}>🎒 캐꾸 & 짐싸기</Text>
+          <Pressable onPress={() => navigation.navigate('Templates')} hitSlop={8}>
+            <Text style={styles.templateLink}>📋 템플릿</Text>
+          </Pressable>
+        </View>
+
+        <WeatherSuggestionBar
+          trip={trip}
+          addedNames={bagItems.map((i) => i.name)}
+          onAddItem={handleAddWeatherItem}
+        />
 
         <DecorationCanvas
           bagKind={bag.kind}
@@ -80,6 +103,12 @@ export function PackingScreen() {
           onChangePlacements={(placements: StickerPlacement[]) =>
             updateBagDecoration(bag.id, bag.decoration.color, placements)
           }
+        />
+
+        <BaggageWeightGauge
+          bag={bag}
+          items={bagItems}
+          onChangeLimit={(kg) => updateBagWeightLimit(bag.id, kg)}
         />
 
         <Text style={styles.heading}>가방 구역</Text>
@@ -148,7 +177,15 @@ export function PackingScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FBF7F0' },
   scroll: { paddingBottom: 48 },
+  headingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 16,
+  },
+  headingRowText: { fontSize: 16, fontWeight: '700', color: '#2A2A2E' },
   heading: { fontSize: 16, fontWeight: '700', color: '#2A2A2E', margin: 16 },
+  templateLink: { fontSize: 12, fontWeight: '700', color: '#FF8A5B' },
   sectionRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 16 },
   sectionCard: {
     flex: 1,

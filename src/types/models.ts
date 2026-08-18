@@ -75,6 +75,8 @@ export interface Bag {
   label: string; // "엄마 24인치 캐리어"
   decoration: BagDecoration;
   sections: BagSection[];
+  /** 항공사 위탁 수하물 허용 무게(kg). 15/20/23/32kg 중 선택하는 게 일반적 */
+  weightLimitKg: number;
 }
 
 /** 위험/제한 품목 카테고리 (수하물 규정 자동 알림에 사용) */
@@ -114,6 +116,9 @@ export interface Trip {
   familyId: string; // = crewId
   name: string;
   destinationCountry: string;
+  destinationCity?: string; // "오사카" — 날씨 카드 표시용
+  lat?: number; // 날씨 API 조회용 좌표 (없으면 국가/계절 기반 평년값으로 대체)
+  lon?: number;
   season: 'spring' | 'summer' | 'autumn' | 'winter';
   startDate: string; // ISO date
   endDate: string; // ISO date
@@ -164,5 +169,34 @@ export interface VaultDocument {
   fileMimeType?: string;
   memoText?: string; // 오프라인 메모 본문 (인터넷 없이도 로컬 캐시로 확인 가능)
   createdBy: string;
+  createdAt: string; // ISO datetime
+}
+
+/** 템플릿에 저장되는 섹션 구조 — 특정 여행/가방의 구체적인 id에 묶이지 않은 재사용 가능한 형태 */
+export interface PackTemplateSection {
+  name: string;
+  icon: string;
+  baggageMode: BaggageMode;
+  isCustom: boolean;
+}
+
+/** 템플릿에 저장되는 물품 — 섹션은 id 대신 이름으로 참조해, 적용 시 새 섹션에 다시 매칭한다 */
+export interface PackTemplateItem {
+  sectionName: string;
+  name: string;
+  emoji: string;
+  restriction: RestrictionCategory;
+  isEssential: boolean;
+  quantity: number;
+}
+
+/** "3박4일 일본여행 템플릿" 등으로 저장해두고 다음 여행에 그대로 불러오는 패킹 리스트 스냅샷 */
+export interface PackTemplate {
+  id: string;
+  name: string;
+  bagKind: BagKind;
+  bagColor: BagColor;
+  sections: PackTemplateSection[];
+  items: PackTemplateItem[];
   createdAt: string; // ISO datetime
 }

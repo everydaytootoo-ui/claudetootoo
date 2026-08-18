@@ -10,6 +10,7 @@ import { CalendarScreen } from '../screens/CalendarScreen';
 import { VaultScreen } from '../screens/VaultScreen';
 import { DepartureCheckInScreen } from '../screens/DepartureCheckInScreen';
 import { GroupScreen } from '../screens/GroupScreen';
+import { TemplateScreen } from '../screens/TemplateScreen';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -19,11 +20,12 @@ export type RootTabParamList = {
   Vault: undefined;
 };
 
-/** 탭 바깥에서 전체 화면으로 열리는 스크린들 (출발 체크, 크루 관리) */
+/** 탭 바깥에서 전체 화면으로 열리는 스크린들 (출발 체크, 크루 관리, 템플릿) */
 export type RootStackParamList = {
   MainTabs: undefined;
   DepartureCheckIn: undefined;
   Group: undefined;
+  Templates: undefined;
 };
 
 /** 탭 화면(Home 등)에서 탭 이동과 스택 화면 이동을 모두 타입 안전하게 호출하기 위한 합성 타입 */
@@ -88,6 +90,7 @@ export function RootNavigator() {
           options={{ title: '출발 전 필수품 체크' }}
         />
         <Stack.Screen name="Group" component={GroupScreen} options={{ title: '여행 크루' }} />
+        <Stack.Screen name="Templates" component={TemplateScreen} options={{ title: '패킹 템플릿' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

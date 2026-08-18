@@ -26,6 +26,7 @@ const SHORTCUTS: Shortcut[] = [
   { kind: 'tab', target: 'Calendar', icon: '🗓', label: '여행 캘린더', desc: 'D-Day와 일자별 일정' },
   { kind: 'tab', target: 'Vault', icon: '📄', label: '바우처 보관함', desc: '항공권 · 예약증 · 메모' },
   { kind: 'stack', target: 'Group', icon: '👨‍👩‍👧‍👦', label: '여행 크루 관리', desc: '가족·친구 초대 코드 공유' },
+  { kind: 'stack', target: 'Templates', icon: '📋', label: '패킹 템플릿', desc: '저장한 구성 1초 만에 불러오기' },
 ];
 
 export function HomeScreen() {

@@ -202,3 +202,25 @@ create policy "family vault_documents rw" on vault_documents
 -- vault_documents.file_url / items.photo_url 은 Supabase Storage의 비공개 버킷(예: "vault", "item-photos")에
 -- 업로드한 뒤 반환되는 signed URL 또는 storage 경로를 저장하는 것을 권장한다. 버킷 정책 역시
 -- family_members를 통해 같은 가족만 read/write 가능하도록 제한해야 한다.
+
+-- ---------------------------------------------------------------------
+-- ④ 패킹 리스트 템플릿
+-- 클라이언트 MVP는 AsyncStorage(기기 로컬)에 저장하지만, 크루원끼리 템플릿을
+-- 공유하고 싶을 때를 대비해 동일한 구조의 클라우드 테이블도 미리 정의해둔다.
+-- ---------------------------------------------------------------------
+create table if not exists pack_templates (
+  id uuid primary key default gen_random_uuid(),
+  family_id uuid not null references families(id) on delete cascade,
+  name text not null, -- "3박4일 일본여행 템플릿"
+  bag_kind text not null check (bag_kind in ('carryon20','carryon24','carryon28','backpack','boston')),
+  bag_color text not null,
+  sections jsonb not null default '[]'::jsonb, -- PackTemplateSection[]
+  items jsonb not null default '[]'::jsonb, -- PackTemplateItem[]
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table pack_templates enable row level security;
+
+create policy "family pack_templates rw" on pack_templates
+  for all using (is_family_member(family_id)) with check (is_family_member(family_id));

@@ -1,5 +1,17 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { Bag, CalendarEvent, PackItem, StickerPlacement, Trip, TripMember, VaultDocument } from '../types/models';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  Bag,
+  CalendarEvent,
+  PackItem,
+  PackTemplate,
+  StickerPlacement,
+  Trip,
+  TripMember,
+  VaultDocument,
+} from '../types/models';
+import { collectEssentialItems, countUncheckedEssentials } from '../utils/essentialChecklist';
+import { expandTemplateSections } from '../utils/templateBuilder';
+import { scheduleDepartureReminders } from '../notifications/departureReminders';
 
 /** 이 기기를 쓰고 있는 "나"를 가리키는 표시명. 실서비스에서는 로그인 세션의 표시명으로 대체된다. */
 export const CURRENT_USER_NAME = '나';
@@ -18,6 +30,8 @@ interface TripContextValue {
   documents: VaultDocument[];
   members: TripMember[];
   updateBagDecoration: (bagId: string, color: Bag['decoration']['color'], placements: StickerPlacement[]) => void;
+  updateBagWeightLimit: (bagId: string, weightLimitKg: number) => void;
+  applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
   setItems: React.Dispatch<React.SetStateAction<PackItem[]>>;
   setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
   setDocuments: React.Dispatch<React.SetStateAction<VaultDocument[]>>;
@@ -31,14 +45,14 @@ const MOCK_TRIP: Trip = {
   familyId: 'family-1',
   name: '가족 오사카 여행',
   destinationCountry: 'JP',
+  destinationCity: '오사카',
+  lat: 34.6937,
+  lon: 135.5023,
   season: 'winter',
   startDate: '2026-09-20',
   endDate: '2026-09-24',
   inviteCode: 'AB12CD',
 };
-
-/** 필수 지참품(여권/지갑 등)을 담아두는 전용 섹션 — 가방이 아니라 몸에 지니는 품목이 많아 별도로 둔다. */
-const ESSENTIALS_SECTION_ID = 'sec-essentials';
 
 function createInitialBags(): Bag[] {
   const bagId = 'bag-1';
@@ -50,12 +64,13 @@ function createInitialBags(): Bag[] {
       kind: 'carryon24',
       label: '엄마 24인치 캐리어',
       decoration: { bagId, color: 'pastel_pink', placements: [] },
+      weightLimitKg: 23,
       sections: [
         { id: 'sec-left', bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
         { id: 'sec-right', bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
         { id: 'sec-hidden', bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
         {
-          id: ESSENTIALS_SECTION_ID,
+          id: 'sec-essentials',
           bagId,
           kind: 'custom',
           name: '필수 지참품',
@@ -110,6 +125,52 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const updateBagWeightLimit: TripContextValue['updateBagWeightLimit'] = (bagId, weightLimitKg) => {
+    setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, weightLimitKg } : b)));
+  };
+
+  /** ④ 템플릿을 가방에 적용 — 섹션 구조를 새 id로 다시 만들고, 옛 섹션에 있던 물품은 정리한 뒤 템플릿 물품으로 채운다 */
+  const applyTemplateToBag: TripContextValue['applyTemplateToBag'] = (bagId, template) => {
+    const targetBag = bags.find((b) => b.id === bagId);
+    if (!targetBag) return;
+
+    const oldSectionIds = new Set(targetBag.sections.map((s) => s.id));
+    const newSections = expandTemplateSections(template, bagId);
+    const sectionIdByName = new Map(newSections.map((s) => [s.name, s.id]));
+
+    setBags((prev) =>
+      prev.map((b) =>
+        b.id === bagId
+          ? { ...b, kind: template.bagKind, decoration: { ...b.decoration, color: template.bagColor }, sections: newSections }
+          : b
+      )
+    );
+
+    const newItems: PackItem[] = template.items.map((templateItem, index) => ({
+      id: `tpl-item-${index}-${Date.now()}`,
+      sectionId: sectionIdByName.get(templateItem.sectionName) ?? newSections[0].id,
+      name: templateItem.name,
+      emoji: templateItem.emoji,
+      checked: false,
+      quantity: templateItem.quantity,
+      restriction: templateItem.restriction,
+      createdBy: CURRENT_USER_NAME,
+      isEssential: templateItem.isEssential,
+      confirmedBy: [],
+    }));
+
+    setItems((prev) => [...prev.filter((item) => !oldSectionIds.has(item.sectionId)), ...newItems]);
+  };
+
+  // ③ items/bags가 바뀔 때마다 "출발 D-1/D-Day 필수품 미챙김" 알림을 최신 개수로 다시 예약한다.
+  useEffect(() => {
+    const rows = collectEssentialItems(bags, items);
+    const unchecked = countUncheckedEssentials(rows);
+    scheduleDepartureReminders(MOCK_TRIP, unchecked).catch(() => {
+      // 알림 권한이 없거나 플랫폼 미지원이면 조용히 무시 (필수 기능이 아님)
+    });
+  }, [bags, items]);
+
   const value = useMemo<TripContextValue>(
     () => ({
       trip: MOCK_TRIP,
@@ -119,6 +180,8 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       documents,
       members,
       updateBagDecoration,
+      updateBagWeightLimit,
+      applyTemplateToBag,
       setItems,
       setEvents,
       setDocuments,
