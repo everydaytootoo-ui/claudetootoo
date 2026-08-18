@@ -1,30 +1,32 @@
-import {
-  AdEventType,
-  InterstitialAd,
-  MobileAds,
-  RewardedAd,
-  RewardedAdEventType,
-  TestIds,
-} from 'react-native-google-mobile-ads';
-
 /**
  * AdMob 수익화 지점
  *  - 보상형(Rewarded): 한정판 스티커/테마 해금, 히든포켓 무제한 추가
  *  - 전면(Interstitial): 짐싸기 완료 / 인스타 자랑용 카드 저장 완료 시 노출
  *
- * 실제 광고 단위 ID는 배포 전 app.json(extra) 또는 환경변수로 주입하고,
- * 개발/디버그 빌드에서는 TestIds를 사용해 정책 위반을 방지한다.
+ * react-native-google-mobile-ads는 커스텀 네이티브 코드가 필요해 Expo Go에서는
+ * 동작하지 않는다(개발 빌드/EAS Build 필요). require를 지연 + try/catch로 감싸서
+ * Expo Go 같은 환경에서는 앱이 크래시하는 대신 광고 기능만 조용히 꺼지도록 한다.
  */
-const REWARDED_UNIT_ID = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-XXXXXXXXXXXXXXXX/REWARDED_ID';
+type AdsSdk = typeof import('react-native-google-mobile-ads');
+let sdk: AdsSdk | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  sdk = require('react-native-google-mobile-ads');
+} catch {
+  sdk = null;
+}
+
+/** 실제 광고 단위 ID는 배포 전 app.json(extra) 또는 환경변수로 주입하고, 개발 빌드에서는 TestIds를 사용한다. */
+const REWARDED_UNIT_ID = __DEV__ ? sdk?.TestIds.REWARDED : 'ca-app-pub-XXXXXXXXXXXXXXXX/REWARDED_ID';
 const INTERSTITIAL_UNIT_ID = __DEV__
-  ? TestIds.INTERSTITIAL
+  ? sdk?.TestIds.INTERSTITIAL
   : 'ca-app-pub-XXXXXXXXXXXXXXXX/INTERSTITIAL_ID';
 
 let initialized = false;
 
 export async function initializeAds(): Promise<void> {
-  if (initialized) return;
-  await MobileAds().initialize();
+  if (initialized || !sdk) return;
+  await sdk.MobileAds().initialize();
   initialized = true;
 }
 
@@ -39,6 +41,12 @@ export function showRewardedAdForUnlock(
   onRewardEarned: () => void,
   onFailed?: (error: unknown) => void
 ): void {
+  if (!sdk || !REWARDED_UNIT_ID) {
+    onFailed?.(new Error('이 환경(Expo Go 등)에서는 광고 기능을 사용할 수 없어요.'));
+    return;
+  }
+  const { AdEventType, RewardedAd, RewardedAdEventType } = sdk;
+
   const rewarded = RewardedAd.createForAdRequest(REWARDED_UNIT_ID, {
     requestNonPersonalizedAdsOnly: false,
   });
@@ -72,6 +80,12 @@ export function showRewardedAdForUnlock(
 
 /** 짐싸기 완료 / 공유 카드 저장 완료 등 자연스러운 완료 시점에 노출하는 전면 광고 */
 export function showInterstitialAfterCompletion(onClosed?: () => void): void {
+  if (!sdk || !INTERSTITIAL_UNIT_ID) {
+    onClosed?.();
+    return;
+  }
+  const { AdEventType, InterstitialAd } = sdk;
+
   const interstitial = InterstitialAd.createForAdRequest(INTERSTITIAL_UNIT_ID, {
     requestNonPersonalizedAdsOnly: false,
   });
