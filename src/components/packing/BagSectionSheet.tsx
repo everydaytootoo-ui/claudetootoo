@@ -15,6 +15,8 @@ interface Props {
   onAddQuickPickItem: (section: BagSection, quickPick: QuickPickItem) => void;
   onAttachPhoto: (itemId: string, localUri: string) => void;
   onRemoveItem: (itemId: string) => void;
+  /** 유저가 직접 추가한 구역(isCustom)에서만 노출되는 삭제 버튼 — 기본 제공 구역은 지울 수 없다 */
+  onDeleteSection: (section: BagSection) => void;
 }
 
 /**
@@ -23,7 +25,7 @@ interface Props {
  * - 본문: 체크리스트(체크박스) + 실물 사진 썸네일, 위탁/기내 규정 위반 시 경고 배지
  */
 export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectionSheet(
-  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem },
+  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem, onDeleteSection },
   ref
 ) {
   const snapPoints = useMemo(() => ['45%', '85%'], []);
@@ -50,9 +52,16 @@ export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectio
   return (
     <BottomSheet ref={ref} index={-1} snapPoints={snapPoints} enablePanDownToClose>
       <BottomSheetView style={styles.header}>
-        <Text style={styles.title}>
-          {section ? `${section.icon} ${section.name}` : ''}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>
+            {section ? `${section.icon} ${section.name}` : ''}
+          </Text>
+          {section?.isCustom && (
+            <Pressable onPress={() => onDeleteSection(section)} hitSlop={8}>
+              <Text style={styles.deleteSectionText}>구역 삭제</Text>
+            </Pressable>
+          )}
+        </View>
         <Text style={styles.subtitle}>
           {section?.baggageMode === 'checked' ? '🧳 위탁 수하물 구역' : '🎒 기내 반입 구역'}
         </Text>
@@ -143,7 +152,9 @@ export function buildPackItemDraft(section: BagSection, quickPick: QuickPickItem
 
 const styles = StyleSheet.create({
   header: { paddingHorizontal: 16, paddingBottom: 8, gap: 4 },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: 18, fontWeight: '700', color: '#2A2A2E' },
+  deleteSectionText: { fontSize: 12, color: '#C0392B', fontWeight: '600' },
   subtitle: { fontSize: 12, color: '#8A8A8E', marginBottom: 8 },
   warningBanner: {
     marginHorizontal: 16,

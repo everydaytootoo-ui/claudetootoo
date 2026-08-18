@@ -37,6 +37,10 @@ interface TripContextValue {
   applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
   /** ⑤ 새 가방(가족·친구 누구든) 추가 — 기본 4구역으로 시작하고 새로 만들어진 bagId를 반환한다 */
   addBag: (ownerName: string, kind: BagKind) => string;
+  /** 가방에 유저가 원하는 이름의 커스텀 구역(상단 지퍼 포켓, 노트북 슬롯 등)을 추가한다 */
+  addSection: (bagId: string, name: string, icon: string, baggageMode: Bag['sections'][number]['baggageMode']) => void;
+  /** 커스텀 구역만 삭제할 수 있다 — 그 구역에 있던 물품도 함께 정리된다 */
+  deleteSection: (bagId: string, sectionId: string) => void;
   setItems: React.Dispatch<React.SetStateAction<PackItem[]>>;
   setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
   setDocuments: React.Dispatch<React.SetStateAction<VaultDocument[]>>;
@@ -59,13 +63,17 @@ const MOCK_TRIP: Trip = {
   inviteCode: 'AB12CD',
 };
 
-/** 새 가방을 만들 때 항상 같이 딸려오는 기본 4구역 (왼쪽/오른쪽/히든포켓/필수 지참품) */
+/**
+ * 새 가방을 만들 때 항상 같이 딸려오는 기본 4구역 (왼쪽/오른쪽/히든포켓/필수 지참품).
+ * 넷 다 isCustom: false — kind:'custom'인 필수 지참품도 유저가 만든 게 아니라 기본 제공이라
+ * 구역 삭제 UI에는 노출되지 않는다(유저가 직접 추가한 구역만 삭제 가능).
+ */
 function createDefaultSections(bagId: string): BagSection[] {
   return [
     { id: `sec-left-${bagId}`, bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
     { id: `sec-right-${bagId}`, bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
     { id: `sec-hidden-${bagId}`, bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
-    { id: `sec-essentials-${bagId}`, bagId, kind: 'custom', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: true },
+    { id: `sec-essentials-${bagId}`, bagId, kind: 'custom', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: false },
   ];
 }
 
@@ -181,6 +189,30 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     return newBagId;
   };
 
+  const addSection: TripContextValue['addSection'] = (bagId, name, icon, baggageMode) => {
+    const newSection: BagSection = {
+      id: `sec-custom-${Date.now()}`,
+      bagId,
+      kind: 'custom',
+      name,
+      icon,
+      baggageMode,
+      isCustom: true,
+    };
+    setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, sections: [...b.sections, newSection] } : b)));
+  };
+
+  const deleteSection: TripContextValue['deleteSection'] = (bagId, sectionId) => {
+    const targetBag = bags.find((b) => b.id === bagId);
+    const targetSection = targetBag?.sections.find((s) => s.id === sectionId);
+    if (!targetSection?.isCustom) return; // 기본 제공 구역은 삭제할 수 없다
+
+    setBags((prev) =>
+      prev.map((b) => (b.id === bagId ? { ...b, sections: b.sections.filter((s) => s.id !== sectionId) } : b))
+    );
+    setItems((prev) => prev.filter((item) => item.sectionId !== sectionId));
+  };
+
   // ③ items/bags가 바뀔 때마다 "출발 D-1/D-Day 필수품 미챙김" 알림을 최신 개수로 다시 예약한다.
   useEffect(() => {
     const rows = collectEssentialItems(bags, items);
@@ -202,6 +234,8 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       updateBagWeightLimit,
       applyTemplateToBag,
       addBag,
+      addSection,
+      deleteSection,
       setItems,
       setEvents,
       setDocuments,

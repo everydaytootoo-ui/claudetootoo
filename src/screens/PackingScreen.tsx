@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { DecorationCanvas } from '../components/decoration/DecorationCanvas';
@@ -8,11 +8,13 @@ import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
 import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar';
 import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
 import { BagSwitcher } from '../components/packing/BagSwitcher';
-import { BagSection, DecorationAsset, StickerPlacement } from '../types/models';
+import { BaggageMode, BagSection, DecorationAsset, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
 import { AppNavigationProp } from '../navigation/RootNavigator';
 import { QuickPickItem } from '../data/quickPickCatalog';
+
+const SECTION_ICON_OPTIONS = ['🧦', '💻', '🧢', '🥾', '🧴', '🎮', '📚', '🪴'];
 
 const ASSET_CATALOG: DecorationAsset[] = [
   { id: 'flag-jp', type: 'sticker', emoji: '🇯🇵', label: '일본 국기', isPremium: false },
@@ -25,7 +27,8 @@ const ASSET_CATALOG: DecorationAsset[] = [
 
 /** 잠긴 스티커는 아직 unlockedPremiumIds에 없으면 보상형 광고 시청을 유도한다. */
 export function PackingScreen() {
-  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit, addBag } = useTripContext();
+  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit, addBag, addSection, deleteSection } =
+    useTripContext();
   const navigation = useNavigation<AppNavigationProp>();
 
   const [selectedBagId, setSelectedBagId] = useState(bags[0].id);
@@ -34,6 +37,10 @@ export function PackingScreen() {
   const [activeSection, setActiveSection] = useState<BagSection | null>(null);
   const [shareVisible, setShareVisible] = useState(false);
   const [unlockedPremiumIds, setUnlockedPremiumIds] = useState<string[]>([]);
+  const [sectionModalVisible, setSectionModalVisible] = useState(false);
+  const [newSectionName, setNewSectionName] = useState('');
+  const [newSectionIcon, setNewSectionIcon] = useState(SECTION_ICON_OPTIONS[0]);
+  const [newSectionMode, setNewSectionMode] = useState<BaggageMode>('checked');
   const sheetRef = useRef<BottomSheet>(null);
 
   // 다른 가방으로 전환하면 이전 가방의 구역이 열려 있던 하단 시트를 닫는다.
@@ -84,6 +91,30 @@ export function PackingScreen() {
         },
       ]
     );
+  };
+
+  const handleAddSection = () => {
+    if (!newSectionName.trim()) return;
+    addSection(bag.id, newSectionName.trim(), newSectionIcon, newSectionMode);
+    setNewSectionName('');
+    setNewSectionIcon(SECTION_ICON_OPTIONS[0]);
+    setNewSectionMode('checked');
+    setSectionModalVisible(false);
+  };
+
+  const handleDeleteSection = (section: BagSection) => {
+    Alert.alert('구역 삭제', `"${section.name}" 구역을 삭제할까요? 안에 담긴 물품도 함께 삭제돼요.`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: () => {
+          deleteSection(bag.id, section.id);
+          setActiveSection(null);
+          sheetRef.current?.close();
+        },
+      },
+    ]);
   };
 
   return (
@@ -139,6 +170,9 @@ export function PackingScreen() {
               </Text>
             </Pressable>
           ))}
+          <Pressable style={[styles.sectionCard, styles.sectionCardAdd]} onPress={() => setSectionModalVisible(true)}>
+            <Text style={styles.sectionAddText}>+ 구역{'\n'}추가</Text>
+          </Pressable>
         </View>
 
         <Pressable
@@ -168,7 +202,63 @@ export function PackingScreen() {
           setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, photoUrl: localUri } : i)))
         }
         onRemoveItem={(itemId) => setItems((prev) => prev.filter((i) => i.id !== itemId))}
+        onDeleteSection={handleDeleteSection}
       />
+
+      <Modal visible={sectionModalVisible} transparent animationType="fade">
+        <View style={styles.shareModalBackdrop}>
+          <View style={styles.sectionModalCard}>
+            <Text style={styles.sectionModalTitle}>새 구역 추가</Text>
+            <TextInput
+              style={styles.sectionModalInput}
+              placeholder="구역 이름 (예: 노트북 슬롯)"
+              value={newSectionName}
+              onChangeText={setNewSectionName}
+            />
+            <View style={styles.sectionIconRow}>
+              {SECTION_ICON_OPTIONS.map((icon) => (
+                <Pressable
+                  key={icon}
+                  style={[styles.sectionIconChip, newSectionIcon === icon && styles.sectionIconChipSelected]}
+                  onPress={() => setNewSectionIcon(icon)}
+                >
+                  <Text style={styles.sectionIconChipText}>{icon}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <View style={styles.sectionModeRow}>
+              <Pressable
+                style={[styles.sectionModeChip, newSectionMode === 'checked' && styles.sectionModeChipSelected]}
+                onPress={() => setNewSectionMode('checked')}
+              >
+                <Text
+                  style={[styles.sectionModeText, newSectionMode === 'checked' && styles.sectionModeTextSelected]}
+                >
+                  🧳 위탁 수하물
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.sectionModeChip, newSectionMode === 'carryOn' && styles.sectionModeChipSelected]}
+                onPress={() => setNewSectionMode('carryOn')}
+              >
+                <Text
+                  style={[styles.sectionModeText, newSectionMode === 'carryOn' && styles.sectionModeTextSelected]}
+                >
+                  🎒 기내 반입
+                </Text>
+              </Pressable>
+            </View>
+            <View style={styles.sectionModalActions}>
+              <Pressable style={styles.modalCancel} onPress={() => setSectionModalVisible(false)}>
+                <Text style={styles.modalCancelText}>취소</Text>
+              </Pressable>
+              <Pressable style={styles.modalSave} onPress={handleAddSection}>
+                <Text style={styles.modalSaveText}>추가</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={shareVisible} animationType="slide" transparent>
         <View style={styles.shareModalBackdrop}>
@@ -202,9 +292,9 @@ const styles = StyleSheet.create({
   headingRowText: { fontSize: 16, fontWeight: '700', color: '#2A2A2E' },
   heading: { fontSize: 16, fontWeight: '700', color: '#2A2A2E', margin: 16 },
   templateLink: { fontSize: 12, fontWeight: '700', color: '#FF8A5B' },
-  sectionRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 16 },
+  sectionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 16 },
   sectionCard: {
-    flex: 1,
+    width: '30%',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 12,
@@ -212,8 +302,40 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   sectionIcon: { fontSize: 24 },
-  sectionName: { fontSize: 12, fontWeight: '600', color: '#2A2A2E' },
+  sectionName: { fontSize: 12, fontWeight: '600', color: '#2A2A2E', textAlign: 'center' },
   sectionCount: { fontSize: 11, color: '#B0B0B4' },
+  sectionCardAdd: { backgroundColor: '#F3F1EC', justifyContent: 'center' },
+  sectionAddText: { fontSize: 12, fontWeight: '700', color: '#8A8A8E', textAlign: 'center' },
+  sectionModalCard: { width: '85%', backgroundColor: '#FFFFFF', borderRadius: 20, padding: 20, gap: 12 },
+  sectionModalTitle: { fontSize: 14, fontWeight: '700', color: '#2A2A2E' },
+  sectionModalInput: {
+    backgroundColor: '#F3F1EC',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13,
+  },
+  sectionIconRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  sectionIconChip: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#F3F1EC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionIconChipSelected: { backgroundColor: '#FDE9DD' },
+  sectionIconChipText: { fontSize: 18 },
+  sectionModeRow: { flexDirection: 'row', gap: 8 },
+  sectionModeChip: { flex: 1, paddingVertical: 10, borderRadius: 12, backgroundColor: '#F3F1EC', alignItems: 'center' },
+  sectionModeChipSelected: { backgroundColor: '#FDE9DD' },
+  sectionModeText: { fontSize: 12, fontWeight: '600', color: '#4A4A4E' },
+  sectionModeTextSelected: { color: '#C1560B' },
+  sectionModalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 4 },
+  modalCancel: { paddingHorizontal: 12, paddingVertical: 8 },
+  modalCancelText: { color: '#8A8A8E', fontSize: 13 },
+  modalSave: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#FF8A5B', borderRadius: 10 },
+  modalSaveText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   shareCta: {
     margin: 16,
     backgroundColor: '#FF8A5B',

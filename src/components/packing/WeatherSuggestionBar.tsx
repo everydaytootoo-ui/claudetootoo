@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Trip } from '../../types/models';
 import { fetchTripWeather, WeatherSummary } from '../../lib/weather';
-import { getWeatherRecommendations } from '../../data/weatherRecommendations';
+import { getTripRecommendations } from '../../data/weatherRecommendations';
 import { QuickPickItem } from '../../data/quickPickCatalog';
 
 interface Props {
@@ -29,7 +29,7 @@ export function WeatherSuggestionBar({ trip, addedNames, onAddItem }: Props) {
     };
   }, [trip.id, trip.startDate, trip.endDate]);
 
-  const recommendations = useMemo(() => (weather ? getWeatherRecommendations(weather) : []), [weather]);
+  const recommendations = useMemo(() => (weather ? getTripRecommendations(weather, trip) : []), [weather, trip]);
 
   if (!weather) {
     return (
