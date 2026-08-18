@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import {
   Bag,
+  BagKind,
+  BagSection,
   CalendarEvent,
   PackItem,
   PackTemplate,
@@ -12,6 +14,7 @@ import {
 import { collectEssentialItems, countUncheckedEssentials } from '../utils/essentialChecklist';
 import { expandTemplateSections } from '../utils/templateBuilder';
 import { scheduleDepartureReminders } from '../notifications/departureReminders';
+import { BAG_KIND_LABEL } from '../data/bagKinds';
 
 /** 이 기기를 쓰고 있는 "나"를 가리키는 표시명. 실서비스에서는 로그인 세션의 표시명으로 대체된다. */
 export const CURRENT_USER_NAME = '나';
@@ -32,6 +35,8 @@ interface TripContextValue {
   updateBagDecoration: (bagId: string, color: Bag['decoration']['color'], placements: StickerPlacement[]) => void;
   updateBagWeightLimit: (bagId: string, weightLimitKg: number) => void;
   applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
+  /** ⑤ 새 가방(가족·친구 누구든) 추가 — 기본 4구역으로 시작하고 새로 만들어진 bagId를 반환한다 */
+  addBag: (ownerName: string, kind: BagKind) => string;
   setItems: React.Dispatch<React.SetStateAction<PackItem[]>>;
   setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
   setDocuments: React.Dispatch<React.SetStateAction<VaultDocument[]>>;
@@ -54,6 +59,16 @@ const MOCK_TRIP: Trip = {
   inviteCode: 'AB12CD',
 };
 
+/** 새 가방을 만들 때 항상 같이 딸려오는 기본 4구역 (왼쪽/오른쪽/히든포켓/필수 지참품) */
+function createDefaultSections(bagId: string): BagSection[] {
+  return [
+    { id: `sec-left-${bagId}`, bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
+    { id: `sec-right-${bagId}`, bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
+    { id: `sec-hidden-${bagId}`, bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
+    { id: `sec-essentials-${bagId}`, bagId, kind: 'custom', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: true },
+  ];
+}
+
 function createInitialBags(): Bag[] {
   const bagId = 'bag-1';
   return [
@@ -65,20 +80,7 @@ function createInitialBags(): Bag[] {
       label: '엄마 24인치 캐리어',
       decoration: { bagId, color: 'pastel_pink', placements: [] },
       weightLimitKg: 23,
-      sections: [
-        { id: 'sec-left', bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
-        { id: 'sec-right', bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
-        { id: 'sec-hidden', bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
-        {
-          id: 'sec-essentials',
-          bagId,
-          kind: 'custom',
-          name: '필수 지참품',
-          icon: '🛂',
-          baggageMode: 'carryOn',
-          isCustom: true,
-        },
-      ],
+      sections: createDefaultSections(bagId),
     },
   ];
 }
@@ -162,6 +164,23 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => [...prev.filter((item) => !oldSectionIds.has(item.sectionId)), ...newItems]);
   };
 
+  /** ⑤ 가족·친구 누구든 자기 가방을 추가할 수 있게 — 기본 4구역으로 시작한다 */
+  const addBag: TripContextValue['addBag'] = (ownerName, kind) => {
+    const newBagId = `bag-${Date.now()}`;
+    const newBag: Bag = {
+      id: newBagId,
+      tripId: MOCK_TRIP.id,
+      ownerName,
+      kind,
+      label: `${ownerName} ${BAG_KIND_LABEL[kind]}`,
+      decoration: { bagId: newBagId, color: 'cream_white', placements: [] },
+      weightLimitKg: 23,
+      sections: createDefaultSections(newBagId),
+    };
+    setBags((prev) => [...prev, newBag]);
+    return newBagId;
+  };
+
   // ③ items/bags가 바뀔 때마다 "출발 D-1/D-Day 필수품 미챙김" 알림을 최신 개수로 다시 예약한다.
   useEffect(() => {
     const rows = collectEssentialItems(bags, items);
@@ -182,6 +201,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       updateBagDecoration,
       updateBagWeightLimit,
       applyTemplateToBag,
+      addBag,
       setItems,
       setEvents,
       setDocuments,

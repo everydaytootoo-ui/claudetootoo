@@ -4,11 +4,13 @@ import { useTripContext } from '../state/TripContext';
 import { PackTemplate } from '../types/models';
 import { buildTemplateFromBag } from '../utils/templateBuilder';
 import { deletePackTemplate, listPackTemplates, savePackTemplate } from '../lib/templateStorage';
+import { BagSwitcher } from '../components/packing/BagSwitcher';
 
 /** ④ 지금 가방 구성을 템플릿으로 저장하고, 다음 여행에서 1초 만에 그대로 불러오는 화면 */
 export function TemplateScreen() {
   const { bags, items, applyTemplateToBag } = useTripContext();
-  const bag = bags[0];
+  const [selectedBagId, setSelectedBagId] = useState(bags[0].id);
+  const bag = bags.find((b) => b.id === selectedBagId) ?? bags[0];
 
   const [templates, setTemplates] = useState<PackTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ export function TemplateScreen() {
   const handleApply = (template: PackTemplate) => {
     Alert.alert(
       '템플릿 불러오기',
-      `"${template.name}" 템플릿을 지금 가방에 적용할까요? 현재 짐 구성은 덮어써져요.`,
+      `"${template.name}" 템플릿을 "${bag.label}"에 적용할까요? 현재 짐 구성은 덮어써져요.`,
       [
         { text: '취소', style: 'cancel' },
         {
@@ -70,11 +72,12 @@ export function TemplateScreen() {
         onRefresh={refresh}
         ListHeaderComponent={
           <View style={styles.headerSection}>
+            <BagSwitcher bags={bags} selectedBagId={bag.id} onSelect={setSelectedBagId} />
             <Text style={styles.desc}>
-              지금 가방 구성을 템플릿으로 저장하면, 다음 여행 만들 때 1초 만에 그대로 불러올 수 있어요.
+              지금 "{bag.label}" 구성을 템플릿으로 저장하면, 다음 여행 만들 때 1초 만에 그대로 불러올 수 있어요.
             </Text>
             <Pressable style={styles.saveBtn} onPress={() => setSaveModalVisible(true)}>
-              <Text style={styles.saveBtnText}>📋 지금 가방을 템플릿으로 저장</Text>
+              <Text style={styles.saveBtnText}>📋 {bag.ownerName}의 가방을 템플릿으로 저장</Text>
             </Pressable>
           </View>
         }

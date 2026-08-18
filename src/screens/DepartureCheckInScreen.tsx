@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { collectEssentialItems, countUncheckedEssentials, EssentialRow } from '../utils/essentialChecklist';
 import { ESSENTIAL_QUICK_PICKS, QuickPickItem } from '../data/quickPickCatalog';
 import { buildPackItemDraft } from '../components/packing/BagSectionSheet';
+import { BagSwitcher } from '../components/packing/BagSwitcher';
 import { pickItemPhoto } from '../utils/photoPicker';
 
 /**
@@ -14,7 +15,8 @@ import { pickItemPhoto } from '../utils/photoPicker';
  */
 export function DepartureCheckInScreen() {
   const { trip, bags, items, setItems, members } = useTripContext();
-  const bag = bags[0];
+  const [selectedBagId, setSelectedBagId] = useState(bags[0].id);
+  const bag = bags.find((b) => b.id === selectedBagId) ?? bags[0];
 
   const rows = useMemo(() => collectEssentialItems(bags, items), [bags, items]);
   const uncheckedCount = useMemo(() => countUncheckedEssentials(rows), [rows]);
@@ -72,7 +74,9 @@ export function DepartureCheckInScreen() {
           </Text>
         </View>
 
-        <Text style={styles.sectionLabel}>+ 필수품 추가</Text>
+        <BagSwitcher bags={bags} selectedBagId={bag.id} onSelect={setSelectedBagId} />
+
+        <Text style={styles.sectionLabel}>+ {bag.ownerName}의 필수품 추가</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickPickRow}>
           {ESSENTIAL_QUICK_PICKS.map((qp) => (
             <Pressable key={qp.id} style={styles.quickPickChip} onPress={() => handleAddEssential(qp)}>

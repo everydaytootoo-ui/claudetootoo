@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { BagSectionSheet, buildPackItemDraft } from '../components/packing/BagSe
 import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
 import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar';
 import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
+import { BagSwitcher } from '../components/packing/BagSwitcher';
 import { BagSection, DecorationAsset, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
@@ -24,14 +25,22 @@ const ASSET_CATALOG: DecorationAsset[] = [
 
 /** 잠긴 스티커는 아직 unlockedPremiumIds에 없으면 보상형 광고 시청을 유도한다. */
 export function PackingScreen() {
-  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit } = useTripContext();
-  const bag = bags[0]; // MVP: 가족의 첫 번째 가방부터 시작 (가방 여러 개는 스와이프 탭으로 확장 가능)
+  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit, addBag } = useTripContext();
   const navigation = useNavigation<AppNavigationProp>();
+
+  const [selectedBagId, setSelectedBagId] = useState(bags[0].id);
+  const bag = bags.find((b) => b.id === selectedBagId) ?? bags[0];
 
   const [activeSection, setActiveSection] = useState<BagSection | null>(null);
   const [shareVisible, setShareVisible] = useState(false);
   const [unlockedPremiumIds, setUnlockedPremiumIds] = useState<string[]>([]);
   const sheetRef = useRef<BottomSheet>(null);
+
+  // 다른 가방으로 전환하면 이전 가방의 구역이 열려 있던 하단 시트를 닫는다.
+  useEffect(() => {
+    setActiveSection(null);
+    sheetRef.current?.close();
+  }, [selectedBagId]);
 
   const openSection = (section: BagSection) => {
     setActiveSection(section);
@@ -87,6 +96,13 @@ export function PackingScreen() {
           </Pressable>
         </View>
 
+        <BagSwitcher
+          bags={bags}
+          selectedBagId={bag.id}
+          onSelect={setSelectedBagId}
+          onAddBag={(ownerName, kind) => setSelectedBagId(addBag(ownerName, kind))}
+        />
+
         <WeatherSuggestionBar
           trip={trip}
           addedNames={bagItems.map((i) => i.name)}
@@ -111,7 +127,7 @@ export function PackingScreen() {
           onChangeLimit={(kg) => updateBagWeightLimit(bag.id, kg)}
         />
 
-        <Text style={styles.heading}>가방 구역</Text>
+        <Text style={styles.heading}>{bag.label} 구역</Text>
         <View style={styles.sectionRow}>
           {bag.sections.map((section) => (
             <Pressable key={section.id} style={styles.sectionCard} onPress={() => openSection(section)}>
