@@ -44,9 +44,6 @@ export const SEASONAL_RECOMMENDATIONS: Record<
   Partial<Record<'spring' | 'summer' | 'autumn' | 'winter', QuickPickItem[]>>
 > = {
   JP: {
-    winter: [
-      { id: 'jp-adapter', emoji: '🔌', name: '110V 돼지코 어댑터', restriction: 'none' },
-      { id: 'hotpack', emoji: '🥵', name: '핫팩', restriction: 'none' },
-    ],
+    winter: [{ id: 'hotpack', emoji: '🥵', name: '핫팩', restriction: 'none' }],
   },
 };

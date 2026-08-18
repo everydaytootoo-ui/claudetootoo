@@ -33,6 +33,10 @@ interface TripContextValue {
   events: CalendarEvent[];
   documents: VaultDocument[];
   members: TripMember[];
+  /** 여행지 국가/도시/좌표·일정·계절을 한 번에 수정한다 (여행 설정 화면에서 사용) */
+  updateTrip: (
+    updates: Partial<Pick<Trip, 'name' | 'destinationCountry' | 'destinationCity' | 'lat' | 'lon' | 'season' | 'startDate' | 'endDate'>>
+  ) => void;
   updateBagDecoration: (bagId: string, color: Bag['decoration']['color'], placements: StickerPlacement[]) => void;
   updateBagWeightLimit: (bagId: string, weightLimitKg: number) => void;
   applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
@@ -147,11 +151,16 @@ const INITIAL_MEMBERS: TripMember[] = [
 ];
 
 export function TripProvider({ children }: { children: React.ReactNode }) {
+  const [trip, setTrip] = useState<Trip>(MOCK_TRIP);
   const [bags, setBags] = useState<Bag[]>(createInitialBags);
   const [items, setItems] = useState<PackItem[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>(INITIAL_EVENTS);
   const [documents, setDocuments] = useState<VaultDocument[]>([]);
   const [members, setMembers] = useState<TripMember[]>(INITIAL_MEMBERS);
+
+  const updateTrip: TripContextValue['updateTrip'] = (updates) => {
+    setTrip((prev) => ({ ...prev, ...updates }));
+  };
 
   const updateBagDecoration: TripContextValue['updateBagDecoration'] = (bagId, color, placements) => {
     setBags((prev) =>
@@ -266,23 +275,24 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => prev.filter((item) => item.sectionId !== sectionId));
   };
 
-  // ③ items/bags가 바뀔 때마다 "출발 D-1/D-Day 필수품 미챙김" 알림을 최신 개수로 다시 예약한다.
+  // ③ items/bags/trip 일정이 바뀔 때마다 "출발 D-1/D-Day 필수품 미챙김" 알림을 최신 개수로 다시 예약한다.
   useEffect(() => {
     const rows = collectEssentialItems(bags, items);
     const unchecked = countUncheckedEssentials(rows);
-    scheduleDepartureReminders(MOCK_TRIP, unchecked).catch(() => {
+    scheduleDepartureReminders(trip, unchecked).catch(() => {
       // 알림 권한이 없거나 플랫폼 미지원이면 조용히 무시 (필수 기능이 아님)
     });
-  }, [bags, items]);
+  }, [bags, items, trip]);
 
   const value = useMemo<TripContextValue>(
     () => ({
-      trip: MOCK_TRIP,
+      trip,
       bags,
       items,
       events,
       documents,
       members,
+      updateTrip,
       updateBagDecoration,
       updateBagWeightLimit,
       applyTemplateToBag,
@@ -296,7 +306,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       setDocuments,
       setMembers,
     }),
-    [bags, items, events, documents, members]
+    [trip, bags, items, events, documents, members]
   );
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;

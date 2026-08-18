@@ -4,6 +4,7 @@ import { Trip } from '../../types/models';
 import { fetchTripWeather, WeatherSummary } from '../../lib/weather';
 import { getTripRecommendations } from '../../data/weatherRecommendations';
 import { QuickPickItem } from '../../data/quickPickCatalog';
+import { getPowerAdvice } from '../../data/powerRecommendations';
 
 interface Props {
   trip: Trip;
@@ -30,6 +31,7 @@ export function WeatherSuggestionBar({ trip, addedNames, onAddItem }: Props) {
   }, [trip.id, trip.startDate, trip.endDate]);
 
   const recommendations = useMemo(() => (weather ? getTripRecommendations(weather, trip) : []), [weather, trip]);
+  const powerAdvice = useMemo(() => getPowerAdvice(trip.destinationCountry), [trip.destinationCountry]);
 
   if (!weather) {
     return (
@@ -54,6 +56,7 @@ export function WeatherSuggestionBar({ trip, addedNames, onAddItem }: Props) {
       {expanded && (
         <>
           <Text style={styles.condition}>{weather.condition}</Text>
+          {powerAdvice && <Text style={styles.powerNote}>🔌 {powerAdvice.note}</Text>}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
             {recommendations.map((rec) => {
               const added = addedNames.includes(rec.name);
@@ -88,6 +91,7 @@ const styles = StyleSheet.create({
   temps: { fontSize: 12, color: '#4A4A4E' },
   chevron: { fontSize: 12, color: '#B0B0B4' },
   condition: { fontSize: 11, color: '#8A8A8E' },
+  powerNote: { fontSize: 11, color: '#4A4A4E', backgroundColor: '#F3F1EC', borderRadius: 10, padding: 8, lineHeight: 16 },
   chipRow: { gap: 8, paddingTop: 4 },
   chip: {
     minWidth: 68,

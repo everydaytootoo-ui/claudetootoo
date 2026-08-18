@@ -1,6 +1,7 @@
 import { WeatherSummary } from '../lib/weather';
 import { Trip } from '../types/models';
 import { QuickPickItem, SEASONAL_RECOMMENDATIONS } from './quickPickCatalog';
+import { getPowerItems } from './powerRecommendations';
 
 /** 예보(또는 평년값)를 보고 챙기면 좋을 아이템을 즉석에서 골라주는 규칙 기반 추천 */
 export function getWeatherRecommendations(weather: WeatherSummary): QuickPickItem[] {
@@ -30,14 +31,15 @@ export function getWeatherRecommendations(weather: WeatherSummary): QuickPickIte
 }
 
 /**
- * 날씨 기반 추천 + 여행지 국가·계절 고정 필수품(예: 일본/겨울 -> 110V 어댑터, 핫팩)을 합쳐서
- * 짐싸기 화면 상단 날씨 카드 하나에서 한 번에 보여준다.
+ * 날씨 기반 추천 + 여행지 국가·계절 고정 필수품(예: 겨울 -> 핫팩) + 콘센트/전압 비교로 나온
+ * 어댑터·변압기 추천을 합쳐서 짐싸기 화면 상단 날씨 카드 하나에서 한 번에 보여준다.
  */
 export function getTripRecommendations(weather: WeatherSummary, trip: Trip): QuickPickItem[] {
   const weatherItems = getWeatherRecommendations(weather);
   const seasonalItems = SEASONAL_RECOMMENDATIONS[trip.destinationCountry]?.[trip.season] ?? [];
+  const powerItems = getPowerItems(trip.destinationCountry);
 
-  const combined = [...seasonalItems, ...weatherItems];
+  const combined = [...powerItems, ...seasonalItems, ...weatherItems];
   const seen = new Set<string>();
   return combined.filter((item) => {
     if (seen.has(item.name)) return false;

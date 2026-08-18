@@ -11,6 +11,7 @@ import { VaultScreen } from '../screens/VaultScreen';
 import { DepartureCheckInScreen } from '../screens/DepartureCheckInScreen';
 import { GroupScreen } from '../screens/GroupScreen';
 import { TemplateScreen } from '../screens/TemplateScreen';
+import { TripSettingsScreen } from '../screens/TripSettingsScreen';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -26,6 +27,7 @@ export type RootStackParamList = {
   DepartureCheckIn: undefined;
   Group: undefined;
   Templates: undefined;
+  TripSettings: undefined;
 };
 
 /** 탭 화면(Home 등)에서 탭 이동과 스택 화면 이동을 모두 타입 안전하게 호출하기 위한 합성 타입 */
@@ -91,6 +93,7 @@ export function RootNavigator() {
         />
         <Stack.Screen name="Group" component={GroupScreen} options={{ title: '여행 크루' }} />
         <Stack.Screen name="Templates" component={TemplateScreen} options={{ title: '패킹 템플릿' }} />
+        <Stack.Screen name="TripSettings" component={TripSettingsScreen} options={{ title: '여행 설정' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

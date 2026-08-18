@@ -44,10 +44,15 @@ export function HomeScreen() {
     <SafeAreaView style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.heroCard}>
-          <Text style={styles.heroDday}>{computeDDay(trip.startDate)}</Text>
+          <View style={styles.heroTopRow}>
+            <Text style={styles.heroDday}>{computeDDay(trip.startDate)}</Text>
+            <Pressable style={styles.heroEditButton} onPress={() => navigation.navigate('TripSettings')}>
+              <Text style={styles.heroEditButtonText}>✏️ 여행 설정</Text>
+            </Pressable>
+          </View>
           <Text style={styles.heroTitle}>{trip.name}</Text>
           <Text style={styles.heroDates}>
-            {trip.startDate} ~ {trip.endDate} · 크루 {members.length}명 (가족·친구)
+            {trip.destinationCity ?? trip.destinationCountry} · {trip.startDate} ~ {trip.endDate} · 크루 {members.length}명
           </Text>
           <Pressable style={styles.inviteRow} onPress={handleShareInvite}>
             <View>
@@ -93,6 +98,9 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FBF7F0' },
   scroll: { padding: 16, paddingBottom: 48, gap: 16 },
   heroCard: { backgroundColor: '#2A2A2E', borderRadius: 24, padding: 20, gap: 6 },
+  heroTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  heroEditButton: { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },
+  heroEditButtonText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
   heroDday: { color: '#FF8A5B', fontSize: 24, fontWeight: '800' },
   heroTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
   heroDates: { color: '#C7C7CC', fontSize: 12 },
