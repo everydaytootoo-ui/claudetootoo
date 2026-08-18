@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { DecorationCanvas } from '../components/decoration/DecorationCanvas';
 import { BagSectionSheet, buildPackItemDraft } from '../components/packing/BagSectionSheet';
 import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
-import { Bag, BagSection, DecorationAsset, PackItem, StickerPlacement, Trip } from '../types/models';
+import { BagSection, DecorationAsset, StickerPlacement } from '../types/models';
+import { useTripContext } from '../state/TripContext';
+import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
 
 const ASSET_CATALOG: DecorationAsset[] = [
   { id: 'flag-jp', type: 'sticker', emoji: '🇯🇵', label: '일본 국기', isPremium: false },
@@ -15,39 +17,14 @@ const ASSET_CATALOG: DecorationAsset[] = [
   { id: 'gold-badge', type: 'sticker', emoji: '🎖️', label: '골드 와펜', isPremium: true },
 ];
 
-const MOCK_TRIP: Trip = {
-  id: 'trip-1',
-  familyId: 'family-1',
-  name: '가족 오사카 여행',
-  destinationCountry: 'JP',
-  season: 'winter',
-  startDate: '2026-09-20',
-  endDate: '2026-09-24',
-  inviteCode: 'AB12CD',
-};
-
-function createInitialBag(): Bag {
-  const bagId = 'bag-1';
-  return {
-    id: bagId,
-    tripId: MOCK_TRIP.id,
-    ownerName: '엄마',
-    kind: 'carryon24',
-    label: '엄마 24인치 캐리어',
-    decoration: { bagId, color: 'pastel_pink', placements: [] },
-    sections: [
-      { id: 'sec-left', bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
-      { id: 'sec-right', bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
-      { id: 'sec-hidden', bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
-    ],
-  };
-}
-
+/** 잠긴 스티커는 아직 unlockedPremiumIds에 없으면 보상형 광고 시청을 유도한다. */
 export function PackingScreen() {
-  const [bag, setBag] = useState<Bag>(createInitialBag);
-  const [items, setItems] = useState<PackItem[]>([]);
+  const { trip, bags, items, setItems, updateBagDecoration } = useTripContext();
+  const bag = bags[0]; // MVP: 가족의 첫 번째 가방부터 시작 (가방 여러 개는 스와이프 탭으로 확장 가능)
+
   const [activeSection, setActiveSection] = useState<BagSection | null>(null);
   const [shareVisible, setShareVisible] = useState(false);
+  const [unlockedPremiumIds, setUnlockedPremiumIds] = useState<string[]>([]);
   const sheetRef = useRef<BottomSheet>(null);
 
   const openSection = (section: BagSection) => {
@@ -55,10 +32,38 @@ export function PackingScreen() {
     sheetRef.current?.snapToIndex(0);
   };
 
+  const bagItems = useMemo(
+    () => items.filter((i) => bag.sections.some((s) => s.id === i.sectionId)),
+    [items, bag.sections]
+  );
   const sectionItems = useMemo(
     () => items.filter((i) => i.sectionId === activeSection?.id),
     [items, activeSection]
   );
+
+  const visibleAssetCatalog = useMemo(
+    () => ASSET_CATALOG.map((a) => (unlockedPremiumIds.includes(a.id) ? { ...a, isPremium: false } : a)),
+    [unlockedPremiumIds]
+  );
+
+  const handleRequestUnlock = (asset: DecorationAsset) => {
+    Alert.alert(
+      '한정판 스티커 🔒',
+      `광고를 끝까지 시청하면 "${asset.label}"을(를) 무료로 잠금 해제할 수 있어요.`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '광고 보고 해금하기',
+          onPress: () =>
+            showRewardedAdForUnlock(
+              'premium_sticker',
+              () => setUnlockedPremiumIds((prev) => [...prev, asset.id]),
+              () => Alert.alert('아쉬워요', '광고를 끝까지 시청해야 해금할 수 있어요.')
+            ),
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.root}>
@@ -69,13 +74,11 @@ export function PackingScreen() {
           bagKind={bag.kind}
           color={bag.decoration.color}
           placements={bag.decoration.placements}
-          assetCatalog={ASSET_CATALOG}
-          onRequestUnlock={(asset) => console.log('보상형 광고 시청 유도:', asset.label)}
-          onChangeColor={(color) =>
-            setBag((prev) => ({ ...prev, decoration: { ...prev.decoration, color } }))
-          }
+          assetCatalog={visibleAssetCatalog}
+          onRequestUnlock={handleRequestUnlock}
+          onChangeColor={(color) => updateBagDecoration(bag.id, color, bag.decoration.placements)}
           onChangePlacements={(placements: StickerPlacement[]) =>
-            setBag((prev) => ({ ...prev, decoration: { ...prev.decoration, placements } }))
+            updateBagDecoration(bag.id, bag.decoration.color, placements)
           }
         />
 
@@ -93,7 +96,14 @@ export function PackingScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.shareCta} onPress={() => setShareVisible(true)}>
+        <Pressable
+          style={styles.shareCta}
+          onPress={() => {
+            setShareVisible(true);
+            // 짐싸기 세션 완료 시점(공유 카드 진입)에 자연스럽게 전면 광고 노출
+            showInterstitialAfterCompletion();
+          }}
+        >
           <Text style={styles.shareCtaText}>📸 캐꾸 자랑 카드 만들기</Text>
         </Pressable>
       </ScrollView>
@@ -119,11 +129,11 @@ export function PackingScreen() {
         <View style={styles.shareModalBackdrop}>
           <View style={styles.shareModalCard}>
             <ShareCardGenerator
-              trip={MOCK_TRIP}
+              trip={trip}
               bag={bag}
-              items={items}
+              items={bagItems}
               assetCatalog={ASSET_CATALOG}
-              onCardExported={() => console.log('전면 광고 노출 트리거')}
+              onCardExported={() => showInterstitialAfterCompletion()}
             />
             <Pressable style={styles.closeBtn} onPress={() => setShareVisible(false)}>
               <Text style={styles.closeBtnText}>닫기</Text>

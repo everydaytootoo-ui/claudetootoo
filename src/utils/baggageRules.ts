@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { BaggageMode, FamilySearchResult, PackItem, RestrictionCategory } from '../types/models';
+import { Bag, BaggageMode, FamilySearchResult, PackItem, RestrictionCategory } from '../types/models';
 
 export type BaggageWarningLevel = 'none' | 'warning' | 'danger';
 
@@ -142,7 +142,40 @@ export async function searchFamilyItems(
     bagLabel: row.section.bag.label,
     sectionName: row.section.name,
     ownerName: row.section.bag.owner_name,
+    baggageMode: row.section.baggage_mode,
   }));
+}
+
+/**
+ * searchFamilyItems와 동일한 결과 형태를 백엔드 없이 인메모리 상태(Zustand/Context 등)로부터
+ * 계산하는 로컬 버전. 오프라인 캐시나 데모/스토리북 환경에서 사용한다.
+ */
+export function searchFamilyItemsLocal(
+  bags: Bag[],
+  items: PackItem[],
+  keyword: string
+): FamilySearchResult[] {
+  const trimmed = keyword.trim().toLowerCase();
+  if (!trimmed) return [];
+
+  const results: FamilySearchResult[] = [];
+  for (const bag of bags) {
+    for (const section of bag.sections) {
+      const sectionItems = items.filter(
+        (item) => item.sectionId === section.id && item.name.toLowerCase().includes(trimmed)
+      );
+      for (const item of sectionItems) {
+        results.push({
+          item,
+          bagLabel: bag.label,
+          sectionName: section.name,
+          ownerName: bag.ownerName,
+          baggageMode: section.baggageMode,
+        });
+      }
+    }
+  }
+  return results;
 }
 
 /** 검색 결과를 "엄마 24인치 캐리어 -> 히든포켓" 형태의 표시용 문자열로 변환 */

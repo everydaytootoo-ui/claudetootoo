@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PackingScreen } from './src/screens/PackingScreen';
+import { RootNavigator } from './src/navigation/RootNavigator';
+import { TripProvider } from './src/state/TripContext';
+import { initializeAds } from './src/ads/AdMobManager';
 
 export default function App() {
+  useEffect(() => {
+    initializeAds();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PackingScreen />
+      <TripProvider>
+        <RootNavigator />
+      </TripProvider>
     </GestureHandlerRootView>
   );
 }

@@ -147,3 +147,53 @@ begin
   return target_family_id;
 end;
 $$;
+
+-- ---------------------------------------------------------------------
+-- 캘린더 & 바우처/메모 보관함
+-- ---------------------------------------------------------------------
+create table if not exists calendar_events (
+  id uuid primary key default gen_random_uuid(),
+  trip_id uuid not null references trips(id) on delete cascade,
+  event_date date not null,
+  event_time time,
+  title text not null,
+  memo text,
+  category text not null default 'etc' check (
+    category in ('flight','hotel','activity','food','transport','etc')
+  ),
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_calendar_events_trip_date on calendar_events(trip_id, event_date);
+
+create table if not exists vault_documents (
+  id uuid primary key default gen_random_uuid(),
+  trip_id uuid not null references trips(id) on delete cascade,
+  type text not null check (
+    type in ('flight_ticket','hotel_voucher','qr_code','memo','other')
+  ),
+  title text not null,
+  file_url text, -- Supabase Storage 경로 (PDF/이미지). 오프라인 메모는 null
+  file_mime_type text,
+  memo_text text,
+  created_by uuid not null references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_vault_documents_trip on vault_documents(trip_id);
+
+alter table calendar_events enable row level security;
+alter table vault_documents enable row level security;
+
+create policy "family calendar_events rw" on calendar_events
+  for all using (is_family_member((select family_id from trips where trips.id = trip_id)))
+  with check (is_family_member((select family_id from trips where trips.id = trip_id)));
+
+create policy "family vault_documents rw" on vault_documents
+  for all using (is_family_member((select family_id from trips where trips.id = trip_id)))
+  with check (is_family_member((select family_id from trips where trips.id = trip_id)));
+
+-- vault_documents.file_url / items.photo_url 은 Supabase Storage의 비공개 버킷(예: "vault", "item-photos")에
+-- 업로드한 뒤 반환되는 signed URL 또는 storage 경로를 저장하는 것을 권장한다. 버킷 정책 역시
+-- family_members를 통해 같은 가족만 read/write 가능하도록 제한해야 한다.

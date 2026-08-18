@@ -116,4 +116,32 @@ export interface FamilySearchResult {
   bagLabel: string; // "엄마 24인치 캐리어"
   sectionName: string; // "히든포켓"
   ownerName: string;
+  baggageMode: BaggageMode; // 검색 결과에도 위탁/기내 반입 경고를 함께 보여주기 위함
+}
+
+/** 캘린더 — 일자별 세부 일정 */
+export interface CalendarEvent {
+  id: string;
+  tripId: string;
+  date: string; // ISO date (YYYY-MM-DD)
+  time?: string; // "14:30" — 없으면 종일 일정
+  title: string;
+  memo?: string;
+  category: 'flight' | 'hotel' | 'activity' | 'food' | 'transport' | 'etc';
+  createdBy: string;
+}
+
+/** 바우처/메모 보관함 — 항공권 PDF, 호텔 예약증, QR, 오프라인 메모 */
+export type VaultDocumentType = 'flight_ticket' | 'hotel_voucher' | 'qr_code' | 'memo' | 'other';
+
+export interface VaultDocument {
+  id: string;
+  tripId: string;
+  type: VaultDocumentType;
+  title: string;
+  fileUrl?: string; // PDF/이미지 등 첨부파일 (Supabase Storage URL) — 오프라인 메모는 없음
+  fileMimeType?: string;
+  memoText?: string; // 오프라인 메모 본문 (인터넷 없이도 로컬 캐시로 확인 가능)
+  createdBy: string;
+  createdAt: string; // ISO datetime
 }
