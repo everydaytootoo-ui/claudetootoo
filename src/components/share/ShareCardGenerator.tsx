@@ -3,7 +3,6 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import ViewShot, { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import Svg, { Circle } from 'react-native-svg';
 import { BAG_COLOR_HEX, Bag, DecorationAsset, PackItem, Trip } from '../../types/models';
 import { BagSilhouette } from '../decoration/BagSilhouette';
 
@@ -107,52 +106,52 @@ export function ShareCardGenerator({ trip, bag, items, assetCatalog, onCardExpor
             </Text>
           </View>
 
-          <View style={styles.bagStage}>
-            {/* 가방 외관 (스티커 배치 포함, 읽기 전용 렌더) */}
-            <View style={styles.bagExterior}>
-              <BagSilhouette kind={bag.kind} colorHex={BAG_COLOR_HEX[bag.decoration.color]} />
-              {bag.decoration.placements.map((p) => {
-                const asset = assetCatalog.find((a) => a.id === p.assetId);
-                if (!asset) return null;
-                return (
-                  <Text
-                    key={p.id}
-                    style={[
-                      styles.exteriorSticker,
-                      {
-                        left: `${p.x * 100}%`,
-                        top: `${p.y * 100}%`,
-                        transform: [{ rotate: `${p.rotation}deg` }, { scale: p.scale }],
-                      },
-                    ]}
-                  >
-                    {asset.emoji ?? '🏷️'}
-                  </Text>
-                );
-              })}
-            </View>
+          {/* 가방 외관 (스티커 배치 포함, 읽기 전용 렌더) */}
+          <View style={styles.bagExterior}>
+            <BagSilhouette kind={bag.kind} colorHex={BAG_COLOR_HEX[bag.decoration.color]} />
+            {bag.decoration.placements.map((p) => {
+              const asset = assetCatalog.find((a) => a.id === p.assetId);
+              if (!asset) return null;
+              return (
+                <Text
+                  key={p.id}
+                  style={[
+                    styles.exteriorSticker,
+                    {
+                      left: `${p.x * 100}%`,
+                      top: `${p.y * 100}%`,
+                      transform: [{ rotate: `${p.rotation}deg` }, { scale: p.scale }],
+                    },
+                  ]}
+                >
+                  {asset.emoji ?? '🏷️'}
+                </Text>
+              );
+            })}
+          </View>
 
-            {/* 가방 내부 엑스레이 투시 오버레이 */}
-            <View style={styles.xrayOverlay}>
-              <Svg style={StyleSheet.absoluteFill} viewBox="0 0 240 320">
-                {checkedItems.map((_, i) => (
-                  <Circle
-                    key={i}
-                    cx={40 + (i % 4) * 50}
-                    cy={60 + Math.floor(i / 4) * 55}
-                    r={20}
-                    fill="#FFFFFF33"
-                  />
+          {/* 챙긴 짐 목록 — 겉모습뿐 아니라 실제로 뭘 쌌는지도 카드에서 바로 보여준다 */}
+          <View style={styles.packedPanel}>
+            <Text style={styles.packedTitle}>🎒 챙긴 짐 {checkedItems.length}개</Text>
+            {checkedItems.length === 0 ? (
+              <Text style={styles.packedEmpty}>아직 체크한 짐이 없어요</Text>
+            ) : (
+              <View style={styles.packedGrid}>
+                {checkedItems.slice(0, 15).map((item) => (
+                  <View key={item.id} style={styles.packedItem}>
+                    <Text style={styles.packedEmoji}>{item.emoji}</Text>
+                    <Text style={styles.packedName} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                  </View>
                 ))}
-              </Svg>
-              <View style={styles.xrayEmojiGrid}>
-                {checkedItems.slice(0, 12).map((item) => (
-                  <Text key={item.id} style={styles.xrayEmoji}>
-                    {item.emoji}
-                  </Text>
-                ))}
+                {checkedItems.length > 15 && (
+                  <View style={styles.packedItem}>
+                    <Text style={styles.packedMoreText}>+{checkedItems.length - 15}</Text>
+                  </View>
+                )}
               </View>
-            </View>
+            )}
           </View>
 
           <View style={styles.footerRow}>
@@ -194,15 +193,31 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   dday: { color: '#FF8A5B', fontSize: 20, fontWeight: '800' },
   destinationSticker: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
-  bagStage: { flex: 1, marginVertical: 12, borderRadius: 16, overflow: 'hidden', position: 'relative' },
-  bagExterior: { flex: 1, backgroundColor: '#FBF7F0' },
-  exteriorSticker: { position: 'absolute', fontSize: 28 },
-  xrayOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#00000055',
+  bagExterior: {
+    height: CARD_HEIGHT * 0.34,
+    marginTop: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#FBF7F0',
   },
-  xrayEmojiGrid: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', padding: 16, gap: 8, alignContent: 'flex-start' },
-  xrayEmoji: { fontSize: 22 },
+  exteriorSticker: { position: 'absolute', fontSize: 28 },
+  packedPanel: {
+    flex: 1,
+    marginTop: 10,
+    marginBottom: 8,
+    borderRadius: 16,
+    backgroundColor: '#F8F5EE',
+    padding: 12,
+    gap: 8,
+  },
+  packedTitle: { color: '#2A2A2E', fontSize: 13, fontWeight: '800' },
+  packedEmpty: { color: '#8A8A8E', fontSize: 11, textAlign: 'center', marginTop: 12 },
+  packedGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  packedItem: { width: 46, alignItems: 'center', gap: 2 },
+  packedEmoji: { fontSize: 22 },
+  packedName: { fontSize: 8, color: '#4A4A4E', textAlign: 'center' },
+  packedMoreText: { fontSize: 13, fontWeight: '800', color: '#8A6D4A' },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   footerLabel: { color: '#FFFFFF', fontSize: 12 },
   footerCount: { color: '#C7C7CC', fontSize: 12 },

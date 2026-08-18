@@ -272,6 +272,7 @@ export function PackingScreen() {
         onRemoveItem={(itemId) => setItems((prev) => prev.filter((i) => i.id !== itemId))}
         onEditSection={handleEditSection}
         onDeleteSection={handleDeleteSection}
+        onClose={() => sheetRef.current?.close()}
       />
 
       <Modal visible={sectionModalVisible} transparent animationType="fade">

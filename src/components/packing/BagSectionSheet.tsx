@@ -7,6 +7,7 @@ import { guessRestrictionCategory } from '../../data/restrictedItems';
 import { collectBaggageWarnings, validateBaggagePlacement } from '../../utils/baggageRules';
 import { pickItemPhoto } from '../../utils/photoPicker';
 import { QuickPickBar } from './QuickPickBar';
+import { CustomItemComposer } from './CustomItemComposer';
 
 interface Props {
   section: BagSection | null;
@@ -19,6 +20,8 @@ interface Props {
   onEditSection: (section: BagSection) => void;
   /** 유저가 직접 추가한 구역(isCustom)에서만 노출되는 삭제 버튼 — 기본 제공 구역은 지울 수 없다 */
   onDeleteSection: (section: BagSection) => void;
+  /** 시트를 닫는다 — 웹에서는 아래로 끌어서 닫는 제스처가 안 먹을 수 있어 명시적 닫기 버튼도 함께 둔다 */
+  onClose: () => void;
 }
 
 /**
@@ -27,7 +30,7 @@ interface Props {
  * - 본문: 체크리스트(체크박스) + 실물 사진 썸네일, 위탁/기내 규정 위반 시 경고 배지
  */
 export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectionSheet(
-  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem, onEditSection, onDeleteSection },
+  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem, onEditSection, onDeleteSection, onClose },
   ref
 ) {
   const snapPoints = useMemo(() => ['45%', '85%'], []);
@@ -55,26 +58,32 @@ export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectio
     <BottomSheet ref={ref} index={-1} snapPoints={snapPoints} enablePanDownToClose>
       <BottomSheetView style={styles.header}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>
+          <Text style={styles.title} numberOfLines={1}>
             {section ? `${section.icon} ${section.name}` : ''}
           </Text>
-          {section && (
-            <View style={styles.titleActions}>
-              <Pressable onPress={() => onEditSection(section)} hitSlop={8}>
-                <Text style={styles.editSectionText}>✏️ 수정</Text>
-              </Pressable>
-              {section.isCustom && (
-                <Pressable onPress={() => onDeleteSection(section)} hitSlop={8}>
-                  <Text style={styles.deleteSectionText}>구역 삭제</Text>
+          <View style={styles.titleRightGroup}>
+            {section && (
+              <View style={styles.titleActions}>
+                <Pressable onPress={() => onEditSection(section)} hitSlop={8}>
+                  <Text style={styles.editSectionText}>✏️ 수정</Text>
                 </Pressable>
-              )}
-            </View>
-          )}
+                {section.isCustom && (
+                  <Pressable onPress={() => onDeleteSection(section)} hitSlop={8}>
+                    <Text style={styles.deleteSectionText}>구역 삭제</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+            <Pressable style={styles.closeButton} onPress={onClose} hitSlop={8}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </Pressable>
+          </View>
         </View>
         <Text style={styles.subtitle}>
           {section?.baggageMode === 'checked' ? '🧳 위탁 수하물 구역' : '🎒 기내 반입 구역'}
         </Text>
         <QuickPickBar onPick={handlePick} />
+        <CustomItemComposer onAdd={handlePick} />
       </BottomSheetView>
 
       {warnings.length > 0 && (
@@ -162,8 +171,18 @@ export function buildPackItemDraft(section: BagSection, quickPick: QuickPickItem
 const styles = StyleSheet.create({
   header: { paddingHorizontal: 16, paddingBottom: 8, gap: 4 },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontWeight: '700', color: '#2A2A2E' },
+  title: { fontSize: 18, fontWeight: '700', color: '#2A2A2E', flexShrink: 1 },
+  titleRightGroup: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   titleActions: { flexDirection: 'row', gap: 14 },
+  closeButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#F3F1EC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: { fontSize: 13, fontWeight: '700', color: '#4A4A4E' },
   editSectionText: { fontSize: 12, color: '#8A8A8E', fontWeight: '600' },
   deleteSectionText: { fontSize: 12, color: '#C0392B', fontWeight: '600' },
   subtitle: { fontSize: 12, color: '#8A8A8E', marginBottom: 8 },
