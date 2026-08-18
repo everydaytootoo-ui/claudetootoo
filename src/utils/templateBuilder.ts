@@ -12,6 +12,7 @@ export function buildTemplateFromBag(bag: Bag, items: PackItem[], name: string):
     bagKind: bag.kind,
     bagColor: bag.decoration.color,
     sections: bag.sections.map((s) => ({
+      kind: s.kind,
       name: s.name,
       icon: s.icon,
       baggageMode: s.baggageMode,
@@ -37,7 +38,7 @@ export function expandTemplateSections(template: PackTemplate, bagId: string): B
   return template.sections.map((section, index) => ({
     id: `tpl-sec-${index}-${Date.now()}`,
     bagId,
-    kind: 'custom',
+    kind: section.kind,
     name: section.name,
     icon: section.icon,
     baggageMode: section.baggageMode,

@@ -31,7 +31,7 @@ export function DepartureCheckInScreen() {
     return Array.from(grouped.entries());
   }, [rows]);
 
-  const essentialsSection = bag.sections.find((s) => s.name === '필수 지참품') ?? bag.sections[0];
+  const essentialsSection = bag.sections.find((s) => s.kind === 'essentials') ?? bag.sections[0];
 
   const handleAddEssential = (quickPick: QuickPickItem) => {
     const draft = buildPackItemDraft(essentialsSection, quickPick, CURRENT_USER_NAME);

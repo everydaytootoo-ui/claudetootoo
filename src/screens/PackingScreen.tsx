@@ -28,17 +28,33 @@ const ASSET_CATALOG: DecorationAsset[] = [
 
 /** 잠긴 스티커는 아직 unlockedPremiumIds에 없으면 보상형 광고 시청을 유도한다. */
 export function PackingScreen() {
-  const { trip, bags, items, setItems, updateBagDecoration, updateBagWeightLimit, addBag, addSection, deleteSection } =
-    useTripContext();
+  const {
+    trip,
+    bags,
+    items,
+    setItems,
+    updateBagDecoration,
+    updateBagWeightLimit,
+    addBag,
+    deleteBag,
+    addSection,
+    updateSection,
+    deleteSection,
+  } = useTripContext();
   const navigation = useNavigation<AppNavigationProp>();
 
   const [selectedBagId, setSelectedBagId] = useState(bags[0].id);
   const bag = bags.find((b) => b.id === selectedBagId) ?? bags[0];
 
-  const [activeSection, setActiveSection] = useState<BagSection | null>(null);
+  // id로만 들고 있고 실제 BagSection은 매 렌더마다 bag.sections에서 찾는다 —
+  // 그래야 이름을 수정한 직후에도 시트에 최신 이름이 바로 반영된다(스냅샷을 들고 있으면 낡은 값이 보임).
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+  const activeSection = bag.sections.find((s) => s.id === activeSectionId) ?? null;
+
   const [shareVisible, setShareVisible] = useState(false);
   const [unlockedPremiumIds, setUnlockedPremiumIds] = useState<string[]>([]);
   const [sectionModalVisible, setSectionModalVisible] = useState(false);
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [newSectionName, setNewSectionName] = useState('');
   const [newSectionIcon, setNewSectionIcon] = useState(SECTION_ICON_OPTIONS[0]);
   const [newSectionMode, setNewSectionMode] = useState<BaggageMode>('checked');
@@ -46,12 +62,12 @@ export function PackingScreen() {
 
   // 다른 가방으로 전환하면 이전 가방의 구역이 열려 있던 하단 시트를 닫는다.
   useEffect(() => {
-    setActiveSection(null);
+    setActiveSectionId(null);
     sheetRef.current?.close();
   }, [selectedBagId]);
 
   const openSection = (section: BagSection) => {
-    setActiveSection(section);
+    setActiveSectionId(section.id);
     sheetRef.current?.snapToIndex(0);
   };
 
@@ -98,12 +114,33 @@ export function PackingScreen() {
     );
   };
 
-  const handleAddSection = () => {
-    if (!newSectionName.trim()) return;
-    addSection(bag.id, newSectionName.trim(), newSectionIcon, newSectionMode);
+  const openAddSectionModal = () => {
+    setEditingSectionId(null);
     setNewSectionName('');
     setNewSectionIcon(SECTION_ICON_OPTIONS[0]);
     setNewSectionMode('checked');
+    setSectionModalVisible(true);
+  };
+
+  const handleEditSection = (section: BagSection) => {
+    setEditingSectionId(section.id);
+    setNewSectionName(section.name);
+    setNewSectionIcon(section.icon);
+    setNewSectionMode(section.baggageMode);
+    setSectionModalVisible(true);
+  };
+
+  const handleSaveSection = () => {
+    if (!newSectionName.trim()) return;
+    if (editingSectionId) {
+      updateSection(bag.id, editingSectionId, {
+        name: newSectionName.trim(),
+        icon: newSectionIcon,
+        baggageMode: newSectionMode,
+      });
+    } else {
+      addSection(bag.id, newSectionName.trim(), newSectionIcon, newSectionMode);
+    }
     setSectionModalVisible(false);
   };
 
@@ -115,8 +152,31 @@ export function PackingScreen() {
         style: 'destructive',
         onPress: () => {
           deleteSection(bag.id, section.id);
-          setActiveSection(null);
+          setActiveSectionId(null);
           sheetRef.current?.close();
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteBag = (bagId: string) => {
+    const target = bags.find((b) => b.id === bagId);
+    if (!target) return;
+    if (bags.length <= 1) {
+      Alert.alert('삭제할 수 없어요', '가방은 최소 1개가 있어야 해요.');
+      return;
+    }
+    Alert.alert('가방 삭제', `"${target.label}"을(를) 삭제할까요? 안에 담긴 물품도 함께 삭제돼요.`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: () => {
+          deleteBag(bagId);
+          if (selectedBagId === bagId) {
+            const remaining = bags.find((b) => b.id !== bagId);
+            if (remaining) setSelectedBagId(remaining.id);
+          }
         },
       },
     ]);
@@ -137,6 +197,7 @@ export function PackingScreen() {
           selectedBagId={bag.id}
           onSelect={setSelectedBagId}
           onAddBag={(ownerName, kind) => setSelectedBagId(addBag(ownerName, kind))}
+          onDeleteBag={handleDeleteBag}
         />
 
         <WeatherSuggestionBar
@@ -169,7 +230,7 @@ export function PackingScreen() {
           items={bagItems}
           onToggleChecked={handleToggleChecked}
           onOpenSection={openSection}
-          onAddSectionPress={() => setSectionModalVisible(true)}
+          onAddSectionPress={openAddSectionModal}
         />
 
         <Pressable
@@ -197,13 +258,14 @@ export function PackingScreen() {
           setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, photoUrl: localUri } : i)))
         }
         onRemoveItem={(itemId) => setItems((prev) => prev.filter((i) => i.id !== itemId))}
+        onEditSection={handleEditSection}
         onDeleteSection={handleDeleteSection}
       />
 
       <Modal visible={sectionModalVisible} transparent animationType="fade">
         <View style={styles.shareModalBackdrop}>
           <View style={styles.sectionModalCard}>
-            <Text style={styles.sectionModalTitle}>새 구역 추가</Text>
+            <Text style={styles.sectionModalTitle}>{editingSectionId ? '구역 수정' : '새 구역 추가'}</Text>
             <TextInput
               style={styles.sectionModalInput}
               placeholder="구역 이름 (예: 노트북 슬롯)"
@@ -247,8 +309,8 @@ export function PackingScreen() {
               <Pressable style={styles.modalCancel} onPress={() => setSectionModalVisible(false)}>
                 <Text style={styles.modalCancelText}>취소</Text>
               </Pressable>
-              <Pressable style={styles.modalSave} onPress={handleAddSection}>
-                <Text style={styles.modalSaveText}>추가</Text>
+              <Pressable style={styles.modalSave} onPress={handleSaveSection}>
+                <Text style={styles.modalSaveText}>{editingSectionId ? '저장' : '추가'}</Text>
               </Pressable>
             </View>
           </View>

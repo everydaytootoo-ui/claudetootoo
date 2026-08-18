@@ -15,6 +15,8 @@ interface Props {
   onAddQuickPickItem: (section: BagSection, quickPick: QuickPickItem) => void;
   onAttachPhoto: (itemId: string, localUri: string) => void;
   onRemoveItem: (itemId: string) => void;
+  /** 기본 제공 구역을 포함해 모든 구역의 이름/아이콘/수하물 모드를 수정할 수 있다 */
+  onEditSection: (section: BagSection) => void;
   /** 유저가 직접 추가한 구역(isCustom)에서만 노출되는 삭제 버튼 — 기본 제공 구역은 지울 수 없다 */
   onDeleteSection: (section: BagSection) => void;
 }
@@ -25,7 +27,7 @@ interface Props {
  * - 본문: 체크리스트(체크박스) + 실물 사진 썸네일, 위탁/기내 규정 위반 시 경고 배지
  */
 export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectionSheet(
-  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem, onDeleteSection },
+  { section, items, onToggleChecked, onAddQuickPickItem, onAttachPhoto, onRemoveItem, onEditSection, onDeleteSection },
   ref
 ) {
   const snapPoints = useMemo(() => ['45%', '85%'], []);
@@ -56,10 +58,17 @@ export const BagSectionSheet = forwardRef<BottomSheet, Props>(function BagSectio
           <Text style={styles.title}>
             {section ? `${section.icon} ${section.name}` : ''}
           </Text>
-          {section?.isCustom && (
-            <Pressable onPress={() => onDeleteSection(section)} hitSlop={8}>
-              <Text style={styles.deleteSectionText}>구역 삭제</Text>
-            </Pressable>
+          {section && (
+            <View style={styles.titleActions}>
+              <Pressable onPress={() => onEditSection(section)} hitSlop={8}>
+                <Text style={styles.editSectionText}>✏️ 수정</Text>
+              </Pressable>
+              {section.isCustom && (
+                <Pressable onPress={() => onDeleteSection(section)} hitSlop={8}>
+                  <Text style={styles.deleteSectionText}>구역 삭제</Text>
+                </Pressable>
+              )}
+            </View>
           )}
         </View>
         <Text style={styles.subtitle}>
@@ -154,6 +163,8 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 16, paddingBottom: 8, gap: 4 },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: 18, fontWeight: '700', color: '#2A2A2E' },
+  titleActions: { flexDirection: 'row', gap: 14 },
+  editSectionText: { fontSize: 12, color: '#8A8A8E', fontWeight: '600' },
   deleteSectionText: { fontSize: 12, color: '#C0392B', fontWeight: '600' },
   subtitle: { fontSize: 12, color: '#8A8A8E', marginBottom: 8 },
   warningBanner: {

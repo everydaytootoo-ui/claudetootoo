@@ -37,8 +37,16 @@ interface TripContextValue {
   applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
   /** ⑤ 새 가방(가족·친구 누구든) 추가 — 기본 4구역으로 시작하고 새로 만들어진 bagId를 반환한다 */
   addBag: (ownerName: string, kind: BagKind) => string;
+  /** 가방이 최소 1개는 남아야 하므로 마지막 남은 가방은 삭제되지 않는다(무시됨) */
+  deleteBag: (bagId: string) => void;
   /** 가방에 유저가 원하는 이름의 커스텀 구역(상단 지퍼 포켓, 노트북 슬롯 등)을 추가한다 */
   addSection: (bagId: string, name: string, icon: string, baggageMode: Bag['sections'][number]['baggageMode']) => void;
+  /** 기본 제공 구역을 포함해 이름·아이콘·수하물 모드를 자유롭게 수정할 수 있다 */
+  updateSection: (
+    bagId: string,
+    sectionId: string,
+    updates: Partial<Pick<BagSection, 'name' | 'icon' | 'baggageMode'>>
+  ) => void;
   /** 커스텀 구역만 삭제할 수 있다 — 그 구역에 있던 물품도 함께 정리된다 */
   deleteSection: (bagId: string, sectionId: string) => void;
   setItems: React.Dispatch<React.SetStateAction<PackItem[]>>;
@@ -65,15 +73,16 @@ const MOCK_TRIP: Trip = {
 
 /**
  * 새 가방을 만들 때 항상 같이 딸려오는 기본 4구역 (왼쪽/오른쪽/히든포켓/필수 지참품).
- * 넷 다 isCustom: false — kind:'custom'인 필수 지참품도 유저가 만든 게 아니라 기본 제공이라
- * 구역 삭제 UI에는 노출되지 않는다(유저가 직접 추가한 구역만 삭제 가능).
+ * 넷 다 isCustom: false — 기본 제공 구역이라 삭제 UI에는 노출되지 않지만(유저가 직접 추가한
+ * 구역만 삭제 가능), 이름은 자유롭게 수정할 수 있다. 필수 지참품은 그래서 이름이 아니라
+ * kind: 'essentials'로 식별해, 유저가 이름을 바꿔도 관련 로직이 안 깨지게 한다.
  */
 function createDefaultSections(bagId: string): BagSection[] {
   return [
     { id: `sec-left-${bagId}`, bagId, kind: 'main-left', name: '왼쪽 메인', icon: '👕', baggageMode: 'checked', isCustom: false },
     { id: `sec-right-${bagId}`, bagId, kind: 'main-right', name: '오른쪽 메인', icon: '👖', baggageMode: 'checked', isCustom: false },
     { id: `sec-hidden-${bagId}`, bagId, kind: 'hidden-pocket', name: '히든포켓', icon: '🤫', baggageMode: 'carryOn', isCustom: false },
-    { id: `sec-essentials-${bagId}`, bagId, kind: 'custom', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: false },
+    { id: `sec-essentials-${bagId}`, bagId, kind: 'essentials', name: '필수 지참품', icon: '🛂', baggageMode: 'carryOn', isCustom: false },
   ];
 }
 
@@ -189,6 +198,16 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     return newBagId;
   };
 
+  const deleteBag: TripContextValue['deleteBag'] = (bagId) => {
+    if (bags.length <= 1) return; // 최소 1개의 가방은 항상 남아야 한다
+    const targetBag = bags.find((b) => b.id === bagId);
+    if (!targetBag) return;
+
+    const sectionIds = new Set(targetBag.sections.map((s) => s.id));
+    setBags((prev) => prev.filter((b) => b.id !== bagId));
+    setItems((prev) => prev.filter((item) => !sectionIds.has(item.sectionId)));
+  };
+
   const addSection: TripContextValue['addSection'] = (bagId, name, icon, baggageMode) => {
     const newSection: BagSection = {
       id: `sec-custom-${Date.now()}`,
@@ -200,6 +219,16 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       isCustom: true,
     };
     setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, sections: [...b.sections, newSection] } : b)));
+  };
+
+  const updateSection: TripContextValue['updateSection'] = (bagId, sectionId, updates) => {
+    setBags((prev) =>
+      prev.map((b) =>
+        b.id === bagId
+          ? { ...b, sections: b.sections.map((s) => (s.id === sectionId ? { ...s, ...updates } : s)) }
+          : b
+      )
+    );
   };
 
   const deleteSection: TripContextValue['deleteSection'] = (bagId, sectionId) => {
@@ -234,7 +263,9 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       updateBagWeightLimit,
       applyTemplateToBag,
       addBag,
+      deleteBag,
       addSection,
+      updateSection,
       deleteSection,
       setItems,
       setEvents,

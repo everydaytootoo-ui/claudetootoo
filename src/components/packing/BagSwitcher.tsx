@@ -9,10 +9,12 @@ interface Props {
   onSelect: (bagId: string) => void;
   /** 생략하면 전환 전용(읽기 화면)으로 동작하고 "+ 가방 추가" 칩을 숨긴다 */
   onAddBag?: (ownerName: string, kind: BagKind) => void;
+  /** 생략하거나 가방이 하나뿐이면 삭제(✕) 배지를 숨긴다 — 가방은 최소 1개는 남아야 한다 */
+  onDeleteBag?: (bagId: string) => void;
 }
 
-/** 여러 가방(가족·친구별 캐리어/백팩)을 가로 칩으로 전환 + (선택) "+"로 새 가방 추가 */
-export function BagSwitcher({ bags, selectedBagId, onSelect, onAddBag }: Props) {
+/** 여러 가방(가족·친구별 캐리어/백팩)을 가로 칩으로 전환 + (선택) "+"로 새 가방 추가/✕로 삭제 */
+export function BagSwitcher({ bags, selectedBagId, onSelect, onAddBag, onDeleteBag }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [ownerName, setOwnerName] = useState('');
   const [kind, setKind] = useState<BagKind>('carryon24');
@@ -34,16 +36,27 @@ export function BagSwitcher({ bags, selectedBagId, onSelect, onAddBag }: Props) 
         {bags.map((bag) => {
           const selected = bag.id === selectedBagId;
           return (
-            <Pressable
-              key={bag.id}
-              style={[styles.chip, selected && styles.chipSelected]}
-              onPress={() => onSelect(bag.id)}
-            >
-              <Text style={styles.chipIcon}>{BAG_KIND_ICON[bag.kind]}</Text>
-              <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]} numberOfLines={1}>
-                {bag.ownerName}
-              </Text>
-            </Pressable>
+            <View key={bag.id} style={styles.chipWrap}>
+              <Pressable
+                style={[styles.chip, selected && styles.chipSelected]}
+                onPress={() => onSelect(bag.id)}
+              >
+                <Text style={styles.chipIcon}>{BAG_KIND_ICON[bag.kind]}</Text>
+                <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]} numberOfLines={1}>
+                  {bag.ownerName}
+                </Text>
+              </Pressable>
+              {onDeleteBag && bags.length > 1 && (
+                <Pressable
+                  style={styles.removeBadge}
+                  onPress={() => onDeleteBag(bag.id)}
+                  hitSlop={6}
+                  accessibilityLabel={`${bag.ownerName} 가방 삭제`}
+                >
+                  <Text style={styles.removeBadgeText}>✕</Text>
+                </Pressable>
+              )}
+            </View>
           );
         })}
         {onAddBag && (
@@ -94,6 +107,19 @@ export function BagSwitcher({ bags, selectedBagId, onSelect, onAddBag }: Props) 
 
 const styles = StyleSheet.create({
   row: { gap: 8, paddingHorizontal: 16, paddingBottom: 4 },
+  chipWrap: { position: 'relative' },
+  removeBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#2A2A2E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeBadgeText: { fontSize: 10, color: '#FFFFFF', fontWeight: '700' },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',

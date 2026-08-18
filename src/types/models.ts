@@ -55,6 +55,7 @@ export type SectionKind =
   | 'hidden-pocket'
   | 'top-zip'
   | 'laptop-slot'
+  | 'essentials' // 필수 지참품 — 이름은 유저가 바꿀 수 있어도 이 kind로 항상 식별한다
   | 'custom';
 
 export interface BagSection {
@@ -174,6 +175,7 @@ export interface VaultDocument {
 
 /** 템플릿에 저장되는 섹션 구조 — 특정 여행/가방의 구체적인 id에 묶이지 않은 재사용 가능한 형태 */
 export interface PackTemplateSection {
+  kind: SectionKind;
   name: string;
   icon: string;
   baggageMode: BaggageMode;
