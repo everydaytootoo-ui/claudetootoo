@@ -7,11 +7,13 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android", "web"],
     "ios": { "supportsTablet": true, "bundleIdentifier": "com.packwith.app" },
     "android": {
       "package": "com.packwith.app",
       "permissions": ["READ_MEDIA_IMAGES", "WRITE_EXTERNAL_STORAGE"]
     },
+    "web": { "bundler": "metro" },
     "plugins": [
       [
         "expo-image-picker",
