@@ -8,6 +8,7 @@ import { ShareCardGenerator } from '../components/share/ShareCardGenerator';
 import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar';
 import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
 import { BagSwitcher } from '../components/packing/BagSwitcher';
+import { BagInteriorView } from '../components/packing/BagInteriorView';
 import { BaggageMode, BagSection, DecorationAsset, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
@@ -52,6 +53,10 @@ export function PackingScreen() {
   const openSection = (section: BagSection) => {
     setActiveSection(section);
     sheetRef.current?.snapToIndex(0);
+  };
+
+  const handleToggleChecked = (itemId: string) => {
+    setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, checked: !i.checked } : i)));
   };
 
   const bagItems = useMemo(
@@ -158,22 +163,14 @@ export function PackingScreen() {
           onChangeLimit={(kg) => updateBagWeightLimit(bag.id, kg)}
         />
 
-        <Text style={styles.heading}>{bag.label} 구역</Text>
-        <View style={styles.sectionRow}>
-          {bag.sections.map((section) => (
-            <Pressable key={section.id} style={styles.sectionCard} onPress={() => openSection(section)}>
-              <Text style={styles.sectionIcon}>{section.icon}</Text>
-              <Text style={styles.sectionName}>{section.name}</Text>
-              <Text style={styles.sectionCount}>
-                {items.filter((i) => i.sectionId === section.id && i.checked).length}/
-                {items.filter((i) => i.sectionId === section.id).length}
-              </Text>
-            </Pressable>
-          ))}
-          <Pressable style={[styles.sectionCard, styles.sectionCardAdd]} onPress={() => setSectionModalVisible(true)}>
-            <Text style={styles.sectionAddText}>+ 구역{'\n'}추가</Text>
-          </Pressable>
-        </View>
+        <Text style={styles.heading}>{bag.label} 내부</Text>
+        <BagInteriorView
+          bag={bag}
+          items={bagItems}
+          onToggleChecked={handleToggleChecked}
+          onOpenSection={openSection}
+          onAddSectionPress={() => setSectionModalVisible(true)}
+        />
 
         <Pressable
           style={styles.shareCta}
@@ -191,9 +188,7 @@ export function PackingScreen() {
         ref={sheetRef}
         section={activeSection}
         items={sectionItems}
-        onToggleChecked={(itemId) =>
-          setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, checked: !i.checked } : i)))
-        }
+        onToggleChecked={handleToggleChecked}
         onAddQuickPickItem={(section, quickPick) => {
           const draft = buildPackItemDraft(section, quickPick, CURRENT_USER_NAME);
           setItems((prev) => [...prev, { ...draft, id: `${quickPick.id}-${Date.now()}` }]);
@@ -292,20 +287,6 @@ const styles = StyleSheet.create({
   headingRowText: { fontSize: 16, fontWeight: '700', color: '#2A2A2E' },
   heading: { fontSize: 16, fontWeight: '700', color: '#2A2A2E', margin: 16 },
   templateLink: { fontSize: 12, fontWeight: '700', color: '#FF8A5B' },
-  sectionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 16 },
-  sectionCard: {
-    width: '30%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 12,
-    alignItems: 'center',
-    gap: 4,
-  },
-  sectionIcon: { fontSize: 24 },
-  sectionName: { fontSize: 12, fontWeight: '600', color: '#2A2A2E', textAlign: 'center' },
-  sectionCount: { fontSize: 11, color: '#B0B0B4' },
-  sectionCardAdd: { backgroundColor: '#F3F1EC', justifyContent: 'center' },
-  sectionAddText: { fontSize: 12, fontWeight: '700', color: '#8A8A8E', textAlign: 'center' },
   sectionModalCard: { width: '85%', backgroundColor: '#FFFFFF', borderRadius: 20, padding: 20, gap: 12 },
   sectionModalTitle: { fontSize: 14, fontWeight: '700', color: '#2A2A2E' },
   sectionModalInput: {
