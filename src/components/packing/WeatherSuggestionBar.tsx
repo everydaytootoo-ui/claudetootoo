@@ -10,13 +10,15 @@ interface Props {
   trip: Trip;
   addedNames: string[]; // 이미 가방에 담긴 물품 이름 — 추천 칩에 체크 표시용
   onAddItem: (quickPick: QuickPickItem) => void;
+  /** 이미 담은 추천 칩을 다시 탭하면 호출된다 — 이름으로 매칭되는 물품을 다시 빼는 용도 */
+  onRemoveItem: (quickPick: QuickPickItem) => void;
 }
 
 /**
  * 여행지·날짜 기반 날씨 요약 + 원터치 추천 아이템 카드 (① 캐꾸 화면 상단용).
  * 기본은 접힌 상태 — 헤더 한 줄(날씨 요약)만 보이고, 탭하면 추천 칩까지 펼쳐진다.
  */
-export function WeatherSuggestionBar({ trip, addedNames, onAddItem }: Props) {
+export function WeatherSuggestionBar({ trip, addedNames, onAddItem, onRemoveItem }: Props) {
   const [weather, setWeather] = useState<WeatherSummary | null>(null);
   const [expanded, setExpanded] = useState(false);
 
@@ -64,14 +66,13 @@ export function WeatherSuggestionBar({ trip, addedNames, onAddItem }: Props) {
                 <Pressable
                   key={rec.id}
                   style={[styles.chip, added && styles.chipAdded]}
-                  onPress={() => !added && onAddItem(rec)}
-                  disabled={added}
+                  onPress={() => (added ? onRemoveItem(rec) : onAddItem(rec))}
                 >
                   <Text style={styles.chipEmoji}>{rec.emoji}</Text>
                   <Text style={styles.chipLabel} numberOfLines={1}>
                     {rec.name}
                   </Text>
-                  {added && <Text style={styles.chipCheck}>✓ 담음</Text>}
+                  {added && <Text style={styles.chipCheck}>✓ 담음 · 탭하면 취소</Text>}
                 </Pressable>
               );
             })}

@@ -10,7 +10,9 @@ import Animated, {
 import { DecorationAsset, StickerPlacement } from '../../types/models';
 
 interface Props {
-  asset: DecorationAsset;
+  asset: DecorationAsset | null;
+  /** 카탈로그 자산 대신 유저가 직접 입력한 텍스트/이모지 — 있으면 asset보다 우선해서 그린다 */
+  customText?: string;
   placement: StickerPlacement;
   canvasSize: { width: number; height: number };
   isSelected: boolean;
@@ -26,6 +28,7 @@ const MAX_SCALE = 2.5;
 
 export function DraggableSticker({
   asset,
+  customText,
   placement,
   canvasSize,
   isSelected,
@@ -104,6 +107,15 @@ export function DraggableSticker({
 
   const composed = Gesture.Simultaneous(pan, pinch, rotate, tap);
 
+  // 핀치 제스처는 마우스로는 쓸 수 없어(특히 웹) 눌러서 크기를 바꾸는 명시적 버튼도 함께 둔다
+  const SCALE_STEP = 0.15;
+  const bumpScale = (delta: number) => {
+    scale.value = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale.value + delta));
+    commitToParent();
+  };
+
+  const displayText = customText ?? asset?.emoji;
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value - BASE_SIZE / 2 },
@@ -117,20 +129,34 @@ export function DraggableSticker({
     <GestureDetector gesture={composed}>
       <Animated.View style={[styles.wrapper, animatedStyle]}>
         <View style={[styles.stickerBox, isSelected && styles.stickerBoxSelected]}>
-          {asset.emoji ? (
-            <Text style={styles.emoji}>{asset.emoji}</Text>
+          {displayText ? (
+            <Text
+              style={[styles.emoji, displayText.length > 4 ? styles.emojiSmall : displayText.length > 2 && styles.emojiMedium]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
+              {displayText}
+            </Text>
           ) : (
-            <Animated.Image source={{ uri: asset.imageUrl }} style={styles.image} />
+            <Animated.Image source={{ uri: asset?.imageUrl }} style={styles.image} />
           )}
         </View>
         {isSelected && (
-          <Text
-            style={styles.removeBadge}
-            onPress={() => onRemove(placement.id)}
-            accessibilityLabel={`${asset.label} 삭제`}
-          >
-            ✕
-          </Text>
+          <>
+            <Text
+              style={styles.removeBadge}
+              onPress={() => onRemove(placement.id)}
+              accessibilityLabel={`${asset?.label ?? customText} 삭제`}
+            >
+              ✕
+            </Text>
+            <Text style={styles.shrinkBadge} onPress={() => bumpScale(-SCALE_STEP)} accessibilityLabel="스티커 작게">
+              －
+            </Text>
+            <Text style={styles.growBadge} onPress={() => bumpScale(SCALE_STEP)} accessibilityLabel="스티커 크게">
+              ＋
+            </Text>
+          </>
         )}
       </Animated.View>
     </GestureDetector>
@@ -156,6 +182,8 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
   },
   emoji: { fontSize: 40 },
+  emojiMedium: { fontSize: 22 },
+  emojiSmall: { fontSize: 14 },
   image: { width: BASE_SIZE - 8, height: BASE_SIZE - 8, resizeMode: 'contain' },
   removeBadge: {
     position: 'absolute',
@@ -170,5 +198,35 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     overflow: 'hidden',
     fontSize: 12,
+  },
+  shrinkBadge: {
+    position: 'absolute',
+    bottom: -10,
+    left: -10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#FF8A5B',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 22,
+    overflow: 'hidden',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  growBadge: {
+    position: 'absolute',
+    bottom: -10,
+    right: -10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#FF8A5B',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 22,
+    overflow: 'hidden',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

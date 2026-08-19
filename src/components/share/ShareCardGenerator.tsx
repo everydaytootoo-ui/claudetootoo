@@ -111,7 +111,8 @@ export function ShareCardGenerator({ trip, bag, items, assetCatalog, onCardExpor
             <BagSilhouette kind={bag.kind} colorHex={BAG_COLOR_HEX[bag.decoration.color]} />
             {bag.decoration.placements.map((p) => {
               const asset = assetCatalog.find((a) => a.id === p.assetId);
-              if (!asset) return null;
+              const displayText = p.customText ?? asset?.emoji;
+              if (!displayText) return null;
               return (
                 <Text
                   key={p.id}
@@ -124,7 +125,7 @@ export function ShareCardGenerator({ trip, bag, items, assetCatalog, onCardExpor
                     },
                   ]}
                 >
-                  {asset.emoji ?? '🏷️'}
+                  {displayText}
                 </Text>
               );
             })}

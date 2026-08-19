@@ -4,6 +4,7 @@ import {
   BagKind,
   BagSection,
   CalendarEvent,
+  ChecklistItem,
   PackItem,
   PackTemplate,
   SectionSlot,
@@ -15,7 +16,9 @@ import {
 import { collectEssentialItems, countUncheckedEssentials } from '../utils/essentialChecklist';
 import { expandTemplateSections } from '../utils/templateBuilder';
 import { scheduleDepartureReminders } from '../notifications/departureReminders';
+import { scheduleShoppingReminders } from '../notifications/shoppingReminders';
 import { BAG_KIND_LABEL } from '../data/bagKinds';
+import { INITIAL_CHECKLIST_ITEMS } from '../data/shoppingChecklist';
 
 /** 이 기기를 쓰고 있는 "나"를 가리키는 표시명. 실서비스에서는 로그인 세션의 표시명으로 대체된다. */
 export const CURRENT_USER_NAME = '나';
@@ -33,12 +36,14 @@ interface TripContextValue {
   events: CalendarEvent[];
   documents: VaultDocument[];
   members: TripMember[];
+  checklistItems: ChecklistItem[];
   /** 여행지 국가/도시/좌표·일정·계절을 한 번에 수정한다 (여행 설정 화면에서 사용) */
   updateTrip: (
     updates: Partial<Pick<Trip, 'name' | 'destinationCountry' | 'destinationCity' | 'lat' | 'lon' | 'season' | 'startDate' | 'endDate'>>
   ) => void;
   updateBagDecoration: (bagId: string, color: Bag['decoration']['color'], placements: StickerPlacement[]) => void;
-  updateBagWeightLimit: (bagId: string, weightLimitKg: number) => void;
+  /** 위탁/기내 수하물 허용 무게를 함께 또는 따로 수정한다 (항공편 자동 조회 또는 직접 입력) */
+  updateBagWeightLimits: (bagId: string, updates: Partial<Pick<Bag, 'weightLimitKg' | 'carryOnWeightLimitKg'>>) => void;
   applyTemplateToBag: (bagId: string, template: PackTemplate) => void;
   /** ⑤ 새 가방(가족·친구 누구든) 추가 — 기본 4구역으로 시작하고 새로 만들어진 bagId를 반환한다 */
   addBag: (ownerName: string, kind: BagKind) => string;
@@ -67,6 +72,7 @@ interface TripContextValue {
   setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
   setDocuments: React.Dispatch<React.SetStateAction<VaultDocument[]>>;
   setMembers: React.Dispatch<React.SetStateAction<TripMember[]>>;
+  setChecklistItems: React.Dispatch<React.SetStateAction<ChecklistItem[]>>;
 }
 
 const TripContext = createContext<TripContextValue | null>(null);
@@ -116,6 +122,7 @@ function createInitialBags(): Bag[] {
       label: '엄마 24인치 캐리어',
       decoration: { bagId, color: 'pastel_pink', placements: [] },
       weightLimitKg: 23,
+      carryOnWeightLimitKg: 10,
       sections: createDefaultSections(bagId),
     },
   ];
@@ -157,6 +164,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = useState<CalendarEvent[]>(INITIAL_EVENTS);
   const [documents, setDocuments] = useState<VaultDocument[]>([]);
   const [members, setMembers] = useState<TripMember[]>(INITIAL_MEMBERS);
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(INITIAL_CHECKLIST_ITEMS);
 
   const updateTrip: TripContextValue['updateTrip'] = (updates) => {
     setTrip((prev) => ({ ...prev, ...updates }));
@@ -168,8 +176,8 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const updateBagWeightLimit: TripContextValue['updateBagWeightLimit'] = (bagId, weightLimitKg) => {
-    setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, weightLimitKg } : b)));
+  const updateBagWeightLimits: TripContextValue['updateBagWeightLimits'] = (bagId, updates) => {
+    setBags((prev) => prev.map((b) => (b.id === bagId ? { ...b, ...updates } : b)));
   };
 
   /** ④ 템플릿을 가방에 적용 — 섹션 구조를 새 id로 다시 만들고, 옛 섹션에 있던 물품은 정리한 뒤 템플릿 물품으로 채운다 */
@@ -216,6 +224,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       label: `${ownerName} ${BAG_KIND_LABEL[kind]}`,
       decoration: { bagId: newBagId, color: 'cream_white', placements: [] },
       weightLimitKg: 23,
+      carryOnWeightLimitKg: 10,
       sections: createDefaultSections(newBagId),
     };
     setBags((prev) => [...prev, newBag]);
@@ -284,6 +293,13 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
     });
   }, [bags, items, trip]);
 
+  // 쇼핑 체크리스트/여행 일정이 바뀔 때마다 D-30/14/7/1 준비물 알림을 최신 상태로 다시 예약한다.
+  useEffect(() => {
+    scheduleShoppingReminders(checklistItems, trip.startDate).catch(() => {
+      // 알림 권한이 없거나 플랫폼 미지원이면 조용히 무시 (필수 기능이 아님)
+    });
+  }, [checklistItems, trip.startDate]);
+
   const value = useMemo<TripContextValue>(
     () => ({
       trip,
@@ -292,9 +308,10 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       events,
       documents,
       members,
+      checklistItems,
       updateTrip,
       updateBagDecoration,
-      updateBagWeightLimit,
+      updateBagWeightLimits,
       applyTemplateToBag,
       addBag,
       deleteBag,
@@ -305,8 +322,9 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       setEvents,
       setDocuments,
       setMembers,
+      setChecklistItems,
     }),
-    [trip, bags, items, events, documents, members]
+    [trip, bags, items, events, documents, members, checklistItems]
   );
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;

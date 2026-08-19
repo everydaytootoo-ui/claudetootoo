@@ -38,6 +38,8 @@ export interface StickerPlacement {
   rotation: number; // degree
   scale: number; // 1 = 원본 크기
   zIndex: number;
+  /** 정해진 스티커 카탈로그 대신 유저가 직접 입력한 텍스트/이모지 — 있으면 assetId 대신 이걸 그린다 */
+  customText?: string;
 }
 
 export interface BagDecoration {
@@ -85,8 +87,10 @@ export interface Bag {
   label: string; // "엄마 24인치 캐리어"
   decoration: BagDecoration;
   sections: BagSection[];
-  /** 항공사 위탁 수하물 허용 무게(kg). 15/20/23/32kg 중 선택하는 게 일반적 */
+  /** 항공사 위탁 수하물 허용 무게(kg). 15/20/23/32kg 중 선택하는 게 일반적 — 항공편 조회 또는 직접 입력으로 설정 */
   weightLimitKg: number;
+  /** 항공사 기내 반입 수하물 허용 무게(kg) */
+  carryOnWeightLimitKg: number;
 }
 
 /** 위험/제한 품목 카테고리 (수하물 규정 자동 알림에 사용) */
@@ -211,4 +215,28 @@ export interface PackTemplate {
   sections: PackTemplateSection[];
   items: PackTemplateItem[];
   createdAt: string; // ISO datetime
+}
+
+/** 출발일 기준으로 언제까지 준비해두면 좋을지 — D-Day 알림/체크리스트 정렬에 쓰인다 */
+export type DDayCategory = 'D-30' | 'D-14' | 'D-7' | 'D-1';
+
+/** 제휴 커머스 구매 버튼에 필요한 최소 정보 */
+export interface AffiliateInfo {
+  productName: string;
+  price: string;
+  affiliateUrl: string;
+}
+
+/**
+ * "여행 준비 쇼핑 체크리스트" 항목 — 가방/구역에 묶이는 PackItem과 달리, 아직 사지 않았을 수도
+ * 있는 "준비물" 자체를 다룬다. isCompleted가 false이고 affiliateInfo가 있는 항목에만
+ * [최저가 구매] 버튼이 노출된다.
+ */
+export interface ChecklistItem {
+  id: string;
+  title: string;
+  category: string;
+  isCompleted: boolean;
+  dDayCategory?: DDayCategory;
+  affiliateInfo?: AffiliateInfo;
 }

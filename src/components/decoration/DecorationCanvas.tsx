@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BAG_COLOR_HEX, BagColor, BagKind, DecorationAsset, StickerPlacement } from '../../types/models';
 import { DraggableSticker } from './DraggableSticker';
@@ -41,6 +41,8 @@ export function DecorationCanvas({
 }: DecorationCanvasProps) {
   const [canvasSize, setCanvasSize] = useState({ width: 320, height: 420 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [customComposerOpen, setCustomComposerOpen] = useState(false);
+  const [customText, setCustomText] = useState('');
   const nextZIndex = useRef(placements.length + 1);
 
   const onCanvasLayout = (e: LayoutChangeEvent) => {
@@ -66,6 +68,25 @@ export function DecorationCanvas({
     onChangePlacements([...placements, newPlacement]);
   };
 
+  const addCustomSticker = () => {
+    const trimmed = customText.trim();
+    if (!trimmed) return;
+    const newPlacement: StickerPlacement = {
+      id: `custom-${Date.now()}`,
+      assetId: 'custom',
+      customText: trimmed,
+      x: 0.5,
+      y: 0.5,
+      rotation: 0,
+      scale: 1,
+      zIndex: nextZIndex.current++,
+    };
+    setSelectedId(newPlacement.id);
+    onChangePlacements([...placements, newPlacement]);
+    setCustomText('');
+    setCustomComposerOpen(false);
+  };
+
   const commitPlacement: React.ComponentProps<typeof DraggableSticker>['onCommit'] = (id, next) => {
     onChangePlacements(placements.map((p) => (p.id === id ? { ...p, ...next } : p)));
   };
@@ -84,12 +105,13 @@ export function DecorationCanvas({
             .slice()
             .sort((a, b) => a.zIndex - b.zIndex)
             .map((placement) => {
-              const asset = assetCatalog.find((a) => a.id === placement.assetId);
-              if (!asset) return null;
+              const asset = assetCatalog.find((a) => a.id === placement.assetId) ?? null;
+              if (!asset && !placement.customText) return null;
               return (
                 <DraggableSticker
                   key={placement.id}
                   asset={asset}
+                  customText={placement.customText}
                   placement={placement}
                   canvasSize={canvasSize}
                   isSelected={selectedId === placement.id}
@@ -125,7 +147,32 @@ export function DecorationCanvas({
             {asset.isPremium && <Text style={styles.lockBadge}>🔒</Text>}
           </Pressable>
         ))}
+        {!customComposerOpen && (
+          <Pressable style={styles.customTrigger} onPress={() => setCustomComposerOpen(true)}>
+            <Text style={styles.customTriggerText}>✏️{'\n'}직접 입력</Text>
+          </Pressable>
+        )}
       </View>
+
+      {customComposerOpen && (
+        <View style={styles.customComposer}>
+          <TextInput
+            style={styles.customInput}
+            value={customText}
+            onChangeText={setCustomText}
+            placeholder="원하는 글자나 이모지를 입력하세요"
+            placeholderTextColor="#B0B0B4"
+            autoFocus
+            onSubmitEditing={addCustomSticker}
+          />
+          <Pressable style={styles.customCancelBtn} onPress={() => { setCustomComposerOpen(false); setCustomText(''); }}>
+            <Text style={styles.customCancelBtnText}>취소</Text>
+          </Pressable>
+          <Pressable style={[styles.customAddBtn, !customText.trim() && styles.customAddBtnDisabled]} onPress={addCustomSticker} disabled={!customText.trim()}>
+            <Text style={styles.customAddBtnText}>추가</Text>
+          </Pressable>
+        </View>
+      )}
     </GestureHandlerRootView>
   );
 }
@@ -166,4 +213,34 @@ const styles = StyleSheet.create({
   },
   assetEmoji: { fontSize: 26 },
   lockBadge: { position: 'absolute', bottom: -2, right: -2, fontSize: 12 },
+  customTrigger: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: '#FFF1E6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customTriggerText: { fontSize: 10, fontWeight: '700', color: '#C1560B', textAlign: 'center' },
+  customComposer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginHorizontal: 16,
+    marginBottom: 24,
+  },
+  customInput: {
+    flex: 1,
+    backgroundColor: '#F3F1EC',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#2A2A2E',
+  },
+  customCancelBtn: { paddingHorizontal: 10, paddingVertical: 8 },
+  customCancelBtnText: { fontSize: 12, color: '#8A8A8E', fontWeight: '600' },
+  customAddBtn: { backgroundColor: '#FF8A5B', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8 },
+  customAddBtnDisabled: { opacity: 0.4 },
+  customAddBtnText: { fontSize: 12, color: '#FFFFFF', fontWeight: '700' },
 });

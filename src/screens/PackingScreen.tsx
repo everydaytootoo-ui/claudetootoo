@@ -9,6 +9,7 @@ import { WeatherSuggestionBar } from '../components/packing/WeatherSuggestionBar
 import { BaggageWeightGauge } from '../components/packing/BaggageWeightGauge';
 import { BagSwitcher } from '../components/packing/BagSwitcher';
 import { BagInteriorView } from '../components/packing/BagInteriorView';
+import { BagItemListModal } from '../components/packing/BagItemListModal';
 import { BaggageMode, BagSection, DecorationAsset, SectionSlot, StickerPlacement } from '../types/models';
 import { CURRENT_USER_NAME, useTripContext } from '../state/TripContext';
 import { showInterstitialAfterCompletion, showRewardedAdForUnlock } from '../ads/AdMobManager';
@@ -42,7 +43,7 @@ export function PackingScreen() {
     items,
     setItems,
     updateBagDecoration,
-    updateBagWeightLimit,
+    updateBagWeightLimits,
     addBag,
     deleteBag,
     addSection,
@@ -62,6 +63,7 @@ export function PackingScreen() {
   const [shareVisible, setShareVisible] = useState(false);
   const [unlockedPremiumIds, setUnlockedPremiumIds] = useState<string[]>([]);
   const [sectionModalVisible, setSectionModalVisible] = useState(false);
+  const [itemListVisible, setItemListVisible] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [newSectionName, setNewSectionName] = useState('');
   const [newSectionIcon, setNewSectionIcon] = useState(SECTION_ICON_OPTIONS[0]);
@@ -102,6 +104,13 @@ export function PackingScreen() {
     const targetSection = bag.sections[0];
     const draft = buildPackItemDraft(targetSection, quickPick, CURRENT_USER_NAME);
     setItems((prev) => [...prev, { ...draft, id: `${quickPick.id}-${Date.now()}` }]);
+  };
+
+  const handleRemoveWeatherItem = (quickPick: QuickPickItem) => {
+    setItems((prev) => {
+      const match = prev.find((i) => bag.sections.some((s) => s.id === i.sectionId) && i.name === quickPick.name);
+      return match ? prev.filter((i) => i.id !== match.id) : prev;
+    });
   };
 
   const handleRequestUnlock = (asset: DecorationAsset) => {
@@ -216,6 +225,7 @@ export function PackingScreen() {
           trip={trip}
           addedNames={bagItems.map((i) => i.name)}
           onAddItem={handleAddWeatherItem}
+          onRemoveItem={handleRemoveWeatherItem}
         />
 
         <DecorationCanvas
@@ -230,11 +240,7 @@ export function PackingScreen() {
           }
         />
 
-        <BaggageWeightGauge
-          bag={bag}
-          items={bagItems}
-          onChangeLimit={(kg) => updateBagWeightLimit(bag.id, kg)}
-        />
+        <BaggageWeightGauge bag={bag} onChangeLimits={(updates) => updateBagWeightLimits(bag.id, updates)} />
 
         <Text style={styles.heading}>{bag.label} 내부</Text>
         <BagInteriorView
@@ -244,6 +250,10 @@ export function PackingScreen() {
           onOpenSection={openSection}
           onAddSectionPress={openAddSectionModal}
         />
+
+        <Pressable style={styles.listAllLink} onPress={() => setItemListVisible(true)}>
+          <Text style={styles.listAllLinkText}>📋 전체 물품 목록 보기</Text>
+        </Pressable>
 
         <Pressable
           style={styles.shareCta}
@@ -361,6 +371,14 @@ export function PackingScreen() {
           </View>
         </View>
       </Modal>
+
+      <BagItemListModal
+        visible={itemListVisible}
+        bag={bag}
+        items={bagItems}
+        onClose={() => setItemListVisible(false)}
+        onToggleChecked={handleToggleChecked}
+      />
     </SafeAreaView>
   );
 }
@@ -422,6 +440,8 @@ const styles = StyleSheet.create({
   modalCancelText: { color: '#8A8A8E', fontSize: 13 },
   modalSave: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#FF8A5B', borderRadius: 10 },
   modalSaveText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  listAllLink: { alignSelf: 'center', paddingVertical: 4 },
+  listAllLinkText: { fontSize: 12, fontWeight: '700', color: '#8A6D4A' },
   shareCta: {
     margin: 16,
     backgroundColor: '#FF8A5B',

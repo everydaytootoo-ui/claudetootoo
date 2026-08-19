@@ -23,8 +23,9 @@ export function BagSwitcher({ bags, selectedBagId, onSelect, onAddBag, onDeleteB
   if (bags.length <= 1 && !onAddBag) return null;
 
   const handleAdd = () => {
-    if (!ownerName.trim() || !onAddBag) return;
-    onAddBag(ownerName.trim(), kind);
+    if (!onAddBag) return;
+    // 이름을 안 적어도 종류 선택만으로 추가되게 — 비워두면 가방 종류 이름으로 대신 채운다
+    onAddBag(ownerName.trim() || BAG_KIND_LABEL[kind], kind);
     setOwnerName('');
     setKind('carryon24');
     setModalVisible(false);
