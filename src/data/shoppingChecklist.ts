@@ -6,6 +6,30 @@ import { ChecklistItem } from '../types/models';
  */
 export const INITIAL_CHECKLIST_ITEMS: ChecklistItem[] = [
   {
+    id: 'chk-esim',
+    title: '여행지 eSIM 구매',
+    category: '통신·보험',
+    isCompleted: false,
+    dDayCategory: 'D-7',
+    affiliateInfo: {
+      productName: '오사카(일본) eSIM 데이터 요금제',
+      price: '8,900원~',
+      affiliateUrl: 'https://example.com/affiliate/esim',
+    },
+  },
+  {
+    id: 'chk-travel-insurance',
+    title: '여행자보험 가입',
+    category: '통신·보험',
+    isCompleted: false,
+    dDayCategory: 'D-14',
+    affiliateInfo: {
+      productName: '해외여행자보험 (단기)',
+      price: '5,000원~',
+      affiliateUrl: 'https://example.com/affiliate/travel-insurance',
+    },
+  },
+  {
     id: 'chk-adapter',
     title: '멀티 어댑터',
     category: '전자기기',

@@ -26,7 +26,7 @@ function groupByCategory(items: ChecklistItem[]): Array<{ category: string; item
 /**
  * 여행 준비물을 D-Day와 상관없이 카테고리별로 훑어보고 체크하는 쇼핑 체크리스트 화면.
  * 아직 안 산(isCompleted: false) 물건 중 제휴 정보(affiliateInfo)가 있는 것에만
- * [최저가 구매] 버튼이 붙어, 체크리스트를 보다가 바로 구매로 넘어갈 수 있다.
+ * [인기제품 확인하기] 버튼이 붙어, 체크리스트를 보다가 바로 상품 목록으로 넘어갈 수 있다.
  */
 export function ShoppingChecklistScreen() {
   const { checklistItems, setChecklistItems } = useTripContext();
@@ -51,7 +51,7 @@ export function ShoppingChecklistScreen() {
     <SafeAreaView style={styles.root}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.heading}>🛍️ 여행 준비 쇼핑 체크리스트</Text>
-        <Text style={styles.subheading}>D-Day에 맞춰 미리 챙기고, 없는 건 바로 최저가로 구매해보세요.</Text>
+        <Text style={styles.subheading}>D-Day에 맞춰 미리 챙기고, 없는 건 인기제품을 바로 확인해보세요.</Text>
 
         {groups.map((group) => (
           <View key={group.category} style={styles.categoryBlock}>
@@ -75,7 +75,7 @@ export function ShoppingChecklistScreen() {
 
                 {!item.isCompleted && item.affiliateInfo && (
                   <Pressable style={styles.buyBtn} onPress={() => openAffiliateLink(item)}>
-                    <Text style={styles.buyBtnText}>최저가 구매</Text>
+                    <Text style={styles.buyBtnText}>인기제품 확인하기</Text>
                   </Pressable>
                 )}
               </View>
