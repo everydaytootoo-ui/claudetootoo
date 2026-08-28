@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>회피즐~ | 회사, 피할 수 없다면 즐겨라!</title>
-<meta name="description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자! 넵/확인/칼퇴/연차 이모지를 슬랙(128px)·팀즈(256px)·카톡(500px) 규격으로 바로 복사·다운로드하고, 우리팀만의 이모지도 직접 만들어보세요." />
+<meta name="description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자! 넵!/확인/칼퇴!!/연차 같은 굵고 선명한 텍스트 이모지를 슬랙(128px)·팀즈(256px)·카톡(500px) 규격으로 바로 복사·다운로드하고, 우리팀만의 이모지도 직접 만들어보세요." />
 
 <!-- Open Graph / 카카오톡·슬랙 링크 미리보기용 -->
 <meta property="og:type" content="website" />
@@ -21,7 +21,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -56,7 +56,7 @@
   /* ---------- Excel grid frame ---------- */
   .excel-grid {
     display: grid;
-    grid-template-columns: 42px repeat(var(--cols), minmax(130px, 1fr));
+    grid-template-columns: 42px repeat(var(--cols), minmax(140px, 1fr));
   }
   .excel-headcell {
     position: sticky; top: 0; z-index: 10;
@@ -82,7 +82,7 @@
     position: relative;
     border: 1px solid #C9D4CC;
     background: #ffffff;
-    min-height: 150px;
+    min-height: 168px;
     padding: 6px;
     transition: background .12s ease, transform .12s ease;
   }
@@ -138,6 +138,16 @@
 
   .modal-backdrop { backdrop-filter: blur(2px); }
   :focus-visible { outline: 2px solid #107C41; outline-offset: 2px; }
+
+  .checker {
+    background-image: linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);
+    background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+  html.dark .checker {
+    background-image: linear-gradient(45deg,#1f2937 25%,transparent 25%),linear-gradient(-45deg,#1f2937 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1f2937 75%),linear-gradient(-45deg,transparent 75%,#1f2937 75%);
+  }
+
+  #ticketBadge { font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
@@ -183,6 +193,7 @@
     <button id="bookmarkBtn" class="flex items-center gap-1.5 font-bold text-brand dark:text-emerald-400 hover:underline">
       <span>⭐</span>퀵 북마크 추가 <span class="opacity-60 font-mono font-normal hidden sm:inline">(Ctrl+D)</span>
     </button>
+    <span id="ticketBadge" class="hidden ml-auto items-center gap-1 font-mono font-bold text-brand dark:text-emerald-400 bg-brand-tint dark:bg-brand-darker/50 px-2 py-0.5 rounded-full text-[11px]"></span>
   </div>
 
   <!-- 헤더 (엑셀 그린 리본) -->
@@ -243,24 +254,44 @@
       <!-- 생성기 패널 (Sheet 4: 우리팀 이모지 만들기) -->
       <div id="generatorPanel" class="hidden bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-4 sm:p-5">
         <h2 class="font-brand text-lg mb-1 flex items-center gap-2"><span>🛠️</span>우리팀 이모지 만들기</h2>
-        <p class="text-xs text-gray-400 mb-4">문구를 입력하고 스타일을 고르면 실시간으로 미리보기가 생성돼요.</p>
+        <p class="text-xs text-gray-400 mb-4">문구·폰트·색상·스타일을 고르면 실시간으로 미리보기가 생성돼요.</p>
 
         <div class="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-5">
           <div>
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400">문구 (최대 10자)</label>
-            <input id="genText" maxlength="10" value="칼퇴"
+            <input id="genText" maxlength="10" value="칼퇴!!"
               class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-lg font-bold outline-none focus:ring-2 focus:ring-brand" />
 
-            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">스타일</label>
-            <div id="styleTabs" class="grid grid-cols-4 gap-2 mt-1">
-              <button data-style="neon" class="gen-style-btn active">✨ 네온</button>
-              <button data-style="stamp" class="gen-style-btn">🔴 도장</button>
-              <button data-style="motion" class="gen-style-btn">💨 역동적</button>
-              <button data-style="pixel" class="gen-style-btn">👾 픽셀</button>
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
+            <div id="fontTabs" class="grid grid-cols-4 gap-2 mt-1">
+              <button data-font="gothic" class="gen-font-btn">고딕</button>
+              <button data-font="black" class="gen-font-btn active">블랙한</button>
+              <button data-font="dohyeon" class="gen-font-btn">두헌</button>
+              <button data-font="jua" class="gen-font-btn">주아</button>
             </div>
 
-            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">포인트 컬러</label>
-            <input id="genColor" type="color" value="#22d3ee" class="mt-1 w-16 h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">스타일</label>
+            <div id="styleTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
+              <button data-style="stamp" class="gen-style-btn">🔴 도장</button>
+              <button data-style="neon" class="gen-style-btn active">✨ 네온</button>
+              <button data-style="bold" class="gen-style-btn">🅱️ 굵은고딕</button>
+              <button data-style="pixel" class="gen-style-btn">👾 픽셀</button>
+              <button data-style="motion" class="gen-style-btn">💨 역동적</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                <input id="genTextColor" type="color" value="#22d3ee" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+              </div>
+              <div>
+                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">배경색</label>
+                <input id="genBgColor" type="color" value="#0b1021" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+              </div>
+            </div>
+            <label class="flex items-center gap-2 mt-2 text-xs font-bold text-gray-500 dark:text-gray-400">
+              <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명
+            </label>
 
             <div class="mt-5 flex flex-wrap gap-2">
               <button data-size="128" data-name="slack" class="gen-download-btn bg-[#4A154B]">Slack 128px 다운로드</button>
@@ -272,8 +303,7 @@
 
           <div class="flex flex-col items-center justify-start">
             <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">실시간 미리보기</p>
-            <div class="w-full aspect-square rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2"
-                 style="background-image: linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%); background-size:16px 16px; background-position:0 0,0 8px,8px -8px,-8px 0;">
+            <div class="checker w-full aspect-square rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2">
               <canvas id="genPreview" width="300" height="300" class="max-w-full max-h-full"></canvas>
             </div>
           </div>
@@ -311,6 +341,7 @@
         <p class="font-bold text-gray-700 dark:text-gray-200 mb-1">📌 사용 팁</p>
         <p>· 셀을 클릭하면 메신저별 규격으로 바로 다운로드/복사할 수 있어요.</p>
         <p>· 검색창에 초성만 입력해도 (예: ㅍㅌ) 관련 이모지를 찾을 수 있어요.</p>
+        <p>· <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
         <p>· <b>Ctrl+D</b>로 즐겨찾기에 추가하면 다음부터 3초!</p>
         <p>· 보스가 다가오면 <b>ESC</b>! 위장 화면의 Sheet1 탭을 누르면 복귀돼요.</p>
       </div>
@@ -318,7 +349,7 @@
   </main>
 
   <footer class="max-w-[1400px] mx-auto px-4 py-6 text-center text-[11px] text-gray-400 dark:text-gray-600">
-    © 2026 회피즐~ · 회사, 피할 수 없다면 즐겨라! (프로토타입) · 모든 이모지는 시스템 폰트로 렌더링됩니다.
+    © 2026 회피즐~ · 회사, 피할 수 없다면 즐겨라! (프로토타입) · 모든 이모지는 Canvas로 실시간 렌더링됩니다.
   </footer>
 </div>
 
@@ -330,9 +361,8 @@
       <button id="modalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
     </div>
     <div class="p-5 flex flex-col items-center">
-      <div id="modalPreviewWrap" class="w-32 h-32 rounded-xl flex items-center justify-center text-7xl mb-4 border border-gray-100 dark:border-gray-800"
-           style="background-image: linear-gradient(45deg,#f3f4f6 25%,transparent 25%),linear-gradient(-45deg,#f3f4f6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#f3f4f6 75%),linear-gradient(-45deg,transparent 75%,#f3f4f6 75%); background-size:14px 14px; background-position:0 0,0 7px,7px -7px,-7px 0;">
-        <span id="modalEmoji"></span>
+      <div id="modalPreviewWrap" class="checker w-40 h-40 rounded-xl overflow-hidden mb-4 border border-gray-100 dark:border-gray-800">
+        <canvas id="modalCanvas" width="280" height="280" class="w-full h-full"></canvas>
       </div>
       <div class="w-full space-y-2">
         <button data-size="128" data-label="Slack" class="modal-dl-btn bg-[#4A154B]">🔵 Slack용 다운로드 (128×128 PNG)</button>
@@ -364,53 +394,73 @@
   </div>
 </div>
 
+<!-- ============ 30분 칼퇴 티켓 모달 ============ -->
+<div id="ticketModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop bg-black/50 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-brand text-white px-4 py-3 flex items-center justify-between">
+      <p class="font-bold text-sm">🎫 30분 칼퇴 티켓 발급</p>
+      <button id="ticketModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5">
+      <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200 balance">
+        아래 배너를 누르면 <b>30분 무제한 이용권</b>이 발급돼요. 티켓이 있는 동안은 팝업 없이 1초 만에 바로 다운로드·복사할 수 있어요!
+      </p>
+      <button id="ticketGrantBtn" class="mt-4 w-full rounded-lg px-4 py-4 text-left bg-gradient-to-br from-brand to-emerald-600 text-white shadow-md hover:brightness-105 transition">
+        <span class="block text-xs font-bold opacity-80">AD · 배너 클릭</span>
+        <span class="block text-base font-brand mt-0.5">🎬 눌러서 30분 무제한 티켓 받기</span>
+      </button>
+      <p class="text-[11px] text-gray-400 mt-3">티켓은 이 브라우저에만 30분간 저장돼요. (프로토타입 데모 배너입니다)</p>
+    </div>
+  </div>
+</div>
+
 <!-- 토스트 -->
 <div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
 
 <style>
   .gen-style-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
   .gen-style-btn.active { @apply bg-brand text-white border-brand; }
+  .gen-font-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
+  .gen-font-btn.active { @apply bg-gray-800 text-white border-gray-800 dark:bg-emerald-600 dark:border-emerald-600; }
   .gen-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
   .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
 </style>
 
 <script>
 /* =========================================================
-   1. 데이터
+   1. 데이터 — 굵고 선명한 텍스트 이모지 프리셋
    ========================================================= */
+const FONTS = {
+  gothic:  '"Noto Sans KR", sans-serif',
+  black:   '"Black Han Sans", sans-serif',
+  dohyeon: '"Do Hyeon", sans-serif',
+  jua:     '"Jua", sans-serif',
+};
+
 const EMOJI_DATA = [
   // Sheet 1: 회사 찐친이랑 쓰는 이모지 (friend)
-  { emoji:'😭', label:'억울', kw:['억울','서러움','멘탈','눈물'], cat:'friend', hot:true },
-  { emoji:'💀', label:'현타', kw:['현타','멘탈붕괴','죽음','현자타임'], cat:'friend' },
-  { emoji:'🫠', label:'녹아내림', kw:['멘탈','녹음','스트레스','흐물'], cat:'friend' },
-  { emoji:'😵‍💫', label:'정신없음', kw:['정신없음','바쁨','멘붕','어지러움'], cat:'friend' },
-  { emoji:'😤', label:'빡침', kw:['빡침','화남','열받음','분노'], cat:'friend' },
-  { emoji:'🥲', label:'억지웃음', kw:['억지','웃픔','참기','인내'], cat:'friend' },
-  { emoji:'🤣', label:'실화냐', kw:['실화냐','웃김','대박','빵터짐'], cat:'friend', hot:true },
-  { emoji:'👀', label:'저기요', kw:['저기요','눈치','잠깐만','궁금'], cat:'friend' },
-  { emoji:'🛋️', label:'휴게시간', kw:['휴식','쉬는시간','낮잠','소파'], cat:'friend' },
-  { emoji:'🥱', label:'식곤증', kw:['식곤증','졸림','점심후'], cat:'friend' },
+  { text:'네??', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['네??','뭐라고요','당황','놀람'] },
+  { text:'제가요?', cat:'friend', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['제가요','왜저요','당황','억울'] },
+  { text:'실화냐?!', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#ea580c', kw:['실화냐','대박','헐','놀람'], hot:true },
+  { text:'억울', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['억울','서러움','눈물','멘탈'], hot:true },
+  { text:'빡침', cat:'friend', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['빡침','화남','열받음','분노'] },
+  { text:'저기요', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['저기요','눈치','잠깐만','궁금'] },
 
   // Sheet 2: 직장에서 인싸되기 (insa)
-  { emoji:'👍', label:'넵', kw:['넵','네','확인','오케이','ok'], cat:'insa', hot:true },
-  { emoji:'🫡', label:'알겠습니다', kw:['알겠습니다','넵','충성','확인'], cat:'insa' },
-  { emoji:'✅', label:'확인완료', kw:['확인','체크','완료','넵'], cat:'insa' },
-  { emoji:'😊', label:'네넵', kw:['네넵','네','넵','좋아요'], cat:'insa' },
-  { emoji:'🙏', label:'감사합니다', kw:['감사','고마워','수고','땡큐'], cat:'insa' },
-  { emoji:'📩', label:'접수했습니다', kw:['접수','확인','메일'], cat:'insa' },
-  { emoji:'👏', label:'인정', kw:['인정','리스펙','최고','대박'], cat:'insa', hot:true },
-  { emoji:'🔥', label:'오진다', kw:['오진다','핫함','대박','인싸'], cat:'insa' },
-  { emoji:'☕', label:'커피타임', kw:['커피','휴식','카페인','아아'], cat:'insa' },
+  { text:'넵!', cat:'insa', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['넵','네','확인','오케이','ok'], hot:true },
+  { text:'확인', cat:'insa', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['확인','체크','완료','넵'] },
+  { text:'감사!', cat:'insa', style:'neon', font:'black', textColor:'#fbbf24', bgColor:'#0b1021', kw:['감사','고마워','수고','땡큐'] },
+  { text:'인정', cat:'insa', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['인정','리스펙','최고','대박'], hot:true },
+  { text:'회의중', cat:'insa', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['회의중','미팅','바쁨','자리비움'] },
+  { text:'점심시간', cat:'insa', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['점심시간','점심','밥','식사'] },
 
   // Sheet 3: 칼퇴/연차 승인요청 (offwork)
-  { emoji:'🏃‍♂️', label:'칼퇴', kw:['칼퇴','퇴근','칼퇴근'], cat:'offwork', hot:true },
-  { emoji:'🎉', label:'불금', kw:['불금','금요일','퇴근'], cat:'offwork' },
-  { emoji:'🛫', label:'연차', kw:['연차','휴가','반차','연차씁니다'], cat:'offwork', hot:true },
-  { emoji:'😴', label:'퇴근각', kw:['퇴근','졸림','피곤','칼퇴각'], cat:'offwork' },
-  { emoji:'🚪', label:'저퇴근합니다', kw:['퇴근','인사','저퇴근','고생하세요'], cat:'offwork' },
-  { emoji:'🌴', label:'휴가중', kw:['휴가','바캉스','연차중'], cat:'offwork' },
-  { emoji:'📝', label:'승인요청', kw:['승인','결재','연차신청','컨펌'], cat:'offwork', hot:true },
-  { emoji:'✋', label:'반차씁니다', kw:['반차','오전반차','오후반차','휴가'], cat:'offwork' },
+  { text:'퇴근!!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['퇴근','칼퇴','고생하셨습니다'], hot:true },
+  { text:'연차', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차','휴가','연차씁니다'], hot:true },
+  { text:'승인요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['승인','결재','컨펌','연차신청'], hot:true },
+  { text:'칼퇴', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['칼퇴','퇴근','칼퇴근'] },
+  { text:'반차', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['반차','오전반차','오후반차'] },
+  { text:'휴가중', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['휴가중','바캉스','연차중'] },
 ];
 
 const CATEGORIES = [
@@ -442,9 +492,9 @@ function matchesSearch(item, query) {
   if (!query) return true;
   const q = query.trim().toLowerCase();
   if (isChosungQuery(q)) {
-    return toChosung(item.label).includes(q) || item.kw.some(k => toChosung(k).includes(q));
+    return toChosung(item.text).includes(q) || item.kw.some(k => toChosung(k).includes(q));
   }
-  return item.label.toLowerCase().includes(q) || item.kw.some(k => k.toLowerCase().includes(q));
+  return item.text.toLowerCase().includes(q) || item.kw.some(k => k.toLowerCase().includes(q));
 }
 
 /* =========================================================
@@ -506,15 +556,27 @@ function renderGrid() {
 }
 
 function buildEmojiCard(item) {
-  const wrap = el('div', 'h-full w-full flex flex-col items-center justify-center gap-1.5 pt-2 cursor-pointer group');
-  wrap.innerHTML = `
-    <span class="text-4xl sm:text-5xl group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-150 select-none">${item.emoji}</span>
-    <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300 truncate max-w-full px-1">${item.hot ? '🔥 ' : ''}${item.label}</span>
-    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-      <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#4A154B]/10 text-[#4A154B] dark:bg-white/10 dark:text-purple-300 font-bold">Slack</span>
-      <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#464EB8]/10 text-[#464EB8] dark:bg-white/10 dark:text-indigo-300 font-bold">Teams</span>
-      <span class="text-[9px] px-1.5 py-0.5 rounded bg-kakao/40 text-[#3C1E1E] dark:bg-white/10 dark:text-yellow-300 font-bold">카톡</span>
-    </div>`;
+  const wrap = el('div', 'h-full w-full flex flex-col items-center justify-center gap-1 pt-1 cursor-pointer group relative');
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 220; canvas.height = 220;
+  canvas.className = 'w-24 h-24 sm:w-28 sm:h-28 rounded-lg shadow-sm group-hover:scale-105 group-hover:-translate-y-0.5 transition-transform duration-150';
+  drawTextEmoji(canvas.getContext('2d'), 220, item);
+  wrap.appendChild(canvas);
+
+  if (item.hot) {
+    const hot = el('span', 'absolute top-0 right-2 text-sm');
+    hot.textContent = '🔥';
+    wrap.appendChild(hot);
+  }
+
+  const badges = el('div', 'flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5');
+  badges.innerHTML = `
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#4A154B]/10 text-[#4A154B] dark:bg-white/10 dark:text-purple-300 font-bold">Slack</span>
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#464EB8]/10 text-[#464EB8] dark:bg-white/10 dark:text-indigo-300 font-bold">Teams</span>
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-kakao/40 text-[#3C1E1E] dark:bg-white/10 dark:text-yellow-300 font-bold">카톡</span>`;
+  wrap.appendChild(badges);
+
   wrap.addEventListener('click', () => openEmojiModal(item));
   return wrap;
 }
@@ -549,20 +611,145 @@ function onCategoryChange() {
 }
 
 /* =========================================================
-   5. 캔버스 렌더링 유틸 (이모지 카드 다운로드/복사)
+   5. 텍스트 이모지 렌더링 엔진 (Canvas)
+   갤러리 카드 · 모달 미리보기 · 생성기 · 다운로드가 모두 이 함수를 공유합니다.
    ========================================================= */
-function drawEmojiToCanvas(emoji, size) {
+function fitFontSize(ctx, text, maxWidth, startPx, fontFamily) {
+  let px = startPx;
+  ctx.font = `900 ${px}px ${fontFamily}`;
+  while (ctx.measureText(text).width > maxWidth && px > 8) {
+    px -= 2;
+    ctx.font = `900 ${px}px ${fontFamily}`;
+  }
+  return px;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function drawTextEmoji(ctx, size, opts) {
+  const text = opts.text || '텍스트';
+  const style = opts.style || 'bold';
+  const fam = FONTS[opts.font] || opts.font || FONTS.gothic;
+  const textColor = opts.textColor;
+  const bgColor = opts.bgColor;
+  const transparentBg = !!opts.transparentBg;
+  const cx = size / 2, cy = size / 2;
+
+  ctx.clearRect(0, 0, size, size);
+
+  const needsCard = style !== 'pixel' && (style === 'neon' || !transparentBg);
+  if (needsCard) {
+    ctx.fillStyle = style === 'neon' ? (bgColor || '#0b1021') : (bgColor || '#107C41');
+    roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
+    ctx.fill();
+  }
+
+  if (style === 'stamp') {
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(-8 * Math.PI/180); ctx.translate(-cx, -cy);
+    ctx.strokeStyle = textColor || '#C0392B'; ctx.globalAlpha = 0.88;
+    ctx.lineWidth = size * 0.025;
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.43, 0, Math.PI*2); ctx.stroke();
+    ctx.lineWidth = size*0.01;
+    ctx.setLineDash([size*0.015, size*0.015]);
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.37, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+    const px = fitFontSize(ctx, text, size * 0.56, size * 0.22, fam);
+    ctx.font = `900 ${px}px ${fam}`;
+    ctx.fillStyle = textColor || '#C0392B';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, cx, cy - size*0.02);
+    ctx.font = `700 ${Math.floor(size*0.06)}px ${FONTS.gothic}`;
+    ctx.fillText('★ 회피즐 ★', cx, cy + size*0.27);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  else if (style === 'neon') {
+    const px = fitFontSize(ctx, text, size * 0.78, size * 0.32, fam);
+    ctx.font = `900 ${px}px ${fam}`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const glow = textColor || '#22d3ee';
+    for (const blur of [size*0.09, size*0.05, size*0.02]) {
+      ctx.shadowColor = glow; ctx.shadowBlur = blur;
+      ctx.fillStyle = glow; ctx.fillText(text, cx, cy);
+    }
+    ctx.shadowBlur = 0; ctx.fillStyle = '#ffffff';
+    ctx.fillText(text, cx, cy);
+  }
+
+  else if (style === 'bold') {
+    const px = fitFontSize(ctx, text, size * 0.8, size * 0.36, fam);
+    ctx.font = `900 ${px}px ${fam}`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = size * 0.02;
+    ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+    ctx.strokeText(text, cx, cy);
+    ctx.fillStyle = textColor || '#ffffff';
+    ctx.fillText(text, cx, cy);
+  }
+
+  else if (style === 'motion') {
+    ctx.strokeStyle = textColor || '#22d3ee'; ctx.globalAlpha = 0.35; ctx.lineWidth = size*0.012;
+    for (let i=0;i<6;i++){
+      const y = size*0.15 + i*size*0.13;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    const px = fitFontSize(ctx, text, size * 0.8, size * 0.32, fam);
+    ctx.font = `900 ${px}px ${fam}`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.save();
+    ctx.transform(1, 0, -0.18, 1, size*0.08, 0);
+    [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, textColor || '#22d3ee'], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
+      ctx.globalAlpha = a; ctx.fillStyle = c;
+      ctx.fillText(text, cx - dx, cy);
+    });
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  else if (style === 'pixel') {
+    const off = document.createElement('canvas');
+    const scale = 6;
+    off.width = size/scale; off.height = size/scale;
+    const octx = off.getContext('2d');
+    octx.clearRect(0,0,off.width, off.height);
+    if (!transparentBg) { octx.fillStyle = bgColor || '#0b1021'; octx.fillRect(0,0,off.width,off.height); }
+    const hasPixelFont = document.fonts.check('10px "Press Start 2P"');
+    const pfam = hasPixelFont ? '"Press Start 2P"' : 'monospace';
+    let px = Math.floor(off.width * 0.16);
+    octx.font = `${px}px ${pfam}`;
+    while (octx.measureText(text).width > off.width*0.85 && px > 4) { px--; octx.font = `${px}px ${pfam}`; }
+    octx.textAlign='center'; octx.textBaseline='middle';
+    octx.fillStyle = 'rgba(0,0,0,0.35)';
+    octx.fillText(text, off.width/2+1, off.height/2+1);
+    octx.fillStyle = textColor || '#ffffff';
+    octx.fillText(text, off.width/2, off.height/2);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(off, 0, 0, size, size);
+  }
+}
+
+function renderItemCanvas(item, size) {
   const canvas = document.createElement('canvas');
   canvas.width = size; canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, size, size);
-  ctx.font = `${Math.floor(size * 0.72)}px "Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, size / 2, size / 2 + size * 0.04);
+  drawTextEmoji(canvas.getContext('2d'), size, item);
   return canvas;
 }
 
+/* =========================================================
+   6. 다운로드 / 클립보드 복사 유틸
+   ========================================================= */
 function canvasToBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
@@ -618,13 +805,80 @@ function showToast(msg) {
 }
 
 /* =========================================================
-   6. 이모지 모달
+   7. 30분 칼퇴 티켓 (보상형 다운로드 게이트)
+   ========================================================= */
+const TICKET_KEY = 'hpz-ticket-expire';
+let pendingGatedAction = null;
+let ticketInterval = null;
+
+function ticketExpireAt() {
+  const v = parseInt(localStorage.getItem(TICKET_KEY) || '0', 10);
+  return Number.isFinite(v) ? v : 0;
+}
+function hasActiveTicket() { return ticketExpireAt() > Date.now(); }
+
+function gatedAction(fn) {
+  if (hasActiveTicket()) { fn(); return; }
+  pendingGatedAction = fn;
+  openTicketModal();
+}
+
+function openTicketModal() {
+  document.getElementById('ticketModal').classList.remove('hidden');
+  document.getElementById('ticketModal').classList.add('flex');
+}
+function closeTicketModal() {
+  document.getElementById('ticketModal').classList.add('hidden');
+  document.getElementById('ticketModal').classList.remove('flex');
+}
+document.getElementById('ticketModalClose').addEventListener('click', () => { pendingGatedAction = null; closeTicketModal(); });
+document.getElementById('ticketModal').addEventListener('click', e => { if (e.target.id === 'ticketModal') { pendingGatedAction = null; closeTicketModal(); } });
+
+document.getElementById('ticketGrantBtn').addEventListener('click', () => {
+  const expireAt = Date.now() + 30 * 60 * 1000;
+  localStorage.setItem(TICKET_KEY, String(expireAt));
+  closeTicketModal();
+  startTicketCountdown();
+  showToast('🎫 30분 무제한 티켓이 발급됐어요!');
+  if (pendingGatedAction) {
+    const fn = pendingGatedAction;
+    pendingGatedAction = null;
+    fn();
+  }
+});
+
+function startTicketCountdown() {
+  clearInterval(ticketInterval);
+  updateTicketBadge();
+  ticketInterval = setInterval(updateTicketBadge, 1000);
+}
+function updateTicketBadge() {
+  const remain = ticketExpireAt() - Date.now();
+  const badge = document.getElementById('ticketBadge');
+  if (remain <= 0) {
+    localStorage.removeItem(TICKET_KEY);
+    badge.classList.add('hidden');
+    badge.classList.remove('flex');
+    clearInterval(ticketInterval);
+    return;
+  }
+  const m = Math.floor(remain / 60000);
+  const s = Math.floor((remain % 60000) / 1000);
+  badge.textContent = `🎫 ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} 무제한 이용 중`;
+  badge.classList.remove('hidden');
+  badge.classList.add('flex');
+}
+if (hasActiveTicket()) startTicketCountdown();
+
+/* =========================================================
+   8. 이모지 모달
    ========================================================= */
 let currentModalItem = null;
 function openEmojiModal(item) {
   currentModalItem = item;
-  document.getElementById('modalTitle').textContent = `${item.label} 이모지`;
-  document.getElementById('modalEmoji').textContent = item.emoji;
+  document.getElementById('modalTitle').textContent = item.text;
+  const canvas = document.getElementById('modalCanvas');
+  drawTextEmoji(canvas.getContext('2d'), canvas.width, item);
   document.getElementById('emojiModal').classList.remove('hidden');
   document.getElementById('emojiModal').classList.add('flex');
 }
@@ -639,17 +893,19 @@ document.querySelectorAll('.modal-dl-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (!currentModalItem) return;
     const size = parseInt(btn.dataset.size, 10);
-    const canvas = drawEmojiToCanvas(currentModalItem.emoji, size);
-    downloadCanvas(canvas, `${currentModalItem.label}_${btn.dataset.label}_${size}px.png`);
+    gatedAction(() => {
+      const canvas = renderItemCanvas(currentModalItem, size);
+      downloadCanvas(canvas, `${currentModalItem.text}_${btn.dataset.label}_${size}px.png`);
+    });
   });
 });
 document.getElementById('modalCopyBtn').addEventListener('click', () => {
   if (!currentModalItem) return;
-  copyCanvasToClipboard(drawEmojiToCanvas(currentModalItem.emoji, 256));
+  gatedAction(() => copyCanvasToClipboard(renderItemCanvas(currentModalItem, 256)));
 });
 
 /* =========================================================
-   7. 퀵 북마크 모달 (Ctrl+D / Cmd+D)
+   9. 퀵 북마크 모달 (Ctrl+D / Cmd+D)
    ========================================================= */
 function openBookmarkModal() {
   const url = window.location.href;
@@ -675,152 +931,82 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* =========================================================
-   8. 텍스트 이모지 생성기
+   10. 텍스트 이모지 생성기 (Sheet 4)
    ========================================================= */
-let genStyle = 'neon';
+const STYLE_DEFAULTS = {
+  stamp:  { font:'dohyeon', textColor:'#C0392B', bgColor:'#107C41', transparentBg:true },
+  neon:   { font:'black',   textColor:'#22d3ee', bgColor:'#0b1021', transparentBg:false },
+  bold:   { font:'jua',     textColor:'#ffffff', bgColor:'#107C41', transparentBg:false },
+  pixel:  { font:'black',   textColor:'#ffffff', bgColor:'#0b1021', transparentBg:true },
+  motion: { font:'black',   textColor:'#22d3ee', bgColor:'#107C41', transparentBg:true },
+};
+let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false };
+
+function applyStyleDefaults(style) {
+  const d = STYLE_DEFAULTS[style];
+  genState = { ...genState, style, ...d };
+  document.getElementById('genTextColor').value = d.textColor;
+  document.getElementById('genBgColor').value = d.bgColor;
+  const cb = document.getElementById('genTransparent');
+  cb.checked = d.transparentBg;
+  cb.disabled = style === 'neon';
+  document.querySelectorAll('.gen-font-btn').forEach(b => b.classList.toggle('active', b.dataset.font === d.font));
+}
+
 document.querySelectorAll('.gen-style-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.gen-style-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    genStyle = btn.dataset.style;
+    applyStyleDefaults(btn.dataset.style);
+    drawGenPreview();
+  });
+});
+document.querySelectorAll('.gen-font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gen-font-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    genState.font = btn.dataset.font;
     drawGenPreview();
   });
 });
 document.getElementById('genText').addEventListener('input', drawGenPreview);
-document.getElementById('genColor').addEventListener('input', drawGenPreview);
+document.getElementById('genTextColor').addEventListener('input', (e) => { genState.textColor = e.target.value; drawGenPreview(); });
+document.getElementById('genBgColor').addEventListener('input', (e) => { genState.bgColor = e.target.value; drawGenPreview(); });
+document.getElementById('genTransparent').addEventListener('change', (e) => { genState.transparentBg = e.target.checked; drawGenPreview(); });
 
-function fitFontSize(ctx, text, maxWidth, startPx) {
-  let px = startPx;
-  ctx.font = `900 ${px}px "Noto Sans KR", sans-serif`;
-  while (ctx.measureText(text).width > maxWidth && px > 8) {
-    px -= 2;
-    ctx.font = `900 ${px}px "Noto Sans KR", sans-serif`;
-  }
-  return px;
-}
-
-function drawGenOn(ctx, size, text, style, color) {
-  ctx.clearRect(0, 0, size, size);
-  const cx = size / 2, cy = size / 2;
-
-  if (style === 'neon') {
-    ctx.fillStyle = '#0b1021';
-    roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.08);
-    ctx.fill();
-    const px = fitFontSize(ctx, text, size * 0.78, size * 0.34);
-    ctx.font = `900 ${px}px "Noto Sans KR", sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    for (const blur of [size*0.09, size*0.05, size*0.02]) {
-      ctx.shadowColor = color; ctx.shadowBlur = blur;
-      ctx.fillStyle = color; ctx.fillText(text, cx, cy);
-    }
-    ctx.shadowBlur = 0; ctx.fillStyle = '#ffffff';
-    ctx.fillText(text, cx, cy);
-  }
-
-  else if (style === 'stamp') {
-    ctx.save();
-    ctx.translate(cx, cy); ctx.rotate(-8 * Math.PI/180); ctx.translate(-cx, -cy);
-    ctx.strokeStyle = '#c0392b'; ctx.globalAlpha = 0.85;
-    ctx.lineWidth = size * 0.025;
-    ctx.beginPath(); ctx.arc(cx, cy, size*0.44, 0, Math.PI*2); ctx.stroke();
-    ctx.lineWidth = size*0.01;
-    ctx.setLineDash([size*0.015, size*0.015]);
-    ctx.beginPath(); ctx.arc(cx, cy, size*0.38, 0, Math.PI*2); ctx.stroke();
-    ctx.setLineDash([]);
-    const px = fitFontSize(ctx, text, size * 0.56, size * 0.24);
-    ctx.font = `900 ${px}px "Noto Sans KR", sans-serif`;
-    ctx.fillStyle = '#c0392b';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text, cx, cy);
-    ctx.font = `700 ${Math.floor(size*0.06)}px "Noto Sans KR", sans-serif`;
-    ctx.fillText('✦ CONFIRMED ✦', cx, cy + size*0.28);
-    ctx.globalAlpha = 1;
-    ctx.restore();
-  }
-
-  else if (style === 'motion') {
-    ctx.strokeStyle = color; ctx.globalAlpha = 0.35; ctx.lineWidth = size*0.012;
-    for (let i=0;i<6;i++){
-      const y = size*0.15 + i*size*0.13;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    const px = fitFontSize(ctx, text, size * 0.8, size * 0.32);
-    ctx.font = `900 ${px}px "Noto Sans KR", sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.save();
-    ctx.transform(1, 0, -0.18, 1, size*0.08, 0);
-    [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, color], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
-      ctx.globalAlpha = a; ctx.fillStyle = c;
-      ctx.fillText(text, cx - dx, cy);
-    });
-    ctx.restore();
-    ctx.globalAlpha = 1;
-  }
-
-  else if (style === 'pixel') {
-    const off = document.createElement('canvas');
-    const scale = 6;
-    off.width = size/scale; off.height = size/scale;
-    const octx = off.getContext('2d');
-    octx.clearRect(0,0,off.width, off.height);
-    const hasPixelFont = document.fonts.check('10px "Press Start 2P"');
-    const family = hasPixelFont ? '"Press Start 2P"' : 'monospace';
-    let px = Math.floor(off.width * 0.16);
-    octx.font = `${px}px ${family}`;
-    while (octx.measureText(text).width > off.width*0.85 && px > 4) { px--; octx.font = `${px}px ${family}`; }
-    octx.textAlign='center'; octx.textBaseline='middle';
-    octx.fillStyle = '#111827';
-    octx.fillText(text, off.width/2+1, off.height/2+1);
-    octx.fillStyle = color;
-    octx.fillText(text, off.width/2, off.height/2);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(off, 0, 0, size, size);
-  }
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y, x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x, y+h, r);
-  ctx.arcTo(x, y+h, x, y, r);
-  ctx.arcTo(x, y, x+w, y, r);
-  ctx.closePath();
+function currentGenItem() {
+  return {
+    text: document.getElementById('genText').value || '텍스트',
+    style: genState.style,
+    font: genState.font,
+    textColor: genState.textColor,
+    bgColor: genState.bgColor,
+    transparentBg: genState.transparentBg,
+  };
 }
 
 function drawGenPreview() {
   const canvas = document.getElementById('genPreview');
-  const ctx = canvas.getContext('2d');
-  const text = document.getElementById('genText').value || '텍스트';
-  const color = document.getElementById('genColor').value;
-  drawGenOn(ctx, canvas.width, text, genStyle, color);
+  drawTextEmoji(canvas.getContext('2d'), canvas.width, currentGenItem());
 }
 
 document.querySelectorAll('.gen-download-btn').forEach(btn => {
   if (!btn.dataset.size) return;
   btn.addEventListener('click', () => {
     const size = parseInt(btn.dataset.size, 10);
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const text = document.getElementById('genText').value || '텍스트';
-    const color = document.getElementById('genColor').value;
-    drawGenOn(canvas.getContext('2d'), size, text, genStyle, color);
-    downloadCanvas(canvas, `${text}_${btn.dataset.name}_${size}px.png`);
+    gatedAction(() => {
+      const item = currentGenItem();
+      const canvas = renderItemCanvas(item, size);
+      downloadCanvas(canvas, `${item.text}_${btn.dataset.name}_${size}px.png`);
+    });
   });
 });
 document.getElementById('genCopyBtn').addEventListener('click', () => {
-  const canvas = document.createElement('canvas');
-  canvas.width = 256; canvas.height = 256;
-  const text = document.getElementById('genText').value || '텍스트';
-  const color = document.getElementById('genColor').value;
-  drawGenOn(canvas.getContext('2d'), 256, text, genStyle, color);
-  copyCanvasToClipboard(canvas);
+  gatedAction(() => copyCanvasToClipboard(renderItemCanvas(currentGenItem(), 256)));
 });
 
 /* =========================================================
-   9. 검색
+   11. 검색
    ========================================================= */
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', () => {
@@ -835,7 +1021,7 @@ document.getElementById('searchClear').addEventListener('click', () => {
 });
 
 /* =========================================================
-   10. 다크모드
+   12. 다크모드
    ========================================================= */
 function applyTheme(dark) {
   document.documentElement.classList.toggle('dark', dark);
@@ -852,7 +1038,7 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 })();
 
 /* =========================================================
-   11. 보스키
+   13. 보스키
    ========================================================= */
 function buildBossTable() {
   const table = document.getElementById('bossTable');
@@ -891,7 +1077,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* =========================================================
-   12. 바이럴: 칼퇴 확률 테스트 & 카카오 공유
+   14. 바이럴: 칼퇴 확률 테스트 & 카카오 공유
    ========================================================= */
 document.getElementById('kalToeBtn').addEventListener('click', () => {
   const pct = Math.floor(Math.random()*101);
@@ -923,10 +1109,11 @@ document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
 });
 
 /* =========================================================
-   13. 초기화
+   15. 초기화
    ========================================================= */
 renderSheetTabs();
 renderGrid();
+applyStyleDefaults(genState.style);
 drawGenPreview();
 window.addEventListener('resize', () => { if (state.cat !== 'generator') renderGrid(); });
 </script>
