@@ -872,21 +872,27 @@ function onCategoryChange() {
    6. 텍스트 이모지 렌더링 엔진 (Canvas)
    갤러리 카드 · 모달 미리보기 · 생성기 · 다운로드가 모두 이 함수를 공유합니다.
    ========================================================= */
-// 여러 줄(\n) 텍스트를 받아, 정사각형 상자(maxWidth x maxHeight) 안에 꽉 차면서도
-// 튀어나가지 않는 가장 큰 폰트 크기를 계산합니다. 1줄일 때도 동일한 로직을 씁니다.
-function fitMultilineText(ctx, rawText, maxWidth, maxHeight, startPx, fontFamily, lineHeightRatio) {
+// 여러 줄(\n) 텍스트를 받아, 정사각형 상자(maxWidth x maxHeight)를 '바짝' 채우는
+// 가장 큰 폰트 크기를 계산합니다. 1줄일 때도 동일한 로직을 씁니다.
+//
+// 이전에는 스타일마다 정해둔 startPx(추정치)에서 아래로만 줄여나갔기 때문에,
+// 짧은 문구는 실제로 들어갈 수 있는 크기보다 훨씬 작게 그려지는 문제가 있었습니다.
+// 이제는 항상 (maxWidth, maxHeight)로 계산 가능한 최댓값보다 확실히 큰 지점에서
+// 시작해 1px 단위로 줄여가며 "너비/높이 제약을 동시에 만족하는 가장 큰 값"을 찾습니다.
+function fitMultilineText(ctx, rawText, maxWidth, maxHeight, fontFamily, lineHeightRatio) {
   let lines = String(rawText).split('\n');
   while (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
   while (lines.length > 1 && lines[0] === '') lines.shift();
   if (lines.length === 0) lines = [''];
 
-  let px = startPx;
+  // 어떤 텍스트든 이 값보다 큰 font-size는 절대 두 제약을 동시에 만족할 수 없습니다.
+  let px = Math.ceil(Math.max(maxWidth, maxHeight / lineHeightRatio)) + 8;
   while (px > 8) {
     ctx.font = `900 ${px}px ${fontFamily}`;
     const widest = Math.max(...lines.map(l => ctx.measureText(l || ' ').width));
     const blockHeight = lines.length * px * lineHeightRatio;
     if (widest <= maxWidth && blockHeight <= maxHeight) break;
-    px -= 2;
+    px -= 1;
   }
   ctx.font = `900 ${px}px ${fontFamily}`;
   return { lines, px, lineHeight: px * lineHeightRatio };
@@ -931,27 +937,27 @@ function drawTextEmoji(ctx, size, opts) {
     ctx.translate(cx, cy); ctx.rotate(-8 * Math.PI/180); ctx.translate(-cx, -cy);
     ctx.strokeStyle = textColor || '#C0392B'; ctx.globalAlpha = 0.88;
     ctx.lineWidth = size * 0.025;
-    ctx.beginPath(); ctx.arc(cx, cy, size*0.43, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.47, 0, Math.PI*2); ctx.stroke();
     ctx.lineWidth = size*0.01;
     ctx.setLineDash([size*0.015, size*0.015]);
-    ctx.beginPath(); ctx.arc(cx, cy, size*0.37, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.40, 0, Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
-    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.56, size*0.34, size*0.22, fam, 1.08);
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.66, size*0.42, fam, 1.06);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillStyle = textColor || '#C0392B';
-    lineCenters(cy - size*0.02, lines.length, lineHeight).forEach((y, i) => ctx.fillText(lines[i], cx, y));
-    ctx.font = `700 ${Math.floor(size*0.06)}px ${FONTS.gothic}`;
-    ctx.fillText('★ CONFIRMED ★', cx, cy + size*0.27);
+    lineCenters(cy - size*0.05, lines.length, lineHeight).forEach((y, i) => ctx.fillText(lines[i], cx, y));
+    ctx.font = `700 ${Math.floor(size*0.05)}px ${FONTS.gothic}`;
+    ctx.fillText('★ CONFIRMED ★', cx, cy + size*0.32);
     ctx.globalAlpha = 1;
     ctx.restore();
   }
 
   else if (style === 'neon') {
-    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.78, size*0.62, size*0.32, fam, 1.15);
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.86, size*0.84, fam, 1.08);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const glow = textColor || '#22d3ee';
     const ys = lineCenters(cy, lines.length, lineHeight);
-    for (const blur of [size*0.09, size*0.05, size*0.02]) {
+    for (const blur of [size*0.06, size*0.035, size*0.015]) {
       ctx.shadowColor = glow; ctx.shadowBlur = blur;
       ctx.fillStyle = glow;
       ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
@@ -961,7 +967,7 @@ function drawTextEmoji(ctx, size, opts) {
   }
 
   else if (style === 'bold') {
-    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.8, size*0.68, size*0.36, fam, 1.15);
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.90, size*0.88, fam, 1.08);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
     ctx.lineWidth = size * 0.02;
@@ -979,10 +985,10 @@ function drawTextEmoji(ctx, size, opts) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
     }
     ctx.globalAlpha = 1;
-    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.8, size*0.62, size*0.32, fam, 1.15);
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.84, size*0.86, fam, 1.08);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.save();
-    ctx.transform(1, 0, -0.18, 1, size*0.08, 0);
+    ctx.transform(1, 0, -0.18, 1, size*0.04, 0);
     const ys = lineCenters(cy, lines.length, lineHeight);
     [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, textColor || '#22d3ee'], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
       ctx.globalAlpha = a; ctx.fillStyle = c;
@@ -1001,7 +1007,7 @@ function drawTextEmoji(ctx, size, opts) {
     if (!transparentBg) { octx.fillStyle = bgColor || '#0b1021'; octx.fillRect(0,0,off.width,off.height); }
     const hasPixelFont = document.fonts.check('10px "Press Start 2P"');
     const pfam = hasPixelFont ? '"Press Start 2P"' : 'monospace';
-    const { lines, lineHeight } = fitMultilineText(octx, text, off.width*0.85, off.height*0.72, off.width*0.16, pfam, 1.35);
+    const { lines, lineHeight } = fitMultilineText(octx, text, off.width*0.92, off.height*0.90, pfam, 1.25);
     octx.textAlign='center'; octx.textBaseline='middle';
     const oys = lineCenters(off.height/2, lines.length, lineHeight);
     octx.fillStyle = 'rgba(0,0,0,0.35)';
