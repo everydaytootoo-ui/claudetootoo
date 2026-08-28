@@ -567,8 +567,28 @@ function canvasToBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
+// claude.ai 아티팩트 미리보기 등 샌드박스 환경에서는 window.claude.downloads로,
+// 일반 브라우저 배포 환경에서는 표준 <a download> 방식으로 자동 대체됩니다.
+let downloadsCapabilityPromise;
+function getDownloadsCapability() {
+  if (typeof window.claude?.use !== 'function') return Promise.resolve(null);
+  if (!downloadsCapabilityPromise) downloadsCapabilityPromise = window.claude.use('downloads').catch(() => null);
+  return downloadsCapabilityPromise;
+}
+
 async function downloadCanvas(canvas, filename) {
   const blob = await canvasToBlob(canvas);
+  const downloads = await getDownloadsCapability();
+  if (downloads) {
+    try {
+      await downloads.save({ filename, data: blob });
+      showToast(`${filename} 다운로드 완료!`);
+      return;
+    } catch (err) {
+      if (err && err.code === 'declined') return;
+      // 실패 시 표준 다운로드 방식으로 대체
+    }
+  }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = filename;
