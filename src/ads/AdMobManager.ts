@@ -78,12 +78,17 @@ export function showRewardedAdForUnlock(
   rewarded.load();
 }
 
+/** 세션(앱을 다시 켤 때까지)당 전면 광고 노출 횟수 상한 — 짧은 시간에 반복 노출되어 피로감을 주지 않도록 */
+const MAX_INTERSTITIALS_PER_SESSION = 2;
+let interstitialShowCount = 0;
+
 /** 짐싸기 완료 / 공유 카드 저장 완료 등 자연스러운 완료 시점에 노출하는 전면 광고 */
 export function showInterstitialAfterCompletion(onClosed?: () => void): void {
-  if (!sdk || !INTERSTITIAL_UNIT_ID) {
+  if (!sdk || !INTERSTITIAL_UNIT_ID || interstitialShowCount >= MAX_INTERSTITIALS_PER_SESSION) {
     onClosed?.();
     return;
   }
+  interstitialShowCount += 1;
   const { AdEventType, InterstitialAd } = sdk;
 
   const interstitial = InterstitialAd.createForAdRequest(INTERSTITIAL_UNIT_ID, {

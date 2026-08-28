@@ -257,11 +257,7 @@ export function PackingScreen() {
 
         <Pressable
           style={styles.shareCta}
-          onPress={() => {
-            setShareVisible(true);
-            // 짐싸기 세션 완료 시점(공유 카드 진입)에 자연스럽게 전면 광고 노출
-            showInterstitialAfterCompletion();
-          }}
+          onPress={() => setShareVisible(true)}
         >
           <Text style={styles.shareCtaText}>📸 캐꾸 자랑 카드 만들기</Text>
         </Pressable>

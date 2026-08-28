@@ -229,8 +229,8 @@ export interface AffiliateInfo {
 
 /**
  * "여행 준비 쇼핑 체크리스트" 항목 — 가방/구역에 묶이는 PackItem과 달리, 아직 사지 않았을 수도
- * 있는 "준비물" 자체를 다룬다. isCompleted가 false이고 affiliateInfo가 있는 항목에만
- * [최저가 구매] 버튼이 노출된다.
+ * 있는 "준비물" 자체를 다룬다. isCompleted가 false이고 affiliateInfo가 있고 ownedAlready가 아닌
+ * 항목에만 제휴 구매 버튼이 노출된다.
  */
 export interface ChecklistItem {
   id: string;
@@ -239,4 +239,6 @@ export interface ChecklistItem {
   isCompleted: boolean;
   dDayCategory?: DDayCategory;
   affiliateInfo?: AffiliateInfo;
+  /** 유저가 "이미 있어요"를 선택한 항목 — 구매 버튼을 더 이상 보여주지 않는다 */
+  ownedAlready?: boolean;
 }
