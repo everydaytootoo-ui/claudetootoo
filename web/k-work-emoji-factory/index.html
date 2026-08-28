@@ -3,25 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>회피즐~ | 회사, 피할 수 없다면 즐겨라!</title>
-<meta name="description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자! 실시간 TOP 20, 회사 찐친 이모지, 칼퇴/연차 승인요청, 유저 제작 자유 이모지까지 — 굵고 선명한 텍스트 이모지를 슬랙(128px)·팀즈(256px)·카톡(500px) 규격으로 바로 복사·다운로드하세요." />
+<title>회피즐~ | 슬랙·팀즈 이모지 만들기 & 직장인 커스텀 이모티콘 생성기</title>
+<meta name="description" content="회사, 피할 수 없다면 즐겨라! 3초 만에 끝내는 슬랙 이모지 만들기, 팀즈 이모지 만들기, 커스텀 이모티콘 제작 툴. 128px/256px 맞춤 규격 다운로드 및 엑셀 위장 이모지 시트." />
+<meta name="keywords" content="팀즈 이모지 만들기, 슬랙 이모지 만들기, 커스텀 이모지 만들기, 팀즈 이모티콘 만들기, 슬랙 이모티콘 만들기, 커스텀 이모티콘 만들기, 직장인 이모지, 회피즐" />
 
 <!-- Open Graph / 카카오톡·슬랙 링크 미리보기용 -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="회피즐~" />
-<meta property="og:title" content="오늘도 회피즐~ 3초 만에 복사하는 K-직장인 이모지 시트" />
-<meta property="og:description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자!" />
+<meta property="og:title" content="회피즐~ | 슬랙·팀즈 커스텀 이모지 만들기" />
+<meta property="og:description" content="오늘도 회피즐~ 3초 만에 만드는 K-직장인 커스텀 이모지 & 짤 팩토리" />
 <meta property="og:image" content="./og-image.png" />
 <meta property="og:url" content="https://hoepizzle.example.com" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="회피즐~ | 회사, 피할 수 없다면 즐겨라!" />
-<meta name="twitter:description" content="3초 만에 복사하는 K-직장인 이모지 시트" />
+<meta name="twitter:title" content="회피즐~ | 슬랙·팀즈 커스텀 이모지 만들기" />
+<meta name="twitter:description" content="오늘도 회피즐~ 3초 만에 만드는 K-직장인 커스텀 이모지 & 짤 팩토리" />
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.85em' font-size='90'%3E%F0%9F%99%88%3C/text%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -293,11 +294,12 @@
               class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-lg font-bold outline-none focus:ring-2 focus:ring-brand resize-none leading-snug">칼퇴!!</textarea>
 
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
-            <div id="fontTabs" class="grid grid-cols-4 gap-2 mt-1">
+            <div id="fontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
               <button data-font="gothic" class="gen-font-btn">고딕</button>
               <button data-font="black" class="gen-font-btn active">블랙한</button>
               <button data-font="dohyeon" class="gen-font-btn">두헌</button>
               <button data-font="jua" class="gen-font-btn">주아</button>
+              <button data-font="gungseo" class="gen-font-btn">궁서체</button>
             </div>
 
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">스타일</label>
@@ -497,6 +499,7 @@ const FONTS = {
   black:   '"Black Han Sans", sans-serif',
   dohyeon: '"Do Hyeon", sans-serif',
   jua:     '"Jua", sans-serif',
+  gungseo: '"Nanum Brush Script", cursive',
 };
 
 const BUILTIN_EMOJI_DATA = [
@@ -540,16 +543,46 @@ const HOT_THRESHOLD = 150; // likes+downloads 합산이 이 값 이상이면 �
 
 /* =========================================================
    2. LocalStorage 유틸 — 좋아요 / 다운로드 카운트 / 유저 이모지 / 티켓
+
+   일부 브라우저·미리보기 환경(예: 서드파티 저장소를 차단한 iframe)에서는
+   localStorage 접근 자체가 예외를 던질 수 있습니다. 그런 경우에도 좋아요·
+   갤러리 공유 같은 기능이 "이번 세션 동안은" 정상 동작하도록, 모든 읽기/쓰기를
+   메모리 캐시(memoryStore)와 함께 관리합니다: 쓰기는 항상 메모리에 반영되고,
+   localStorage 저장은 가능할 때만 best-effort로 덧붙입니다.
    ========================================================= */
+const memoryStore = {};
+function lsGet(key) {
+  try { return localStorage.getItem(key); } catch { return undefined; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, value); } catch {}
+}
+function lsRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
 function readJSON(key, fallback) {
+  if (Object.prototype.hasOwnProperty.call(memoryStore, key)) return memoryStore[key];
+  const raw = lsGet(key);
+  if (raw === undefined || raw === null) return fallback;
   try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
+    const parsed = JSON.parse(raw);
+    memoryStore[key] = parsed;
+    return parsed;
   } catch { return fallback; }
 }
 function writeJSON(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  memoryStore[key] = value;
+  try { lsSet(key, JSON.stringify(value)); } catch {}
 }
+function readStr(key, fallback) {
+  if (Object.prototype.hasOwnProperty.call(memoryStore, key)) return memoryStore[key];
+  const raw = lsGet(key);
+  if (raw === undefined || raw === null) return fallback;
+  memoryStore[key] = raw;
+  return raw;
+}
+function writeStr(key, value) { memoryStore[key] = value; lsSet(key, value); }
+function removeStr(key) { delete memoryStore[key]; lsRemove(key); }
 
 const LIKED_KEY = 'hpz-liked-ids';
 const LIKE_COUNT_KEY = 'hpz-like-counts';
@@ -843,7 +876,7 @@ function drawTextEmoji(ctx, size, opts) {
     ctx.fillStyle = textColor || '#C0392B';
     lineCenters(cy - size*0.02, lines.length, lineHeight).forEach((y, i) => ctx.fillText(lines[i], cx, y));
     ctx.font = `700 ${Math.floor(size*0.06)}px ${FONTS.gothic}`;
-    ctx.fillText('★ 회피즐 ★', cx, cy + size*0.27);
+    ctx.fillText('★ CONFIRMED ★', cx, cy + size*0.27);
     ctx.globalAlpha = 1;
     ctx.restore();
   }
@@ -987,7 +1020,7 @@ let pendingGatedAction = null;
 let ticketInterval = null;
 
 function ticketExpireAt() {
-  const v = parseInt(localStorage.getItem(TICKET_KEY) || '0', 10);
+  const v = parseInt(readStr(TICKET_KEY, '0') || '0', 10);
   return Number.isFinite(v) ? v : 0;
 }
 function hasActiveTicket() { return ticketExpireAt() > Date.now(); }
@@ -1011,7 +1044,7 @@ document.getElementById('ticketModal').addEventListener('click', e => { if (e.ta
 
 document.getElementById('ticketGrantBtn').addEventListener('click', () => {
   const expireAt = Date.now() + 30 * 60 * 1000;
-  localStorage.setItem(TICKET_KEY, String(expireAt));
+  writeStr(TICKET_KEY, String(expireAt));
   closeTicketModal();
   startTicketCountdown();
   showToast('🎫 30분 무제한 티켓이 발급됐어요!');
@@ -1031,7 +1064,7 @@ function updateTicketBadge() {
   const remain = ticketExpireAt() - Date.now();
   const badge = document.getElementById('ticketBadge');
   if (remain <= 0) {
-    localStorage.removeItem(TICKET_KEY);
+    removeStr(TICKET_KEY);
     badge.classList.add('hidden');
     badge.classList.remove('flex');
     clearInterval(ticketInterval);
@@ -1269,13 +1302,13 @@ document.getElementById('searchClear').addEventListener('click', () => {
 function applyTheme(dark) {
   document.documentElement.classList.toggle('dark', dark);
   document.getElementById('themeToggle').textContent = dark ? '☀️' : '🌙';
-  localStorage.setItem('hpz-theme', dark ? 'dark' : 'light');
+  writeStr('hpz-theme', dark ? 'dark' : 'light');
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
   applyTheme(!document.documentElement.classList.contains('dark'));
 });
 (function initTheme(){
-  const saved = localStorage.getItem('hpz-theme');
+  const saved = readStr('hpz-theme', null);
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme(saved ? saved === 'dark' : prefersDark);
 })();
