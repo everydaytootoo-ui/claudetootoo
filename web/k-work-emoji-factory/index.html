@@ -438,15 +438,20 @@
         <p>· Sheet 5에서 <b>🖼️ 이미지/짤 업로드</b> 모드로 직접 짤에 자막을 얹어 만들 수 있어요.</p>
         <p>· 카드의 <b>👍 좋아요</b>는 1인 1회, 좋아요+다운로드 합산이 실시간 TOP 20에 반영돼요.</p>
         <p>· 검색창에 초성만 입력해도 (예: ㅍㅌ) 관련 이모지를 찾을 수 있어요.</p>
-        <p>· <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
+        <p>· 첫 다운로드/복사는 무료! 이후엔 <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
         <p>· <b>Ctrl+D</b>로 즐겨찾기에 추가하면 다음부터 3초!</p>
         <p>· 보스가 다가오면 <b>ESC</b>! 위장 화면 우측 상단 <b>✕</b> 버튼(또는 ESC)을 누르면 바로 복귀돼요.</p>
       </div>
     </aside>
   </main>
 
-  <footer class="max-w-[1400px] mx-auto px-4 py-6 text-center text-[11px] text-gray-400 dark:text-gray-600">
-    © 2026 회피즐~ · 회사, 피할 수 없다면 즐겨라! (프로토타입) · 모든 이모지는 Canvas로 실시간 렌더링됩니다.
+  <footer class="max-w-[1400px] mx-auto px-4 py-6 text-center text-[11px] text-gray-400 dark:text-gray-600 space-y-1.5">
+    <p class="flex items-center justify-center gap-3">
+      <a href="./privacy.html" class="hover:text-brand dark:hover:text-emerald-400 underline">개인정보처리방침</a>
+      <span class="opacity-40">·</span>
+      <a href="./terms.html" class="hover:text-brand dark:hover:text-emerald-400 underline">이용약관</a>
+    </p>
+    <p>© 2026 회피즐~ · 회사, 피할 수 없다면 즐겨라! (프로토타입) · 모든 이모지는 Canvas로 실시간 렌더링됩니다.</p>
   </footer>
 </div>
 
@@ -500,13 +505,17 @@
     </div>
     <div class="p-5">
       <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200 balance">
-        아래 배너를 누르면 <b>30분 무제한 이용권</b>이 발급돼요. 티켓이 있는 동안은 팝업 없이 1초 만에 바로 다운로드·복사할 수 있어요!
+        아래 버튼을 누르면 <b>30분 무제한 이용권</b>이 발급돼요. 티켓이 있는 동안은 팝업 없이 1초 만에 바로 다운로드·복사할 수 있어요!
       </p>
+      <p class="text-xs text-gray-400 mt-1.5">광고 시청은 회피즐~을 무료로 운영하는 데 큰 도움이 돼요 🙏</p>
       <button id="ticketGrantBtn" class="mt-4 w-full rounded-lg px-4 py-4 text-left bg-gradient-to-br from-brand to-emerald-600 text-white shadow-md hover:brightness-105 transition">
-        <span class="block text-xs font-bold opacity-80">AD · 배너 클릭</span>
+        <span class="block text-xs font-bold opacity-80">무료 이용권 받기</span>
         <span class="block text-base font-brand mt-0.5">🎬 눌러서 30분 무제한 티켓 받기</span>
       </button>
-      <p class="text-[11px] text-gray-400 mt-3">티켓은 이 브라우저에만 30분간 저장돼요. (프로토타입 데모 배너입니다)</p>
+      <button id="ticketAdFreeBtn" class="mt-2 w-full rounded-lg px-4 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-emerald-500 transition">
+        ☕ 후원하고 광고 없이 이용하기
+      </button>
+      <p class="text-[11px] text-gray-400 mt-3">티켓은 이 브라우저에만 30분간 저장돼요. (프로토타입 데모입니다)</p>
     </div>
   </div>
 </div>
@@ -1142,6 +1151,7 @@ function showToast(msg) {
    8. 30분 칼퇴 티켓 (보상형 다운로드 게이트)
    ========================================================= */
 const TICKET_KEY = 'hpz-ticket-expire';
+const FREE_ACTION_KEY = 'hpz-free-action-used';
 let pendingGatedAction = null;
 let ticketInterval = null;
 
@@ -1151,8 +1161,15 @@ function ticketExpireAt() {
 }
 function hasActiveTicket() { return ticketExpireAt() > Date.now(); }
 
+// 브랜드 약속이 "3초 만에 복사"인데 첫 클릭부터 광고 게이트가 뜨면 그 약속이
+// 바로 깨져 보입니다. 그래서 이 브라우저에서의 첫 다운로드/복사 1회는 게이트 없이
+// 통과시키고, 그 이후부터 30분 티켓을 요구합니다.
+function hasUsedFreeAction() { return readStr(FREE_ACTION_KEY, '0') === '1'; }
+function markFreeActionUsed() { writeStr(FREE_ACTION_KEY, '1'); }
+
 function gatedAction(fn) {
   if (hasActiveTicket()) { fn(); return; }
+  if (!hasUsedFreeAction()) { markFreeActionUsed(); fn(); return; }
   pendingGatedAction = fn;
   openTicketModal();
 }
@@ -1168,6 +1185,13 @@ function closeTicketModal() {
 document.getElementById('ticketModalClose').addEventListener('click', () => { pendingGatedAction = null; closeTicketModal(); });
 document.getElementById('ticketModal').addEventListener('click', e => { if (e.target.id === 'ticketModal') { pendingGatedAction = null; closeTicketModal(); } });
 
+// ⚠️ 실서비스 연동 시 반드시 읽어주세요
+// 지금 이 버튼은 "클릭하면 즉시" 티켓을 발급하는 데모입니다. 실제 광고 수익화를
+// 붙일 때 절대 이 버튼을 AdSense 디스플레이 배너 클릭에 연결하지 마세요 —
+// "광고를 누르면 보상을 준다"는 구조는 부정 클릭 유도로 간주되어 Google 광고
+// 정책 위반(계정 정지 사유)이 됩니다. 반드시 별도의 리워드 광고 SDK(Google Ad
+// Manager 리워드 광고, AdMob Rewarded Ad 등)를 연동해서, 광고가 끝까지 재생된
+// 뒤 그 SDK의 "재생 완료" 콜백 안에서만 아래 로직(티켓 발급)을 실행하세요.
 document.getElementById('ticketGrantBtn').addEventListener('click', () => {
   const expireAt = Date.now() + 30 * 60 * 1000;
   writeStr(TICKET_KEY, String(expireAt));
@@ -1179,6 +1203,12 @@ document.getElementById('ticketGrantBtn').addEventListener('click', () => {
     pendingGatedAction = null;
     fn();
   }
+});
+
+// 광고를 보고 싶지 않은 유저를 위한 대체 채널. 실제 결제 연동(토스페이먼츠,
+// 카카오페이 등) 전까지는 준비 중 안내만 표시합니다.
+document.getElementById('ticketAdFreeBtn').addEventListener('click', () => {
+  showToast('☕ 후원 결제는 준비 중이에요! 조금만 기다려주세요 🙏');
 });
 
 function startTicketCountdown() {
