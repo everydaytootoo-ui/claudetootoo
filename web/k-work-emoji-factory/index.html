@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>회피즐~ | 회사, 피할 수 없다면 즐겨라!</title>
-<meta name="description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자! 넵!/확인/칼퇴!!/연차 같은 굵고 선명한 텍스트 이모지를 슬랙(128px)·팀즈(256px)·카톡(500px) 규격으로 바로 복사·다운로드하고, 우리팀만의 이모지도 직접 만들어보세요." />
+<meta name="description" content="피할 수 없는 출근이라면? 3초 이모지 복사로 스마트하게 월급 루팡하자! 실시간 TOP 20, 회사 찐친 이모지, 칼퇴/연차 승인요청, 유저 제작 자유 이모지까지 — 굵고 선명한 텍스트 이모지를 슬랙(128px)·팀즈(256px)·카톡(500px) 규격으로 바로 복사·다운로드하세요." />
 
 <!-- Open Graph / 카카오톡·슬랙 링크 미리보기용 -->
 <meta property="og:type" content="website" />
@@ -82,7 +82,7 @@
     position: relative;
     border: 1px solid #C9D4CC;
     background: #ffffff;
-    min-height: 168px;
+    min-height: 192px;
     padding: 6px;
     transition: background .12s ease, transform .12s ease;
   }
@@ -96,6 +96,12 @@
     user-select: none;
   }
   html.dark .cell-ref { color: #4c5f54; }
+  .rank-badge {
+    position: absolute; top: 2px; left: 4px;
+    font-size: 10px; font-weight: 800; font-family: 'IBM Plex Mono', monospace;
+    color: #ffffff; background: #107C41; border-radius: 999px;
+    min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; padding: 0 4px;
+  }
 
   /* window chrome */
   .win-titlebar { background: #E1E8E3; color: #3E4F45; }
@@ -148,6 +154,14 @@
   }
 
   #ticketBadge { font-variant-numeric: tabular-nums; }
+
+  .sort-btn {
+    padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 999px;
+    border: 1px solid #C9D4CC; background: #fff; color: #54685C; cursor: pointer; transition: all .12s ease;
+  }
+  .sort-btn.active { background: #107C41; color: #fff; border-color: #107C41; }
+  html.dark .sort-btn { background: #16231c; color: #8fa398; border-color: #2c3a33; }
+  html.dark .sort-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
 </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
@@ -249,6 +263,17 @@
     <!-- 좌측: 엑셀 그리드 / 생성기 -->
     <section class="min-w-0">
 
+      <!-- TOP20 안내 바 -->
+      <div id="topInfoBar" class="hidden mb-2 text-xs font-bold text-brand dark:text-emerald-400 bg-brand-tint dark:bg-brand-darker/40 border border-brand/30 rounded px-3 py-2 items-center gap-1.5">
+        <span>🔥</span><span>좋아요 + 다운로드/복사 수를 합산해 실시간으로 집계되는 TOP 20이에요.</span>
+      </div>
+      <!-- 자유 이모지 정렬 바 -->
+      <div id="freeSortBar" class="hidden mb-2 items-center gap-2">
+        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 mr-1">정렬</span>
+        <button data-sort="latest" class="sort-btn active">🆕 최신순</button>
+        <button data-sort="popular" class="sort-btn">🔥 인기순</button>
+      </div>
+
       <div id="gridPanel" class="bg-white dark:bg-gray-900 rounded shadow overflow-hidden border border-gray-200 dark:border-gray-800">
         <div class="overflow-auto max-h-[70vh]" id="gridScroll">
           <div id="excelGrid" class="excel-grid text-sm"></div>
@@ -256,7 +281,7 @@
         <p id="emptyState" class="hidden text-center text-gray-400 text-sm py-10">🔍 검색 결과가 없어요. 다른 키워드로 찾아보세요!</p>
       </div>
 
-      <!-- 생성기 패널 (Sheet 4: 우리팀 이모지 만들기) -->
+      <!-- 생성기 패널 (Sheet 5: 우리팀 이모지 만들기) -->
       <div id="generatorPanel" class="hidden bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-4 sm:p-5">
         <h2 class="font-brand text-lg mb-1 flex items-center gap-2"><span>🛠️</span>우리팀 이모지 만들기</h2>
         <p class="text-xs text-gray-400 mb-4">문구·폰트·색상·스타일을 고르면 실시간으로 미리보기가 생성돼요.</p>
@@ -277,7 +302,7 @@
 
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">스타일</label>
             <div id="styleTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
-              <button data-style="stamp" class="gen-style-btn">🔴 도장</button>
+              <button data-style="stamp" class="gen-style-btn">🔴 도장 쿵!</button>
               <button data-style="neon" class="gen-style-btn active">✨ 네온</button>
               <button data-style="bold" class="gen-style-btn">🅱️ 굵은고딕</button>
               <button data-style="pixel" class="gen-style-btn">👾 픽셀</button>
@@ -295,7 +320,7 @@
               </div>
             </div>
             <label class="flex items-center gap-2 mt-2 text-xs font-bold text-gray-500 dark:text-gray-400">
-              <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명
+              <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명 (PNG 스티커용)
             </label>
 
             <div class="mt-5 flex flex-wrap gap-2">
@@ -304,6 +329,9 @@
               <button data-size="500" data-name="kakao" class="gen-download-btn bg-[#3C1E1E]">카톡 500px 다운로드</button>
               <button id="genCopyBtn" class="gen-download-btn bg-gray-700">📋 클립보드 복사</button>
             </div>
+            <button id="genShareBtn" class="mt-2 w-full rounded px-3 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
+              <span>🌐</span>갤러리에 공유하기
+            </button>
           </div>
 
           <div class="flex flex-col items-center justify-start">
@@ -345,6 +373,7 @@
       <div class="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-3 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
         <p class="font-bold text-gray-700 dark:text-gray-200 mb-1">📌 사용 팁</p>
         <p>· 셀을 클릭하면 메신저별 규격으로 바로 다운로드/복사할 수 있어요.</p>
+        <p>· 카드의 <b>👍 좋아요</b>는 1인 1회, 좋아요+다운로드 합산이 실시간 TOP 20에 반영돼요.</p>
         <p>· 검색창에 초성만 입력해도 (예: ㅍㅌ) 관련 이모지를 찾을 수 있어요.</p>
         <p>· <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
         <p>· <b>Ctrl+D</b>로 즐겨찾기에 추가하면 다음부터 3초!</p>
@@ -419,6 +448,32 @@
   </div>
 </div>
 
+<!-- ============ 갤러리 공유 모달 ============ -->
+<div id="shareModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop bg-black/50 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-teal-600 text-white px-4 py-3 flex items-center justify-between">
+      <p class="font-bold text-sm">🌐 갤러리에 공유하기</p>
+      <button id="shareModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5">
+      <p class="text-sm text-gray-700 dark:text-gray-200 mb-3">어느 시트에 등록할까요?</p>
+      <div id="shareCatOptions" class="space-y-2">
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="free" checked /> 🤪 자유 이모지 (유저 제작)
+        </label>
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="friend" /> 💬 회사 찐친 이모지
+        </label>
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="offwork" /> 🏃 칼퇴/연차 승인요청
+        </label>
+      </div>
+      <button id="shareConfirmBtn" class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded text-sm">공유하기</button>
+      <p class="text-[11px] text-gray-400 mt-3">성적 표현·음란성 어휘가 포함된 문구는 자동으로 차단돼요. 직장인 유머·평범한 욕설은 괜찮아요.</p>
+    </div>
+  </div>
+</div>
+
 <!-- 토스트 -->
 <div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
 
@@ -434,6 +489,8 @@
 <script>
 /* =========================================================
    1. 데이터 — 굵고 선명한 텍스트 이모지 프리셋
+   seedLikes / seedDownloads 는 서버 없는 프로토타입에서 "이미 쌓인 인기"를
+   흉내 내는 기준값이며, 실서비스에서는 백엔드 집계값으로 교체하면 됩니다.
    ========================================================= */
 const FONTS = {
   gothic:  '"Noto Sans KR", sans-serif',
@@ -442,43 +499,105 @@ const FONTS = {
   jua:     '"Jua", sans-serif',
 };
 
-const EMOJI_DATA = [
-  // Sheet 1: 회사 찐친이랑 쓰는 이모지 (friend)
-  { text:'네??', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['네??','뭐라고요','당황','놀람'] },
-  { text:'제가요?', cat:'friend', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['제가요','왜저요','당황','억울'] },
-  { text:'실화냐?!', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#ea580c', kw:['실화냐','대박','헐','놀람'], hot:true },
-  { text:'억울', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['억울','서러움','눈물','멘탈'], hot:true },
-  { text:'빡침', cat:'friend', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['빡침','화남','열받음','분노'] },
-  { text:'저기요', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['저기요','눈치','잠깐만','궁금'] },
+const BUILTIN_EMOJI_DATA = [
+  // Sheet 2: 회사 찐친 이모지 (friend)
+  { id:'f1', text:'네??', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['네??','뭐라고요','당황','놀람'], seedLikes:62, seedDownloads:40 },
+  { id:'f2', text:'제가요?', cat:'friend', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['제가요','왜저요','당황','억울'], seedLikes:48, seedDownloads:30 },
+  { id:'f3', text:'실화냐?!', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#ea580c', kw:['실화냐','대박','헐','놀람'], seedLikes:210, seedDownloads:150 },
+  { id:'f4', text:'억울', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['억울','서러움','눈물','멘탈'], seedLikes:180, seedDownloads:120 },
+  { id:'f5', text:'빡침', cat:'friend', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['빡침','화남','열받음','분노'], seedLikes:55, seedDownloads:38 },
+  { id:'f6', text:'저기요', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['저기요','눈치','잠깐만','궁금'], seedLikes:40, seedDownloads:25 },
+  { id:'f7', text:'회의중', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['회의중','미팅','바쁨','자리비움'], seedLikes:70, seedDownloads:45 },
+  { id:'f8', text:'점심시간', cat:'friend', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['점심시간','점심','밥','식사'], seedLikes:65, seedDownloads:50 },
 
-  // Sheet 2: 직장에서 인싸되기 (insa)
-  { text:'넵!', cat:'insa', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['넵','네','확인','오케이','ok'], hot:true },
-  { text:'확인', cat:'insa', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['확인','체크','완료','넵'] },
-  { text:'감사!', cat:'insa', style:'neon', font:'black', textColor:'#fbbf24', bgColor:'#0b1021', kw:['감사','고마워','수고','땡큐'] },
-  { text:'인정', cat:'insa', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['인정','리스펙','최고','대박'], hot:true },
-  { text:'회의중', cat:'insa', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['회의중','미팅','바쁨','자리비움'] },
-  { text:'점심시간', cat:'insa', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['점심시간','점심','밥','식사'] },
+  // Sheet 3: 칼퇴/연차 승인요청 — 영혼 없는 넵/확인/승인요청 모음 (offwork)
+  { id:'o1', text:'넵!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['넵','네','확인','오케이','ok'], seedLikes:320, seedDownloads:260 },
+  { id:'o2', text:'확인', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['확인','체크','완료','넵'], seedLikes:150, seedDownloads:110 },
+  { id:'o3', text:'감사!', cat:'offwork', style:'neon', font:'black', textColor:'#fbbf24', bgColor:'#0b1021', kw:['감사','고마워','수고','땡큐'], seedLikes:90, seedDownloads:60 },
+  { id:'o4', text:'인정', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['인정','리스펙','최고','대박'], seedLikes:140, seedDownloads:95 },
+  { id:'o5', text:'퇴근!!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['퇴근','칼퇴','고생하셨습니다'], seedLikes:260, seedDownloads:190 },
+  { id:'o6', text:'연차', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차','휴가','연차씁니다'], seedLikes:300, seedDownloads:230 },
+  { id:'o7', text:'승인요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['승인','결재','컨펌','연차신청'], seedLikes:275, seedDownloads:205 },
+  { id:'o8', text:'칼퇴', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['칼퇴','퇴근','칼퇴근'], seedLikes:250, seedDownloads:200 },
+  { id:'o9', text:'반차', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['반차','오전반차','오후반차'], seedLikes:85, seedDownloads:55 },
+  { id:'o10', text:'휴가중', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['휴가중','바캉스','연차중'], seedLikes:95, seedDownloads:70 },
 
-  // Sheet 3: 칼퇴/연차 승인요청 (offwork)
-  { text:'퇴근!!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['퇴근','칼퇴','고생하셨습니다'], hot:true },
-  { text:'연차', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차','휴가','연차씁니다'], hot:true },
-  { text:'승인요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['승인','결재','컨펌','연차신청'], hot:true },
-  { text:'칼퇴', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['칼퇴','퇴근','칼퇴근'] },
-  { text:'반차', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['반차','오전반차','오후반차'] },
-  { text:'휴가중', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['휴가중','바캉스','연차중'] },
+  // Sheet 4: 자유 이모지 — 유저 제작 예시 시드 (free)
+  { id:'c1', text:'월급루팡', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0B5C30', kw:['월급루팡','월루','땡땡이'], seedLikes:130, seedDownloads:90, createdAt: Date.now() - 1000*60*60*24*2 },
+  { id:'c2', text:'출근하기싫다', cat:'free', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['출근하기싫다','월요병','출근'], seedLikes:95, seedDownloads:70, createdAt: Date.now() - 1000*60*60*24 },
+  { id:'c3', text:'n연차박제', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차박제','연차','기록'], seedLikes:60, seedDownloads:40, createdAt: Date.now() - 1000*60*60*5 },
 ];
 
 const CATEGORIES = [
-  { id:'friend',    label:'회사 찐친이랑 쓰는 이모지', icon:'💬' },
-  { id:'insa',      label:'직장에서 인싸되기',        icon:'😎' },
-  { id:'offwork',   label:'칼퇴/연차 승인요청',        icon:'🏃' },
-  { id:'generator', label:'우리팀 이모지 만들기',      icon:'🛠️' },
+  { id:'top',       label:'실시간 TOP 20',        icon:'🔥' },
+  { id:'friend',    label:'회사 찐친 이모지',       icon:'💬' },
+  { id:'offwork',   label:'칼퇴/연차 승인요청',      icon:'🏃' },
+  { id:'free',      label:'자유 이모지 (유저 제작)', icon:'🤪' },
+  { id:'generator', label:'우리팀 이모지 만들기',    icon:'🛠️' },
 ];
 
+const HOT_THRESHOLD = 150; // likes+downloads 합산이 이 값 이상이면 🔥 뱃지
+
 /* =========================================================
-   2. 상태 & 초성 검색 유틸
+   2. LocalStorage 유틸 — 좋아요 / 다운로드 카운트 / 유저 이모지 / 티켓
    ========================================================= */
-const state = { cat: 'friend', query: '', cols: 5 };
+function readJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+function writeJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
+const LIKED_KEY = 'hpz-liked-ids';
+const LIKE_COUNT_KEY = 'hpz-like-counts';
+const DOWNLOAD_COUNT_KEY = 'hpz-download-counts';
+const USER_EMOJIS_KEY = 'hpz-user-emojis';
+
+function getLikedSet() { return readJSON(LIKED_KEY, {}); }
+function getLocalLikeCounts() { return readJSON(LIKE_COUNT_KEY, {}); }
+function getLocalDownloadCounts() { return readJSON(DOWNLOAD_COUNT_KEY, {}); }
+function getUserEmojis() { return readJSON(USER_EMOJIS_KEY, []); }
+function saveUserEmojis(list) { writeJSON(USER_EMOJIS_KEY, list); }
+
+function allItems() { return [...BUILTIN_EMOJI_DATA, ...getUserEmojis()]; }
+
+function getLikes(id) {
+  const item = allItems().find(e => e.id === id);
+  const seed = item ? (item.seedLikes || 0) : 0;
+  return seed + (getLocalLikeCounts()[id] || 0);
+}
+function getDownloads(id) {
+  const item = allItems().find(e => e.id === id);
+  const seed = item ? (item.seedDownloads || 0) : 0;
+  return seed + (getLocalDownloadCounts()[id] || 0);
+}
+function itemScore(item) { return getLikes(item.id) + getDownloads(item.id); }
+
+function hasLiked(id) { return !!getLikedSet()[id]; }
+function toggleLike(id) {
+  if (hasLiked(id)) { showToast('이미 좋아요를 눌렀어요!'); return; }
+  const liked = getLikedSet();
+  liked[id] = true;
+  writeJSON(LIKED_KEY, liked);
+  const counts = getLocalLikeCounts();
+  counts[id] = (counts[id] || 0) + 1;
+  writeJSON(LIKE_COUNT_KEY, counts);
+  showToast('👍 좋아요! 감사합니다');
+  if (state.cat !== 'generator') renderGrid();
+}
+function bumpDownloads(id) {
+  const counts = getLocalDownloadCounts();
+  counts[id] = (counts[id] || 0) + 1;
+  writeJSON(DOWNLOAD_COUNT_KEY, counts);
+}
+
+/* =========================================================
+   3. 상태 & 초성 검색 유틸
+   ========================================================= */
+const state = { cat: 'top', query: '', cols: 5, freeSort: 'latest' };
 
 const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 function toChosung(str) {
@@ -496,14 +615,15 @@ function isChosungQuery(str) {
 function matchesSearch(item, query) {
   if (!query) return true;
   const q = query.trim().toLowerCase();
+  const kw = item.kw || [];
   if (isChosungQuery(q)) {
-    return toChosung(item.text).includes(q) || item.kw.some(k => toChosung(k).includes(q));
+    return toChosung(item.text).includes(q) || kw.some(k => toChosung(k).includes(q));
   }
-  return item.text.toLowerCase().includes(q) || item.kw.some(k => k.toLowerCase().includes(q));
+  return item.text.toLowerCase().includes(q) || kw.some(k => k.toLowerCase().includes(q));
 }
 
 /* =========================================================
-   3. 그리드 렌더링 (엑셀 셀 격자 + 열/행 헤더)
+   4. 그리드 렌더링 (엑셀 셀 격자 + 열/행 헤더)
    ========================================================= */
 function getColCount() {
   const w = window.innerWidth;
@@ -520,12 +640,19 @@ function colLetter(i) {
 }
 
 function filteredEmojis() {
+  const items = allItems();
   if (state.query) {
-    return EMOJI_DATA.filter(e => matchesSearch(e, state.query))
-      .sort((a, b) => (b.hot ? 1 : 0) - (a.hot ? 1 : 0));
+    return items.filter(e => matchesSearch(e, state.query)).sort((a, b) => itemScore(b) - itemScore(a));
   }
-  return EMOJI_DATA.filter(e => e.cat === state.cat)
-    .sort((a, b) => (b.hot ? 1 : 0) - (a.hot ? 1 : 0));
+  if (state.cat === 'top') {
+    return [...items].sort((a, b) => itemScore(b) - itemScore(a)).slice(0, 20);
+  }
+  if (state.cat === 'free') {
+    const freeItems = items.filter(e => e.cat === 'free');
+    if (state.freeSort === 'popular') return freeItems.sort((a, b) => itemScore(b) - itemScore(a));
+    return freeItems.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  }
+  return items.filter(e => e.cat === state.cat).sort((a, b) => itemScore(b) - itemScore(a));
 }
 
 function renderGrid() {
@@ -535,12 +662,18 @@ function renderGrid() {
   grid.style.setProperty('--cols', state.cols);
   grid.innerHTML = '';
 
+  document.getElementById('topInfoBar').classList.toggle('hidden', !(state.cat === 'top' && !state.query));
+  document.getElementById('topInfoBar').classList.toggle('flex', state.cat === 'top' && !state.query);
+  document.getElementById('freeSortBar').classList.toggle('hidden', !(state.cat === 'free' && !state.query));
+  document.getElementById('freeSortBar').classList.toggle('flex', state.cat === 'free' && !state.query);
+
   // corner + column headers
   grid.appendChild(el('div', 'excel-corner'));
   for (let c = 0; c < state.cols; c++) {
     const h = el('div', 'excel-headcell'); h.textContent = colLetter(c); grid.appendChild(h);
   }
 
+  const showRank = state.cat === 'top' && !state.query;
   const rows = Math.max(1, Math.ceil(items.length / state.cols));
   for (let r = 0; r < rows; r++) {
     const rn = el('div', 'excel-rownum'); rn.textContent = String(r + 1); grid.appendChild(rn);
@@ -551,7 +684,7 @@ function renderGrid() {
       const ref = el('span', 'cell-ref'); ref.textContent = colLetter(c) + (r + 1);
       cell.appendChild(ref);
       if (item) {
-        cell.appendChild(buildEmojiCard(item));
+        cell.appendChild(buildEmojiCard(item, showRank ? idx + 1 : null));
       }
       grid.appendChild(cell);
     }
@@ -560,20 +693,29 @@ function renderGrid() {
   document.getElementById('gridPanel').classList.toggle('hidden', items.length === 0 && state.cat !== 'generator');
 }
 
-function buildEmojiCard(item) {
+function buildEmojiCard(item, rank) {
   const wrap = el('div', 'h-full w-full flex flex-col items-center justify-center gap-1 pt-1 cursor-pointer group relative');
 
   const canvas = document.createElement('canvas');
-  canvas.width = 220; canvas.height = 220;
-  canvas.className = 'w-24 h-24 sm:w-28 sm:h-28 rounded-lg shadow-sm group-hover:scale-105 group-hover:-translate-y-0.5 transition-transform duration-150';
-  drawTextEmoji(canvas.getContext('2d'), 220, item);
+  canvas.width = 200; canvas.height = 200;
+  canvas.className = 'w-20 h-20 sm:w-24 sm:h-24 rounded-lg shadow-sm group-hover:scale-105 group-hover:-translate-y-0.5 transition-transform duration-150';
+  drawTextEmoji(canvas.getContext('2d'), 200, item);
   wrap.appendChild(canvas);
 
-  if (item.hot) {
-    const hot = el('span', 'absolute top-0 right-2 text-sm');
-    hot.textContent = '🔥';
+  if (rank) {
+    const rb = el('span', 'rank-badge'); rb.textContent = `#${rank}`;
+    wrap.appendChild(rb);
+  } else if (itemScore(item) >= HOT_THRESHOLD) {
+    const hot = el('span', 'absolute top-0 right-2 text-sm'); hot.textContent = '🔥';
     wrap.appendChild(hot);
   }
+
+  const likeBtn = el('button', 'tnum text-[11px] font-bold px-2 py-0.5 rounded-full mt-1 transition ' +
+    (hasLiked(item.id) ? 'bg-brand text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-brand-tint dark:hover:bg-brand-darker/40'));
+  likeBtn.textContent = `👍 ${getLikes(item.id)}`;
+  likeBtn.title = hasLiked(item.id) ? '이미 좋아요를 눌렀어요' : '좋아요';
+  likeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLike(item.id); });
+  wrap.appendChild(likeBtn);
 
   const badges = el('div', 'flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5');
   badges.innerHTML = `
@@ -589,7 +731,7 @@ function buildEmojiCard(item) {
 function el(tag, cls) { const d = document.createElement(tag); if (cls) d.className = cls; return d; }
 
 /* =========================================================
-   4. 시트 탭 (카테고리 네비게이션)
+   5. 시트 탭 (카테고리 네비게이션) + 자유 이모지 정렬
    ========================================================= */
 function renderSheetTabs() {
   const wrap = document.getElementById('sheetTabs');
@@ -606,17 +748,30 @@ function renderSheetTabs() {
   wrap.appendChild(plus);
 }
 
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.freeSort = btn.dataset.sort;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderGrid();
+  });
+});
+
 function onCategoryChange() {
   renderSheetTabs();
   const isGen = state.cat === 'generator';
   document.getElementById('gridPanel').classList.toggle('hidden', isGen);
   document.getElementById('generatorPanel').classList.toggle('hidden', !isGen);
-  if (!isGen) renderGrid();
-  else drawGenPreview();
+  if (isGen) {
+    document.getElementById('topInfoBar').classList.add('hidden');
+    document.getElementById('freeSortBar').classList.add('hidden');
+    drawGenPreview();
+  } else {
+    renderGrid();
+  }
 }
 
 /* =========================================================
-   5. 텍스트 이모지 렌더링 엔진 (Canvas)
+   6. 텍스트 이모지 렌더링 엔진 (Canvas)
    갤러리 카드 · 모달 미리보기 · 생성기 · 다운로드가 모두 이 함수를 공유합니다.
    ========================================================= */
 // 여러 줄(\n) 텍스트를 받아, 정사각형 상자(maxWidth x maxHeight) 안에 꽉 차면서도
@@ -768,7 +923,7 @@ function renderItemCanvas(item, size) {
 }
 
 /* =========================================================
-   6. 다운로드 / 클립보드 복사 유틸
+   7. 다운로드 / 클립보드 복사 유틸
    ========================================================= */
 function canvasToBlob(canvas) {
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
@@ -825,7 +980,7 @@ function showToast(msg) {
 }
 
 /* =========================================================
-   7. 30분 칼퇴 티켓 (보상형 다운로드 게이트)
+   8. 30분 칼퇴 티켓 (보상형 다운로드 게이트)
    ========================================================= */
 const TICKET_KEY = 'hpz-ticket-expire';
 let pendingGatedAction = null;
@@ -891,7 +1046,7 @@ function updateTicketBadge() {
 if (hasActiveTicket()) startTicketCountdown();
 
 /* =========================================================
-   8. 이모지 모달
+   9. 이모지 모달
    ========================================================= */
 let currentModalItem = null;
 function openEmojiModal(item) {
@@ -916,16 +1071,20 @@ document.querySelectorAll('.modal-dl-btn').forEach(btn => {
     gatedAction(() => {
       const canvas = renderItemCanvas(currentModalItem, size);
       downloadCanvas(canvas, `${currentModalItem.text}_${btn.dataset.label}_${size}px.png`);
+      bumpDownloads(currentModalItem.id);
     });
   });
 });
 document.getElementById('modalCopyBtn').addEventListener('click', () => {
   if (!currentModalItem) return;
-  gatedAction(() => copyCanvasToClipboard(renderItemCanvas(currentModalItem, 256)));
+  gatedAction(() => {
+    copyCanvasToClipboard(renderItemCanvas(currentModalItem, 256));
+    bumpDownloads(currentModalItem.id);
+  });
 });
 
 /* =========================================================
-   9. 퀵 북마크 모달 (Ctrl+D / Cmd+D)
+   10. 퀵 북마크 모달 (Ctrl+D / Cmd+D)
    ========================================================= */
 function openBookmarkModal() {
   const url = window.location.href;
@@ -951,7 +1110,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* =========================================================
-   10. 텍스트 이모지 생성기 (Sheet 4)
+   11. 텍스트 이모지 생성기 (Sheet 5)
    ========================================================= */
 const STYLE_DEFAULTS = {
   stamp:  { font:'dohyeon', textColor:'#C0392B', bgColor:'#107C41', transparentBg:true },
@@ -1017,7 +1176,7 @@ document.querySelectorAll('.gen-download-btn').forEach(btn => {
     gatedAction(() => {
       const item = currentGenItem();
       const canvas = renderItemCanvas(item, size);
-      downloadCanvas(canvas, `${item.text}_${btn.dataset.name}_${size}px.png`);
+      downloadCanvas(canvas, `${item.text.replace(/\n/g,' ')}_${btn.dataset.name}_${size}px.png`);
     });
   });
 });
@@ -1026,13 +1185,77 @@ document.getElementById('genCopyBtn').addEventListener('click', () => {
 });
 
 /* =========================================================
-   11. 검색
+   12. 유해어 필터링 & 갤러리 공유
+   ========================================================= */
+// 성적/음란성 어휘만 차단합니다 (직장인 유머·평범한 욕설은 허용).
+// 실서비스에서는 별도 모더레이션 API/서버 검증과 병행하는 것을 권장합니다.
+const BANNED_WORDS = [
+  '섹스', '자위', '보지', '자지', '젖꼭지', '성기', '음란', '몸캠',
+  '야동', '야설', '떡치', '박아줘', '오르가즘', '삽입', '성인용품',
+  '폰섹', '변태행위', '불륜만남', '성매매', '유흥알바',
+];
+function containsBannedWord(text) {
+  const norm = text.replace(/\s+/g, '').toLowerCase();
+  return BANNED_WORDS.some(w => norm.includes(w));
+}
+
+function openShareModal() {
+  document.getElementById('shareModal').classList.remove('hidden');
+  document.getElementById('shareModal').classList.add('flex');
+}
+function closeShareModal() {
+  document.getElementById('shareModal').classList.add('hidden');
+  document.getElementById('shareModal').classList.remove('flex');
+}
+document.getElementById('shareModalClose').addEventListener('click', closeShareModal);
+document.getElementById('shareModal').addEventListener('click', e => { if (e.target.id === 'shareModal') closeShareModal(); });
+
+document.getElementById('genShareBtn').addEventListener('click', () => {
+  const text = document.getElementById('genText').value.trim();
+  if (!text) { showToast('문구를 먼저 입력해주세요!'); return; }
+  if (containsBannedWord(text)) {
+    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+    return;
+  }
+  openShareModal();
+});
+
+document.getElementById('shareConfirmBtn').addEventListener('click', () => {
+  const text = document.getElementById('genText').value.trim();
+  if (!text) { closeShareModal(); return; }
+  if (containsBannedWord(text)) {
+    closeShareModal();
+    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+    return;
+  }
+  const cat = document.querySelector('input[name="shareCat"]:checked').value;
+  const draft = currentGenItem();
+  const newItem = {
+    id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    text: draft.text, cat,
+    style: draft.style, font: draft.font, textColor: draft.textColor,
+    bgColor: draft.bgColor, transparentBg: draft.transparentBg,
+    kw: [draft.text], source: 'user', createdAt: Date.now(),
+    seedLikes: 0, seedDownloads: 0,
+  };
+  const list = getUserEmojis();
+  list.unshift(newItem);
+  saveUserEmojis(list);
+  closeShareModal();
+  showToast('🎉 갤러리에 공유됐어요!');
+  state.cat = cat; state.query = '';
+  document.getElementById('searchInput').value = '';
+  onCategoryChange();
+});
+
+/* =========================================================
+   13. 검색
    ========================================================= */
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', () => {
   state.query = searchInput.value;
   document.getElementById('searchClear').classList.toggle('hidden', !state.query);
-  if (state.cat === 'generator') { state.cat = 'friend'; onCategoryChange(); }
+  if (state.cat === 'generator') { state.cat = 'top'; onCategoryChange(); }
   else renderGrid();
 });
 document.getElementById('searchClear').addEventListener('click', () => {
@@ -1041,7 +1264,7 @@ document.getElementById('searchClear').addEventListener('click', () => {
 });
 
 /* =========================================================
-   12. 다크모드
+   14. 다크모드
    ========================================================= */
 function applyTheme(dark) {
   document.documentElement.classList.toggle('dark', dark);
@@ -1058,7 +1281,7 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 })();
 
 /* =========================================================
-   13. 보스키
+   15. 보스키
    ========================================================= */
 function buildBossTable() {
   const table = document.getElementById('bossTable');
@@ -1098,7 +1321,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* =========================================================
-   14. 바이럴: 칼퇴 확률 테스트 & 카카오 공유
+   16. 바이럴: 칼퇴 확률 테스트 & 카카오 공유
    ========================================================= */
 document.getElementById('kalToeBtn').addEventListener('click', () => {
   const pct = Math.floor(Math.random()*101);
@@ -1130,7 +1353,7 @@ document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
 });
 
 /* =========================================================
-   15. 초기화
+   17. 초기화
    ========================================================= */
 renderSheetTabs();
 renderGrid();
