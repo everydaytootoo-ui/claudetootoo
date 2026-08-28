@@ -154,9 +154,14 @@
 
 <!-- ============ 보스키 위장 화면 ============ -->
 <div id="bossOverlay" class="fixed inset-0 z-[999] hidden bg-[#f3f2f1]">
-  <div class="h-9 bg-[#217346] flex items-center px-3 text-white text-xs gap-3 select-none font-mono">
+  <div class="h-9 bg-[#217346] flex items-center pl-3 text-white text-xs gap-3 select-none font-mono">
     <span class="font-semibold">📊 2026년_4분기_실적취합_최종_진짜최종.xlsx - Excel</span>
-    <span class="ml-auto opacity-70">자동 저장 켬</span>
+    <span class="ml-auto opacity-70 hidden sm:inline">자동 저장 켬</span>
+    <div class="flex items-center h-full">
+      <span class="w-10 h-9 flex items-center justify-center hover:bg-white/15 cursor-not-allowed opacity-70" title="최소화">─</span>
+      <span class="w-10 h-9 flex items-center justify-center hover:bg-white/15 cursor-not-allowed opacity-70" title="최대화">□</span>
+      <button id="bossCloseBtn" class="w-11 h-9 flex items-center justify-center hover:bg-red-600 transition text-sm" title="닫기 · 원래 화면으로 돌아가기">✕</button>
+    </div>
   </div>
   <div class="h-8 bg-[#f3f2f1] border-b border-gray-300 flex items-center px-3 text-xs text-gray-700 gap-4 select-none">
     <span class="font-bold text-[#217346]">파일</span><span>홈</span><span>삽입</span><span>페이지 레이아웃</span><span>수식</span><span>데이터</span><span>검토</span><span>보기</span><span>도움말</span>
@@ -258,9 +263,9 @@
 
         <div class="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-5">
           <div>
-            <label class="text-xs font-bold text-gray-500 dark:text-gray-400">문구 (최대 10자)</label>
-            <input id="genText" maxlength="10" value="칼퇴!!"
-              class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-lg font-bold outline-none focus:ring-2 focus:ring-brand" />
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400">문구 (최대 40자 · Enter로 줄바꿈)</label>
+            <textarea id="genText" maxlength="40" rows="2"
+              class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-lg font-bold outline-none focus:ring-2 focus:ring-brand resize-none leading-snug">칼퇴!!</textarea>
 
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
             <div id="fontTabs" class="grid grid-cols-4 gap-2 mt-1">
@@ -343,7 +348,7 @@
         <p>· 검색창에 초성만 입력해도 (예: ㅍㅌ) 관련 이모지를 찾을 수 있어요.</p>
         <p>· <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
         <p>· <b>Ctrl+D</b>로 즐겨찾기에 추가하면 다음부터 3초!</p>
-        <p>· 보스가 다가오면 <b>ESC</b>! 위장 화면의 Sheet1 탭을 누르면 복귀돼요.</p>
+        <p>· 보스가 다가오면 <b>ESC</b>! 위장 화면 우측 상단 <b>✕</b> 버튼(또는 ESC)을 누르면 바로 복귀돼요.</p>
       </div>
     </aside>
   </main>
@@ -614,14 +619,30 @@ function onCategoryChange() {
    5. 텍스트 이모지 렌더링 엔진 (Canvas)
    갤러리 카드 · 모달 미리보기 · 생성기 · 다운로드가 모두 이 함수를 공유합니다.
    ========================================================= */
-function fitFontSize(ctx, text, maxWidth, startPx, fontFamily) {
+// 여러 줄(\n) 텍스트를 받아, 정사각형 상자(maxWidth x maxHeight) 안에 꽉 차면서도
+// 튀어나가지 않는 가장 큰 폰트 크기를 계산합니다. 1줄일 때도 동일한 로직을 씁니다.
+function fitMultilineText(ctx, rawText, maxWidth, maxHeight, startPx, fontFamily, lineHeightRatio) {
+  let lines = String(rawText).split('\n');
+  while (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+  while (lines.length > 1 && lines[0] === '') lines.shift();
+  if (lines.length === 0) lines = [''];
+
   let px = startPx;
-  ctx.font = `900 ${px}px ${fontFamily}`;
-  while (ctx.measureText(text).width > maxWidth && px > 8) {
-    px -= 2;
+  while (px > 8) {
     ctx.font = `900 ${px}px ${fontFamily}`;
+    const widest = Math.max(...lines.map(l => ctx.measureText(l || ' ').width));
+    const blockHeight = lines.length * px * lineHeightRatio;
+    if (widest <= maxWidth && blockHeight <= maxHeight) break;
+    px -= 2;
   }
-  return px;
+  ctx.font = `900 ${px}px ${fontFamily}`;
+  return { lines, px, lineHeight: px * lineHeightRatio };
+}
+
+// centerY를 기준으로 각 줄의 세로 중앙 y좌표 배열을 반환합니다 (textBaseline='middle' 전제).
+function lineCenters(centerY, count, lineHeight) {
+  const startY = centerY - (count - 1) * lineHeight / 2;
+  return Array.from({ length: count }, (_, i) => startY + i * lineHeight);
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -662,11 +683,10 @@ function drawTextEmoji(ctx, size, opts) {
     ctx.setLineDash([size*0.015, size*0.015]);
     ctx.beginPath(); ctx.arc(cx, cy, size*0.37, 0, Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
-    const px = fitFontSize(ctx, text, size * 0.56, size * 0.22, fam);
-    ctx.font = `900 ${px}px ${fam}`;
-    ctx.fillStyle = textColor || '#C0392B';
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.56, size*0.34, size*0.22, fam, 1.08);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text, cx, cy - size*0.02);
+    ctx.fillStyle = textColor || '#C0392B';
+    lineCenters(cy - size*0.02, lines.length, lineHeight).forEach((y, i) => ctx.fillText(lines[i], cx, y));
     ctx.font = `700 ${Math.floor(size*0.06)}px ${FONTS.gothic}`;
     ctx.fillText('★ 회피즐 ★', cx, cy + size*0.27);
     ctx.globalAlpha = 1;
@@ -674,28 +694,29 @@ function drawTextEmoji(ctx, size, opts) {
   }
 
   else if (style === 'neon') {
-    const px = fitFontSize(ctx, text, size * 0.78, size * 0.32, fam);
-    ctx.font = `900 ${px}px ${fam}`;
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.78, size*0.62, size*0.32, fam, 1.15);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const glow = textColor || '#22d3ee';
+    const ys = lineCenters(cy, lines.length, lineHeight);
     for (const blur of [size*0.09, size*0.05, size*0.02]) {
       ctx.shadowColor = glow; ctx.shadowBlur = blur;
-      ctx.fillStyle = glow; ctx.fillText(text, cx, cy);
+      ctx.fillStyle = glow;
+      ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
     }
     ctx.shadowBlur = 0; ctx.fillStyle = '#ffffff';
-    ctx.fillText(text, cx, cy);
+    ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
   }
 
   else if (style === 'bold') {
-    const px = fitFontSize(ctx, text, size * 0.8, size * 0.36, fam);
-    ctx.font = `900 ${px}px ${fam}`;
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.8, size*0.68, size*0.36, fam, 1.15);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
     ctx.lineWidth = size * 0.02;
     ctx.strokeStyle = 'rgba(0,0,0,0.28)';
-    ctx.strokeText(text, cx, cy);
+    const ys = lineCenters(cy, lines.length, lineHeight);
+    ys.forEach((y, i) => ctx.strokeText(lines[i], cx, y));
     ctx.fillStyle = textColor || '#ffffff';
-    ctx.fillText(text, cx, cy);
+    ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
   }
 
   else if (style === 'motion') {
@@ -705,14 +726,14 @@ function drawTextEmoji(ctx, size, opts) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
     }
     ctx.globalAlpha = 1;
-    const px = fitFontSize(ctx, text, size * 0.8, size * 0.32, fam);
-    ctx.font = `900 ${px}px ${fam}`;
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.8, size*0.62, size*0.32, fam, 1.15);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.save();
     ctx.transform(1, 0, -0.18, 1, size*0.08, 0);
+    const ys = lineCenters(cy, lines.length, lineHeight);
     [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, textColor || '#22d3ee'], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
       ctx.globalAlpha = a; ctx.fillStyle = c;
-      ctx.fillText(text, cx - dx, cy);
+      ys.forEach((y, i) => ctx.fillText(lines[i], cx - dx, y));
     });
     ctx.restore();
     ctx.globalAlpha = 1;
@@ -727,14 +748,13 @@ function drawTextEmoji(ctx, size, opts) {
     if (!transparentBg) { octx.fillStyle = bgColor || '#0b1021'; octx.fillRect(0,0,off.width,off.height); }
     const hasPixelFont = document.fonts.check('10px "Press Start 2P"');
     const pfam = hasPixelFont ? '"Press Start 2P"' : 'monospace';
-    let px = Math.floor(off.width * 0.16);
-    octx.font = `${px}px ${pfam}`;
-    while (octx.measureText(text).width > off.width*0.85 && px > 4) { px--; octx.font = `${px}px ${pfam}`; }
+    const { lines, lineHeight } = fitMultilineText(octx, text, off.width*0.85, off.height*0.72, off.width*0.16, pfam, 1.35);
     octx.textAlign='center'; octx.textBaseline='middle';
+    const oys = lineCenters(off.height/2, lines.length, lineHeight);
     octx.fillStyle = 'rgba(0,0,0,0.35)';
-    octx.fillText(text, off.width/2+1, off.height/2+1);
+    oys.forEach((y, i) => octx.fillText(lines[i], off.width/2+1, y+1));
     octx.fillStyle = textColor || '#ffffff';
-    octx.fillText(text, off.width/2, off.height/2);
+    oys.forEach((y, i) => octx.fillText(lines[i], off.width/2, y));
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, 0, 0, size, size);
   }
@@ -1069,6 +1089,7 @@ function showBoss() { document.getElementById('bossOverlay').classList.remove('h
 function hideBoss() { document.getElementById('bossOverlay').classList.add('hidden'); }
 document.getElementById('bossKeyBtn').addEventListener('click', showBoss);
 document.getElementById('bossExitTab').addEventListener('click', hideBoss);
+document.getElementById('bossCloseBtn').addEventListener('click', hideBoss);
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const overlay = document.getElementById('bossOverlay');
