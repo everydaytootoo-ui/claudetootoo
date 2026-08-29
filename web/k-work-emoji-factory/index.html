@@ -408,15 +408,12 @@
               <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명 (PNG 스티커용)
             </label>
 
-            <div class="mt-5 flex flex-wrap gap-2">
-              <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
-              <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
-              <button data-size="500" data-name="kakao" class="gen-download-btn kakao-btn bg-kakao">카톡 500px 다운로드</button>
+            <div class="mt-5 grid grid-cols-2 gap-2">
+              <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px</button>
+              <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px</button>
+              <button data-size="500" data-name="kakao" class="gen-download-btn kakao-btn bg-kakao">카톡 500px</button>
               <button id="genCopyBtn" class="gen-download-btn bg-gray-700">📋 클립보드 복사</button>
             </div>
-            <button id="genShareBtn" class="mt-2 w-full rounded px-3 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
-              <span>🌐</span>갤러리에 공유하기
-            </button>
           </div>
 
           <div class="flex flex-col items-center justify-start">
@@ -470,15 +467,12 @@
               </div>
               <button id="imgChangeBtn" class="mt-2 w-full rounded px-3 py-2 text-xs font-bold border-2 border-dashed border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-brand hover:text-brand dark:hover:border-emerald-500 dark:hover:text-emerald-400 transition">🔄 다른 이미지로 변경</button>
 
-              <div class="mt-5 flex flex-wrap gap-2">
-                <button data-size="128" data-name="slack-discord" class="img-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
-                <button data-size="256" data-name="teams" class="img-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
-                <button data-size="500" data-name="kakao" class="img-download-btn kakao-btn bg-kakao">카톡 500px 다운로드</button>
+              <div class="mt-5 grid grid-cols-2 gap-2">
+                <button data-size="128" data-name="slack-discord" class="img-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px</button>
+                <button data-size="256" data-name="teams" class="img-download-btn bg-[#464EB8]">Teams 256px</button>
+                <button data-size="500" data-name="kakao" class="img-download-btn kakao-btn bg-kakao">카톡 500px</button>
                 <button id="imgCopyBtn" class="img-download-btn bg-gray-700">📋 클립보드 복사</button>
               </div>
-              <button id="imgShareBtn" class="mt-2 w-full rounded px-3 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
-                <span>🌐</span>갤러리에 공유하기
-              </button>
             </div>
 
             <div class="flex flex-col items-center justify-start w-full">
@@ -638,32 +632,6 @@
   </div>
 </div>
 
-<!-- ============ 갤러리 공유 모달 ============ -->
-<div id="shareModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop bg-black/50 p-4">
-  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
-    <div class="bg-teal-600 text-white px-4 py-3 flex items-center justify-between">
-      <p class="font-bold text-sm">🌐 갤러리에 공유하기</p>
-      <button id="shareModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
-    </div>
-    <div class="p-5">
-      <p class="text-sm text-gray-700 dark:text-gray-200 mb-3">어느 시트에 등록할까요?</p>
-      <div id="shareCatOptions" class="space-y-2">
-        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
-          <input type="radio" name="shareCat" value="free" checked /> 🤪 자유 이모지 (유저 제작)
-        </label>
-        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
-          <input type="radio" name="shareCat" value="friend" /> 💬 회사 찐친 이모지
-        </label>
-        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
-          <input type="radio" name="shareCat" value="offwork" /> 🏃 칼퇴/연차 승인요청
-        </label>
-      </div>
-      <button id="shareConfirmBtn" class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded text-sm">공유하기</button>
-      <p class="text-[11px] text-gray-400 mt-3">성적 표현·음란성 어휘가 포함된 문구는 자동으로 차단돼요. 직장인 유머·평범한 욕설은 괜찮아요.</p>
-    </div>
-  </div>
-</div>
-
 <!-- 토스트 -->
 <div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
 
@@ -683,8 +651,16 @@
   html.dark .gen-style-btn:hover, html.dark .gen-font-btn:hover, html.dark .img-font-btn:hover { border-color: #34d399; }
   html.dark .gen-style-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
   html.dark .gen-font-btn.active, html.dark .img-font-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
-  .gen-download-btn, .img-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
-  .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
+  /* 다운로드/복사 버튼 — flex-wrap 대신 2열 그리드로 가지런히 배치하고, 글자 크기·굵기를
+     키워 가독성을 높임 (viewer feedback: 갤러리 공유 버튼 삭제 대신 다운로드/복사 버튼을
+     더 읽기 쉽게 개선해달라는 요청) */
+  .gen-download-btn, .img-download-btn {
+    color: #ffffff; font-size: 13px; font-weight: 800; padding: 12px 10px; border-radius: 8px;
+    border: none; cursor: pointer; transition: filter .15s ease; line-height: 1.3;
+  }
+  .gen-download-btn:hover, .img-download-btn:hover { filter: brightness(1.12); }
+  .modal-dl-btn { width: 100%; color: #ffffff; font-size: 14px; font-weight: 800; padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer; transition: filter .15s ease; text-align: left; }
+  .modal-dl-btn:hover { filter: brightness(1.12); }
   /* 텍스트/이미지 모드 버튼을 각각 고유 색(인디고/마젠타)으로 구분해
      active 여부와 상관없이 어떤 버튼이 어떤 기능인지 한눈에 알 수 있도록 함 */
   .gen-mode-btn { flex: 1 1 0%; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; padding: 11px 14px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all .15s ease; }
@@ -1594,99 +1570,6 @@ document.getElementById('genCopyBtn').addEventListener('click', () => {
 });
 
 /* =========================================================
-   12. 유해어 필터링 & 갤러리 공유
-   ========================================================= */
-// 성적/음란성 어휘만 차단합니다 (직장인 유머·평범한 욕설은 허용).
-// 실서비스에서는 별도 모더레이션 API/서버 검증과 병행하는 것을 권장합니다.
-const BANNED_WORDS = [
-  '섹스', '자위', '보지', '자지', '젖꼭지', '성기', '음란', '몸캠',
-  '야동', '야설', '떡치', '박아줘', '오르가즘', '삽입', '성인용품',
-  '폰섹', '변태행위', '불륜만남', '성매매', '유흥알바',
-];
-function containsBannedWord(text) {
-  const norm = text.replace(/\s+/g, '').toLowerCase();
-  return BANNED_WORDS.some(w => norm.includes(w));
-}
-
-function openShareModal() {
-  document.getElementById('shareModal').classList.remove('hidden');
-  document.getElementById('shareModal').classList.add('flex');
-}
-function closeShareModal() {
-  document.getElementById('shareModal').classList.add('hidden');
-  document.getElementById('shareModal').classList.remove('flex');
-}
-document.getElementById('shareModalClose').addEventListener('click', closeShareModal);
-document.getElementById('shareModal').addEventListener('click', e => { if (e.target.id === 'shareModal') closeShareModal(); });
-
-// 공유 모달은 텍스트 생성기(Sheet5-1)와 이미지 업로드(Sheet5-2) 양쪽에서 공용으로 씁니다.
-// 어느 쪽에서 열었는지를 기억해뒀다가, 확인 버튼에서 그에 맞는 아이템을 저장합니다.
-let shareSource = 'text';
-
-document.getElementById('genShareBtn').addEventListener('click', () => {
-  const text = document.getElementById('genText').value.trim();
-  if (!text) { showToast('문구를 먼저 입력해주세요!'); return; }
-  if (containsBannedWord(text)) {
-    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
-    return;
-  }
-  shareSource = 'text';
-  openShareModal();
-});
-
-document.getElementById('shareConfirmBtn').addEventListener('click', () => {
-  const cat = document.querySelector('input[name="shareCat"]:checked').value;
-
-  if (shareSource === 'image') {
-    if (!imgState.image) { closeShareModal(); return; }
-    const caption = document.getElementById('imgCaptionText').value.trim();
-    if (caption && containsBannedWord(caption)) {
-      closeShareModal();
-      alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
-      return;
-    }
-    const newItem = {
-      id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      kind: 'image', cat,
-      imgData: imgState.dataUrl,
-      caption, font: imgState.font, textColor: imgState.textColor, outlineColor: imgState.outlineColor,
-      tx: imgState.tx, ty: imgState.ty, fontScale: imgState.fontScale,
-      kw: caption ? [caption] : ['이미지이모지'], source: 'user', createdAt: Date.now(),
-      seedLikes: 0, seedDownloads: 0,
-    };
-    const list = getUserEmojis();
-    list.unshift(newItem);
-    saveUserEmojis(list);
-  } else {
-    const text = document.getElementById('genText').value.trim();
-    if (!text) { closeShareModal(); return; }
-    if (containsBannedWord(text)) {
-      closeShareModal();
-      alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
-      return;
-    }
-    const draft = currentGenItem();
-    const newItem = {
-      id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      text: draft.text, cat,
-      style: draft.style, font: draft.font, textColor: draft.textColor,
-      bgColor: draft.bgColor, transparentBg: draft.transparentBg,
-      kw: [draft.text], source: 'user', createdAt: Date.now(),
-      seedLikes: 0, seedDownloads: 0,
-    };
-    const list = getUserEmojis();
-    list.unshift(newItem);
-    saveUserEmojis(list);
-  }
-
-  closeShareModal();
-  showToast('🎉 갤러리에 공유됐어요!');
-  state.cat = cat; state.query = '';
-  document.getElementById('searchInput').value = '';
-  onCategoryChange();
-});
-
-/* =========================================================
    13. 이미지/짤 업로드 이모지 편집기 (Sheet 5 모드 2)
    ========================================================= */
 document.querySelectorAll('.gen-mode-btn').forEach(btn => {
@@ -1910,16 +1793,6 @@ document.getElementById('imgCopyBtn').addEventListener('click', () => {
     drawCaptionOverlay(ctx, 256, imgState);
     copyCanvasToClipboard(canvas);
   });
-});
-document.getElementById('imgShareBtn').addEventListener('click', () => {
-  if (!imgState.image) { showToast('이미지를 먼저 업로드해주세요!'); return; }
-  const caption = document.getElementById('imgCaptionText').value.trim();
-  if (caption && containsBannedWord(caption)) {
-    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
-    return;
-  }
-  shareSource = 'image';
-  openShareModal();
 });
 
 /* =========================================================
