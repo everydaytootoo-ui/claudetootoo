@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>회피즐~ | 슬랙·팀즈 이모지 만들기 & 직장인 커스텀 이모티콘 생성기</title>
+<meta name="description" content="회사, 피할 수 없다면 즐겨라! 3초 만에 끝내는 슬랙 이모지 만들기, 팀즈 이모지 만들기, 커스텀 이모티콘 제작 툴. 128px/256px 맞춤 규격 다운로드 및 엑셀 위장 이모지 시트." />
+<meta name="keywords" content="팀즈 이모지 만들기, 슬랙 이모지 만들기, 커스텀 이모지 만들기, 팀즈 이모티콘 만들기, 슬랙 이모티콘 만들기, 커스텀 이모티콘 만들기, 직장인 이모지, 회피즐" />
+
+<!-- Open Graph / 카카오톡·슬랙 링크 미리보기용 -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="회피즐~" />
+<meta property="og:title" content="회피즐~ | 슬랙·팀즈 커스텀 이모지 만들기" />
+<meta property="og:description" content="오늘도 회피즐~ 3초 만에 만드는 K-직장인 커스텀 이모지 & 짤 팩토리" />
+<meta property="og:image" content="https://everydaytootoo-ui.github.io/claudetootoo/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="625" />
+<meta property="og:url" content="https://everydaytootoo-ui.github.io/claudetootoo/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="회피즐~ | 슬랙·팀즈 커스텀 이모지 만들기" />
+<meta name="twitter:description" content="오늘도 회피즐~ 3초 만에 만드는 K-직장인 커스텀 이모지 & 짤 팩토리" />
+<meta name="twitter:image" content="https://everydaytootoo-ui.github.io/claudetootoo/og-image.png" />
+<link rel="canonical" href="https://everydaytootoo-ui.github.io/claudetootoo/" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.85em' font-size='90'%3E%F0%9F%99%88%3C/text%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Noto Sans KR"', 'sans-serif'],
+          brand: ['"Black Han Sans"', 'sans-serif'],
+          mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          pixel: ['"Press Start 2P"', 'monospace'],
+        },
+        colors: {
+          gray: { 50:'#F7FAF8', 100:'#F0F4F1', 200:'#E1E8E3', 300:'#C9D4CC', 400:'#9DAEA2', 500:'#71857A', 600:'#54685C', 700:'#3E4F45', 800:'#283730', 900:'#16231C', 950:'#0E1512' },
+          brand: { DEFAULT: '#107C41', deep: '#0B5C30', darker: '#08351C', tint: '#E6F4EA' },
+          amber: { DEFAULT: '#F5A623', deep: '#D98C0F', tint: '#FDF1DC' },
+          stamp: '#C0392B',
+          kakao: '#FEE500',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  :root { color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  body { font-family: 'Noto Sans KR', sans-serif; }
+  h1, h2, .balance { text-wrap: balance; }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Excel grid frame ---------- */
+  .excel-grid {
+    display: grid;
+    grid-template-columns: 42px repeat(var(--cols), minmax(140px, 1fr));
+  }
+  .excel-headcell {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    height: 28px; font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', monospace;
+    background: #F0F4F1; color: #54685C;
+    border: 1px solid #C9D4CC;
+  }
+  html.dark .excel-headcell { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
+  .excel-corner {
+    position: sticky; top: 0; left: 0; z-index: 20;
+    background: #E1E8E3; border: 1px solid #C9D4CC;
+  }
+  html.dark .excel-corner { background: #131c17; border-color: #2c3a33; }
+  .excel-rownum {
+    position: sticky; left: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; color: #54685C;
+    background: #F0F4F1; border: 1px solid #C9D4CC;
+  }
+  html.dark .excel-rownum { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
+  .excel-cell {
+    position: relative;
+    border: 1px solid #C9D4CC;
+    background: #ffffff;
+    min-height: 192px;
+    padding: 6px;
+    transition: background .12s ease, transform .12s ease;
+  }
+  html.dark .excel-cell { background: #16231c; border-color: #2c3a33; }
+  .excel-cell:hover { background: #EFF9F1; z-index: 2; }
+  html.dark .excel-cell:hover { background: #10281a; }
+  .excel-cell-empty { background: repeating-linear-gradient(45deg, transparent, transparent 8px); }
+  .cell-ref {
+    position: absolute; top: 2px; left: 4px;
+    font-size: 9px; font-family: 'IBM Plex Mono', monospace; color: #9DAEA2; font-weight: 500;
+    user-select: none;
+  }
+  html.dark .cell-ref { color: #4c5f54; }
+  .rank-badge {
+    position: absolute; top: 2px; left: 4px;
+    font-size: 10px; font-weight: 800; font-family: 'IBM Plex Mono', monospace;
+    color: #5C3A00; background: linear-gradient(135deg, #FFD666, #F5A623); border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(217,140,15,0.5);
+    min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; padding: 0 4px;
+  }
+  .hot-badge {
+    position: absolute; top: 0; right: 6px;
+    font-size: 13px; width: 20px; height: 20px; border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #FFD666, #F5A623);
+    box-shadow: 0 1px 3px rgba(217,140,15,0.5);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* window chrome */
+  .win-titlebar { background: #E1E8E3; color: #3E4F45; }
+  html.dark .win-titlebar { background: #0b120e; color: #8fa398; }
+  .quickaccess { background: #F0F4F1; color: #54685C; }
+  html.dark .quickaccess { background: #111b16; color: #7c9086; }
+  .qa-icon { opacity: .45; cursor: not-allowed; }
+
+  /* sheet tabs */
+  .sheet-tab {
+    padding: 9px 16px; font-size: 13px; font-weight: 700;
+    border: 1px solid #C9D4CC; border-bottom: none;
+    background: #E1E8E3; color: #54685C; cursor: pointer;
+    border-radius: 5px 5px 0 0; white-space: nowrap;
+    transition: all .12s ease;
+  }
+  .sheet-tab:hover { background: #F0F4F1; }
+  .sheet-tab.active { background: #ffffff; color: #107C41; border-top: 2px solid #107C41; margin-top: -1px; }
+  html.dark .sheet-tab { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
+  html.dark .sheet-tab:hover { background: #223028; }
+  html.dark .sheet-tab.active { background: #16231c; color: #34d399; border-top-color: #34d399; }
+
+  /* '나만의 이모지 만들기' 탭만 만들기 도구임을 한눈에 알 수 있도록 청록색으로 구분 */
+  .sheet-tab-make { background: #CCFBF1; color: #0F766E; border-color: #5EEAD4; }
+  .sheet-tab-make:hover { background: #99F6E4; }
+  .sheet-tab-make.active { background: #ffffff; color: #0D9488; border-top-color: #0D9488; }
+  html.dark .sheet-tab-make { background: #0f2e2b; color: #5EEAD4; border-color: #115e59; }
+  html.dark .sheet-tab-make:hover { background: #134e4a; }
+  html.dark .sheet-tab-make.active { background: #16231c; color: #2DD4BF; border-top-color: #2DD4BF; }
+
+  .toast { transform: translateY(20px); opacity: 0; transition: all .25s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #C9D4CC; border-radius: 6px; }
+  html.dark ::-webkit-scrollbar-thumb { background: #2c3a33; }
+
+  .modal-backdrop { backdrop-filter: blur(2px); }
+  :focus-visible { outline: 2px solid #107C41; outline-offset: 2px; }
+
+  .checker {
+    background-image: linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);
+    background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+  html.dark .checker {
+    background-image: linear-gradient(45deg,#1f2937 25%,transparent 25%),linear-gradient(-45deg,#1f2937 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1f2937 75%),linear-gradient(-45deg,transparent 75%,#1f2937 75%);
+  }
+
+  #ticketBadge { font-variant-numeric: tabular-nums; }
+
+  /* 워드마크 옆 반짝이 장식 */
+  .sparkle { position: absolute; width: 12px; height: 12px; pointer-events: none; }
+  .sparkle-1 { top: -6px; right: -14px; }
+  .sparkle-2 { width: 7px; height: 7px; top: 6px; right: -22px; opacity: .8; }
+  @media (prefers-reduced-motion: no-preference) {
+    .sparkle-1 { animation: twinkle 2.4s ease-in-out infinite; }
+    .sparkle-2 { animation: twinkle 2.4s ease-in-out infinite .5s; }
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: .35; transform: scale(0.75) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.05) rotate(12deg); }
+  }
+
+  /* 슬로건 배너 (스티커 필 스타일) */
+  .slogan-pill {
+    background: linear-gradient(135deg, #14934D, #0B5C30);
+    position: relative;
+  }
+  .slogan-pill .ref-tag {
+    position: absolute; top: -10px; left: 18px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700; color: #107C41; background: #ffffff; padding: 1px 8px;
+    border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .slogan-pill .balance :where(b, .accent) { color: #FFD666; }
+
+  /* 기능 요약 칩 */
+  .feature-chip { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+  .feature-icon {
+    width: 42px; height: 42px; border-radius: 999px;
+    background: #ffffff; box-shadow: 0 2px 6px rgba(16,124,65,0.18);
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  html.dark .feature-icon { background: #1b2620; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+
+  .sort-btn {
+    padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 999px;
+    border: 1px solid #C9D4CC; background: #fff; color: #54685C; cursor: pointer; transition: all .12s ease;
+  }
+  .sort-btn.active { background: #107C41; color: #fff; border-color: #107C41; }
+  html.dark .sort-btn { background: #16231c; color: #8fa398; border-color: #2c3a33; }
+  html.dark .sort-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
+</style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<!-- ============ 보스키 위장 화면 ============ -->
+<div id="bossOverlay" class="fixed inset-0 z-[999] hidden bg-[#f3f2f1]">
+  <div class="h-9 bg-[#217346] flex items-center pl-3 text-white text-xs gap-3 select-none font-mono">
+    <span class="font-semibold">📊 2026년_4분기_실적취합_최종_진짜최종.xlsx - Excel</span>
+    <span class="ml-auto opacity-70 hidden sm:inline">자동 저장 켬</span>
+    <div class="flex items-center h-full">
+      <span class="w-10 h-9 flex items-center justify-center hover:bg-white/15 cursor-not-allowed opacity-70" title="최소화">─</span>
+      <span class="w-10 h-9 flex items-center justify-center hover:bg-white/15 cursor-not-allowed opacity-70" title="최대화">□</span>
+      <button id="bossCloseBtn" class="w-11 h-9 flex items-center justify-center hover:bg-red-600 transition text-sm" title="닫기 · 원래 화면으로 돌아가기">✕</button>
+    </div>
+  </div>
+  <div class="h-8 bg-[#f3f2f1] border-b border-gray-300 flex items-center px-3 text-xs text-gray-700 gap-4 select-none">
+    <span class="font-bold text-[#217346]">파일</span><span>홈</span><span>삽입</span><span>페이지 레이아웃</span><span>수식</span><span>데이터</span><span>검토</span><span>보기</span><span>도움말</span>
+  </div>
+  <div class="h-7 bg-white border-b border-gray-300 flex items-center px-3 text-xs gap-2 text-gray-500 select-none font-mono">
+    <span class="border border-gray-300 rounded px-2 py-0.5 bg-gray-50">A1</span>
+    <span class="italic">fx</span>
+    <span>=VLOOKUP(A1,실적DB!A:F,4,0)</span>
+  </div>
+  <div class="overflow-auto" style="height: calc(100% - 6.2rem - 28px);">
+    <table class="border-collapse w-full text-xs font-mono tnum" id="bossTable"></table>
+  </div>
+  <div class="h-7 bg-[#f3f2f1] border-t border-gray-300 flex items-center px-2 gap-1 text-xs text-gray-600 select-none">
+    <span class="px-3 py-1 bg-white border border-gray-300 border-b-2 border-b-[#217346] rounded-t cursor-pointer" id="bossExitTab" title="클릭하면 원래 화면으로 돌아갑니다">Sheet1</span>
+    <span class="px-3 py-1 text-gray-400">Sheet2</span>
+    <span class="px-3 py-1 text-gray-400">Sheet3</span>
+  </div>
+</div>
+
+<!-- ============ 메인 앱 ============ -->
+<div id="app">
+
+  <!-- 가짜 윈도우 타이틀바 -->
+  <div class="win-titlebar h-7 flex items-center px-3 text-[11px] gap-2 select-none border-b border-gray-300 dark:border-gray-800">
+    <span>📊</span><span class="font-mono">회피즐_월급루팡_이모지모음.xlsx - Excel</span>
+    <span class="ml-auto opacity-60 hidden sm:inline">자동 저장 켬</span>
+  </div>
+  <!-- 빠른 실행 도구 모음 (Quick Access Toolbar) -->
+  <div class="quickaccess h-8 flex items-center px-3 gap-3 text-xs select-none border-b border-gray-300 dark:border-gray-800">
+    <span class="qa-icon" title="저장 (준비 중)">💾</span>
+    <span class="qa-icon" title="실행 취소 (준비 중)">↩️</span>
+    <span class="qa-icon" title="다시 실행 (준비 중)">↪️</span>
+    <span class="w-px h-4 bg-gray-300 dark:bg-gray-700"></span>
+    <button id="bookmarkBtn" class="flex items-center gap-1.5 font-bold text-brand dark:text-emerald-400 hover:underline">
+      <span>⭐</span>퀵 북마크 추가 <span class="opacity-60 font-mono font-normal hidden sm:inline">(Ctrl+D)</span>
+    </button>
+    <span id="ticketBadge" class="hidden ml-auto items-center gap-1 font-mono font-bold text-amber-deep dark:text-amber bg-amber-tint dark:bg-amber-deep/20 px-2 py-0.5 rounded-full text-[11px]"></span>
+  </div>
+
+  <!-- 헤더 (엑셀 그린 리본) -->
+  <header class="sticky top-0 z-30 bg-brand dark:bg-brand-darker text-white shadow">
+    <div class="max-w-[1400px] mx-auto px-3 sm:px-4 py-2.5 flex items-center gap-3">
+      <div class="flex items-baseline gap-2 shrink-0 relative">
+        <span class="relative font-brand text-2xl sm:text-3xl leading-none tracking-tight">
+          회피즐~
+          <svg class="sparkle sparkle-1" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#FFD666"/></svg>
+          <svg class="sparkle sparkle-2" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#FFD666"/></svg>
+        </span>
+        <span class="hidden md:inline text-[11px] text-brand-tint/80 font-medium">회사, 피할 수 없다면 즐겨라!</span>
+      </div>
+
+      <!-- 수식 입력줄(fx) 스타일 검색창 -->
+      <div class="flex-1 flex items-center bg-white dark:bg-gray-900 rounded overflow-hidden border border-brand-deep/40 shadow-sm max-w-xl">
+        <span class="px-2 sm:px-3 font-mono text-brand dark:text-emerald-400 font-bold italic text-sm border-r border-gray-200 dark:border-gray-700 select-none">fx</span>
+        <input id="searchInput" type="text" placeholder="검색: 퇴근, 넵, 점심... (초성 검색도 가능해요, 예: ㅌㄱ)"
+          class="flex-1 px-2.5 py-2 text-sm text-gray-800 dark:text-gray-100 bg-transparent outline-none placeholder:text-gray-400" />
+        <button id="searchClear" class="px-2 text-gray-400 hover:text-gray-600 text-xs hidden">✕</button>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
+        <button id="themeToggle" title="다크/라이트 모드 전환" class="w-9 h-9 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center transition">🌙</button>
+        <button id="bossKeyBtn" title="ESC 키를 누르면 즉시 엑셀 화면으로 위장합니다" class="px-2.5 sm:px-3 h-9 rounded bg-brand-darker hover:bg-black/30 text-xs sm:text-sm font-bold flex items-center gap-1.5 border border-white/20">
+          <span>🕵️</span><span class="hidden sm:inline">보스키</span><span class="hidden md:inline opacity-70 font-normal">(ESC)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 728x90 광고 배너 -->
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-3">
+    <div class="mx-auto w-full max-w-[728px] h-[90px] border-2 border-dashed border-gray-300 dark:border-gray-700 rounded flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs bg-white dark:bg-gray-900">
+      <!-- AdSense 728x90 반응형 배너 삽입 위치 -->
+      광고 영역 · 728 × 90
+    </div>
+  </div>
+
+  <!-- 슬로건 배너 (스티커 필 스타일) -->
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-5">
+    <div class="slogan-pill rounded-full px-5 sm:px-8 py-3.5 sm:py-4 shadow-lg flex items-center justify-center gap-2.5 text-center">
+      <span class="ref-tag">A1:E1 병합됨</span>
+      <span class="text-xl sm:text-2xl shrink-0">⚡</span>
+      <p class="font-brand text-sm sm:text-xl text-white balance leading-snug">
+        피할 수 없는 출근이라면? <b class="accent whitespace-nowrap">3초 이모지 복사</b>로 스마트하게 월급 루팡하자!
+      </p>
+    </div>
+  </div>
+
+  <!-- 기능 요약 -->
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+        <span class="feature-icon">⏱️</span>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">10초 완성</p>
+        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">간단한 3단계로<br class="hidden sm:block">빠르게 만들기</p>
+      </div>
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+        <span class="feature-icon">😊</span>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">다양한 표현</p>
+        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">직장인 공감<br class="hidden sm:block">이모지 모음</p>
+      </div>
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+        <span class="feature-icon">📊</span>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">엑셀 디자인</p>
+        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">익숙해서 편안한<br class="hidden sm:block">엑셀 컨셉</p>
+      </div>
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+        <span class="feature-icon">💬</span>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">팀즈/슬랙용</p>
+        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">업무 채팅에 딱!<br class="hidden sm:block">부담 없이 사용</p>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
+
+    <!-- 좌측: 엑셀 그리드 / 생성기 -->
+    <section class="min-w-0">
+
+      <!-- TOP20 안내 바 -->
+      <div id="topInfoBar" class="hidden mb-2 text-xs font-bold text-amber-deep dark:text-amber bg-amber-tint dark:bg-amber-deep/10 border border-amber/40 rounded px-3 py-2 items-center gap-1.5">
+        <span>🔥</span><span>좋아요 + 다운로드/복사 수를 합산해 실시간으로 집계되는 TOP 20이에요.</span>
+      </div>
+      <!-- 자유 이모지 정렬 바 -->
+      <div id="freeSortBar" class="hidden mb-2 items-center gap-2">
+        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 mr-1">정렬</span>
+        <button data-sort="latest" class="sort-btn active">🆕 최신순</button>
+        <button data-sort="popular" class="sort-btn">🔥 인기순</button>
+      </div>
+
+      <div id="gridPanel" class="bg-white dark:bg-gray-900 rounded shadow overflow-hidden border border-gray-200 dark:border-gray-800">
+        <div class="overflow-auto max-h-[70vh]" id="gridScroll">
+          <div id="excelGrid" class="excel-grid text-sm"></div>
+        </div>
+        <p id="emptyState" class="hidden text-center text-gray-400 text-sm py-10">🔍 검색 결과가 없어요. 다른 키워드로 찾아보세요!</p>
+      </div>
+
+      <!-- 생성기 패널 (Sheet 5: 실시간 이모지 생성기) -->
+      <div id="generatorPanel" class="hidden bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-4 sm:p-5">
+        <h2 class="font-brand text-lg mb-1 flex items-center gap-2"><span>🛠️</span>실시간 이모지 생성기</h2>
+        <p class="text-xs text-gray-400 mb-3">텍스트 이모지를 직접 만들거나, 짤 이미지를 업로드해서 자막을 얹어보세요.</p>
+
+        <div id="genModeTabs" class="flex gap-2 mb-4">
+          <button data-mode="text" class="gen-mode-btn active">✏️ 텍스트 이모지 만들기</button>
+          <button data-mode="image" class="gen-mode-btn">🖼️ 이미지/짤 업로드하기</button>
+        </div>
+
+        <!-- 모드 1: 텍스트 이모지 -->
+        <div id="textModePanel" class="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-5">
+          <div>
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400">문구 (최대 40자 · Enter로 줄바꿈)</label>
+            <textarea id="genText" maxlength="40" rows="2"
+              class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-lg font-bold outline-none focus:ring-2 focus:ring-brand resize-none leading-snug">칼퇴!!</textarea>
+
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
+            <div id="fontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
+              <button data-font="gothic" class="gen-font-btn">고딕</button>
+              <button data-font="black" class="gen-font-btn active">블랙한</button>
+              <button data-font="dohyeon" class="gen-font-btn">두헌</button>
+              <button data-font="jua" class="gen-font-btn">주아</button>
+              <button data-font="gungseo" class="gen-font-btn">궁서체</button>
+            </div>
+
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">스타일</label>
+            <div id="styleTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
+              <button data-style="stamp" class="gen-style-btn">🔴 도장 쿵!</button>
+              <button data-style="neon" class="gen-style-btn active">✨ 네온</button>
+              <button data-style="bold" class="gen-style-btn">🅱️ 굵은고딕</button>
+              <button data-style="pixel" class="gen-style-btn">👾 픽셀</button>
+              <button data-style="motion" class="gen-style-btn">💨 역동적</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                <input id="genTextColor" type="color" value="#22d3ee" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+              </div>
+              <div>
+                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">배경색</label>
+                <input id="genBgColor" type="color" value="#0b1021" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+              </div>
+            </div>
+            <label class="flex items-center gap-2 mt-2 text-xs font-bold text-gray-500 dark:text-gray-400">
+              <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명 (PNG 스티커용)
+            </label>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+              <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
+              <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
+              <button data-size="500" data-name="kakao" class="gen-download-btn kakao-btn bg-kakao">카톡 500px 다운로드</button>
+              <button id="genCopyBtn" class="gen-download-btn bg-gray-700">📋 클립보드 복사</button>
+            </div>
+            <button id="genShareBtn" class="mt-2 w-full rounded px-3 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
+              <span>🌐</span>갤러리에 공유하기
+            </button>
+          </div>
+
+          <div class="flex flex-col items-center justify-start">
+            <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">실시간 미리보기</p>
+            <div class="checker w-full aspect-square rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2">
+              <canvas id="genPreview" width="300" height="300" class="max-w-full max-h-full"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 모드 2: 이미지/짤 업로드 -->
+        <div id="imageModePanel" class="hidden">
+          <div id="imgDropZone" class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center cursor-pointer hover:border-brand dark:hover:border-emerald-500 transition">
+            <p class="text-3xl mb-2">📷</p>
+            <p class="text-sm font-bold text-gray-600 dark:text-gray-300">이미지를 드래그하거나 클릭해서 업로드하세요</p>
+            <p class="text-xs text-gray-400 mt-1">고양이 밈, 치이카와, 짤방 등 JPG/PNG/GIF (최대 8MB)</p>
+            <input type="file" id="imgFileInput" accept="image/*" class="hidden" />
+          </div>
+
+          <div id="imgEditor" class="hidden grid grid-cols-1 md:grid-cols-[1fr_260px] gap-5">
+            <div>
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400">자막 텍스트 (최대 20자)</label>
+              <input id="imgCaptionText" maxlength="20" placeholder="예: 오늘도 칼퇴 실패"
+                class="mt-1 w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-3 py-2 text-base font-bold outline-none focus:ring-2 focus:ring-brand" />
+
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
+              <div id="imgFontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
+                <button data-font="gothic" class="img-font-btn active">고딕</button>
+                <button data-font="black" class="img-font-btn">블랙한</button>
+                <button data-font="dohyeon" class="img-font-btn">두헌</button>
+                <button data-font="jua" class="img-font-btn">주아</button>
+                <button data-font="gungseo" class="img-font-btn">궁서체</button>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mt-4">
+                <div>
+                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                  <input id="imgTextColor" type="color" value="#ffffff" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+                </div>
+                <div>
+                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">외곽선색</label>
+                  <input id="imgOutlineColor" type="color" value="#000000" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
+                </div>
+              </div>
+              <button id="imgChangeBtn" class="text-xs font-bold text-gray-400 hover:text-brand dark:hover:text-emerald-400 underline mt-2">🔄 다른 이미지로 변경</button>
+
+              <div class="mt-5 flex flex-wrap gap-2">
+                <button data-size="128" data-name="slack-discord" class="img-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
+                <button data-size="256" data-name="teams" class="img-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
+                <button data-size="500" data-name="kakao" class="img-download-btn kakao-btn bg-kakao">카톡 500px 다운로드</button>
+                <button id="imgCopyBtn" class="img-download-btn bg-gray-700">📋 클립보드 복사</button>
+              </div>
+              <button id="imgShareBtn" class="mt-2 w-full rounded px-3 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 transition flex items-center justify-center gap-1.5">
+                <span>🌐</span>갤러리에 공유하기
+              </button>
+            </div>
+
+            <div class="flex flex-col items-center justify-start">
+              <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 캔버스를 드래그해서 자막 위치를 옮겨보세요</p>
+              <canvas id="imgPreviewCanvas" width="300" height="300" class="max-w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-move touch-none"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단: 엑셀 시트 탭 (= 카테고리 네비게이션) -->
+      <div class="mt-3 flex items-end gap-0.5 overflow-x-auto pb-0.5" id="sheetTabs"></div>
+
+      <!-- 바이럴 위젯 -->
+      <div class="mt-4 grid sm:grid-cols-2 gap-3">
+        <div class="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-4">
+          <p class="font-bold text-sm mb-1">📈 오늘의 칼퇴 확률 테스트</p>
+          <p class="text-xs text-gray-400 mb-3 font-mono">=RAND()*100 을 계산 중...</p>
+          <button id="kalToeBtn" class="w-full bg-brand hover:bg-brand-deep text-white font-bold py-2 rounded text-sm">확률 계산하기</button>
+          <p id="kalToeResult" class="text-center text-2xl font-brand tnum mt-3 hidden"></p>
+        </div>
+        <div class="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-4 flex flex-col">
+          <p class="font-bold text-sm mb-1">💬 팀원에게 공유하기</p>
+          <p class="text-xs text-gray-400 mb-3">"오늘도 회피즐~ 3초 만에 복사하는 K-직장인 이모지 시트"</p>
+          <button id="kakaoShareBtn" class="w-full bg-kakao hover:brightness-95 text-[#3C1E1E] font-bold py-2 rounded text-sm mt-auto flex items-center justify-center gap-1.5">
+            <span>💬</span>카카오톡으로 공유
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 우측 사이드바 -->
+    <aside class="space-y-4">
+      <div class="w-full h-[250px] sm:w-[300px] sm:h-[250px] mx-auto border-2 border-dashed border-gray-300 dark:border-gray-700 rounded flex items-center justify-center text-gray-400 dark:text-gray-600 text-xs bg-white dark:bg-gray-900">
+        <!-- AdSense 300x250 배너 삽입 위치 -->
+        광고 영역 · 300 × 250
+      </div>
+
+      <!-- ============ 쿠팡파트너스 위젯 ============
+           TODO: 아래 4개 카드의 href="#"를 쿠팡파트너스 대시보드에서 생성한
+           실제 상품 딥링크로 바꾸고, emoji 아이콘 자리에 실제 상품 썸네일
+           이미지를, "상품명을 입력해주세요" 자리에 실제 상품명을 넣어주세요.
+           고지문구(맨 아래 회색 문장)는 쿠팡파트너스 운영정책상 반드시
+           노출해야 하는 문구이니 절대 지우거나 수정하지 마세요. -->
+      <div class="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-3">
+        <p class="font-bold text-gray-700 dark:text-gray-200 mb-2 text-xs flex items-center gap-1">🛒 직장인 데스크 필수템</p>
+        <div class="space-y-2">
+          <a href="#" class="coupang-product-link flex items-center gap-2 border border-gray-100 dark:border-gray-800 rounded p-2 hover:border-brand dark:hover:border-emerald-500 transition">
+            <span class="w-11 h-11 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xl shrink-0">🕶️</span>
+            <span class="min-w-0">
+              <span class="block text-[11px] font-bold text-gray-700 dark:text-gray-200 truncate">상품명을 입력해주세요 (예: 블루라이트 차단 안경)</span>
+              <span class="block text-[10px] text-brand dark:text-emerald-400 font-bold">쿠팡에서 보기 →</span>
+            </span>
+          </a>
+          <a href="#" class="coupang-product-link flex items-center gap-2 border border-gray-100 dark:border-gray-800 rounded p-2 hover:border-brand dark:hover:border-emerald-500 transition">
+            <span class="w-11 h-11 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xl shrink-0">💺</span>
+            <span class="min-w-0">
+              <span class="block text-[11px] font-bold text-gray-700 dark:text-gray-200 truncate">상품명을 입력해주세요 (예: 목쿠션/등쿠션)</span>
+              <span class="block text-[10px] text-brand dark:text-emerald-400 font-bold">쿠팡에서 보기 →</span>
+            </span>
+          </a>
+          <a href="#" class="coupang-product-link flex items-center gap-2 border border-gray-100 dark:border-gray-800 rounded p-2 hover:border-brand dark:hover:border-emerald-500 transition">
+            <span class="w-11 h-11 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xl shrink-0">🧴</span>
+            <span class="min-w-0">
+              <span class="block text-[11px] font-bold text-gray-700 dark:text-gray-200 truncate">상품명을 입력해주세요 (예: 사무실 디퓨저)</span>
+              <span class="block text-[10px] text-brand dark:text-emerald-400 font-bold">쿠팡에서 보기 →</span>
+            </span>
+          </a>
+          <a href="#" class="coupang-product-link flex items-center gap-2 border border-gray-100 dark:border-gray-800 rounded p-2 hover:border-brand dark:hover:border-emerald-500 transition">
+            <span class="w-11 h-11 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xl shrink-0">☕</span>
+            <span class="min-w-0">
+              <span class="block text-[11px] font-bold text-gray-700 dark:text-gray-200 truncate">상품명을 입력해주세요 (예: 텀블러)</span>
+              <span class="block text-[10px] text-brand dark:text-emerald-400 font-bold">쿠팡에서 보기 →</span>
+            </span>
+          </a>
+        </div>
+        <p class="text-[10px] text-gray-400 mt-2.5 leading-relaxed">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-800 p-3 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+        <p class="font-bold text-gray-700 dark:text-gray-200 mb-1">📌 사용 팁</p>
+        <p>· 셀을 클릭하면 메신저별 규격으로 바로 다운로드/복사할 수 있어요.</p>
+        <p>· Sheet 5에서 <b>🖼️ 이미지/짤 업로드</b> 모드로 직접 짤에 자막을 얹어 만들 수 있어요.</p>
+        <p>· 카드의 <b>👍 좋아요</b>는 1인 1회, 좋아요+다운로드 합산이 실시간 TOP 20에 반영돼요.</p>
+        <p>· 검색창에 초성만 입력해도 (예: ㅍㅌ) 관련 이모지를 찾을 수 있어요.</p>
+        <p>· 첫 다운로드/복사는 무료! 이후엔 <b>🎫 30분 티켓</b>을 발급받으면 팝업 없이 1초 만에 다운로드!</p>
+        <p>· <b>Ctrl+D</b>로 즐겨찾기에 추가하면 다음부터 3초!</p>
+        <p>· 보스가 다가오면 <b>ESC</b>! 위장 화면 우측 상단 <b>✕</b> 버튼(또는 ESC)을 누르면 바로 복귀돼요.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="max-w-[1400px] mx-auto px-4 py-6 text-center text-[11px] text-gray-400 dark:text-gray-600 space-y-1.5">
+    <p class="flex items-center justify-center gap-3">
+      <a href="./privacy.html" class="hover:text-brand dark:hover:text-emerald-400 underline">개인정보처리방침</a>
+      <span class="opacity-40">·</span>
+      <a href="./terms.html" class="hover:text-brand dark:hover:text-emerald-400 underline">이용약관</a>
+    </p>
+    <p>© 2026 회피즐~ · 회사, 피할 수 없다면 즐겨라! (프로토타입) · 모든 이모지는 Canvas로 실시간 렌더링됩니다.</p>
+  </footer>
+</div>
+
+<!-- ============ 이모지 다운로드/복사 모달 ============ -->
+<div id="emojiModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop bg-black/40 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-brand text-white px-4 py-3 flex items-center justify-between">
+      <p id="modalTitle" class="font-bold text-sm">이모지</p>
+      <button id="modalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5 flex flex-col items-center">
+      <div id="modalPreviewWrap" class="checker w-40 h-40 rounded-xl overflow-hidden mb-4 border border-gray-100 dark:border-gray-800">
+        <canvas id="modalCanvas" width="280" height="280" class="w-full h-full"></canvas>
+      </div>
+      <div class="w-full space-y-2">
+        <button data-size="128" data-label="Slack·Discord" class="modal-dl-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">🔵 Slack·Discord용 다운로드 (128×128 PNG)</button>
+        <button data-size="256" data-label="Teams" class="modal-dl-btn bg-[#464EB8]">🟣 Teams용 다운로드 (256×256 PNG)</button>
+        <button data-size="500" data-label="Kakao" class="modal-dl-btn kakao-btn bg-kakao">🟡 카톡 짤용 다운로드 (500×500 PNG)</button>
+        <button id="modalCopyBtn" class="w-full border-2 border-brand text-brand dark:text-emerald-400 dark:border-emerald-500 font-bold py-2.5 rounded text-sm hover:bg-brand-tint dark:hover:bg-brand-darker/40 transition">📋 클립보드에 이미지 복사</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 퀵 북마크 안내 모달 ============ -->
+<div id="bookmarkModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop bg-black/40 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-brand text-white px-4 py-3 flex items-center justify-between">
+      <p class="font-bold text-sm">⭐ 퀵 북마크 추가</p>
+      <button id="bookmarkModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5">
+      <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200 balance">
+        <b class="font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">Ctrl + D</b> (Mac은 <b class="font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">Cmd + D</b>)를 눌러 북마크에 추가하고, 매일 아침 3초 만에 칼퇴 이모지를 사용하세요!
+      </p>
+      <div class="mt-4 flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-2.5 py-2">
+        <span class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate flex-1" id="bookmarkUrl"></span>
+        <span id="bookmarkCopyState" class="text-[11px] font-bold text-brand dark:text-emerald-400 shrink-0">복사됨 ✓</span>
+      </div>
+      <p class="text-[11px] text-gray-400 mt-3">브라우저 정책상 북마크는 직접 눌러 추가해야 해요. 링크는 이미 클립보드에 복사해뒀어요!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 30분 칼퇴 티켓 모달 ============ -->
+<div id="ticketModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop bg-black/50 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-brand text-white px-4 py-3 flex items-center justify-between">
+      <p class="font-bold text-sm">🎫 30분 칼퇴 티켓 발급</p>
+      <button id="ticketModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5">
+      <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200 balance">
+        아래 버튼을 누르면 <b>30분 무제한 이용권</b>이 발급돼요. 티켓이 있는 동안은 팝업 없이 1초 만에 바로 다운로드·복사할 수 있어요!
+      </p>
+      <p class="text-xs text-gray-400 mt-1.5">광고 시청은 회피즐~을 무료로 운영하는 데 큰 도움이 돼요 🙏</p>
+      <button id="ticketGrantBtn" class="mt-4 w-full rounded-lg px-4 py-4 text-left bg-gradient-to-br from-amber to-amber-deep text-white shadow-md hover:brightness-105 transition">
+        <span class="block text-xs font-bold opacity-80">무료 이용권 받기</span>
+        <span class="block text-base font-brand mt-0.5">🎬 눌러서 30분 무제한 티켓 받기</span>
+      </button>
+      <button id="ticketAdFreeBtn" class="mt-2 w-full rounded-lg px-4 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-brand dark:hover:border-emerald-500 transition">
+        ☕ 후원하고 광고 없이 이용하기
+      </button>
+      <p class="text-[11px] text-gray-400 mt-3">티켓은 이 브라우저에만 30분간 저장돼요. (프로토타입 데모입니다)</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 갤러리 공유 모달 ============ -->
+<div id="shareModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-backdrop bg-black/50 p-4">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm overflow-hidden">
+    <div class="bg-teal-600 text-white px-4 py-3 flex items-center justify-between">
+      <p class="font-bold text-sm">🌐 갤러리에 공유하기</p>
+      <button id="shareModalClose" class="text-white/80 hover:text-white text-lg leading-none">✕</button>
+    </div>
+    <div class="p-5">
+      <p class="text-sm text-gray-700 dark:text-gray-200 mb-3">어느 시트에 등록할까요?</p>
+      <div id="shareCatOptions" class="space-y-2">
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="free" checked /> 🤪 자유 이모지 (유저 제작)
+        </label>
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="friend" /> 💬 회사 찐친 이모지
+        </label>
+        <label class="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 cursor-pointer hover:border-brand text-sm">
+          <input type="radio" name="shareCat" value="offwork" /> 🏃 칼퇴/연차 승인요청
+        </label>
+      </div>
+      <button id="shareConfirmBtn" class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded text-sm">공유하기</button>
+      <p class="text-[11px] text-gray-400 mt-3">성적 표현·음란성 어휘가 포함된 문구는 자동으로 차단돼요. 직장인 유머·평범한 욕설은 괜찮아요.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
+
+<style>
+  .gen-style-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
+  .gen-style-btn.active { @apply bg-brand text-white border-brand; }
+  .gen-font-btn, .img-font-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
+  .gen-font-btn.active, .img-font-btn.active { @apply bg-gray-800 text-white border-gray-800 dark:bg-emerald-600 dark:border-emerald-600; }
+  .gen-download-btn, .img-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
+  .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
+  .gen-mode-btn { @apply flex-1 text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
+  .gen-mode-btn.active { @apply bg-brand text-white border-brand; }
+  /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
+     다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
+  .kakao-btn { color: #3C1E1E !important; }
+</style>
+
+<script>
+/* =========================================================
+   1. 데이터 — 굵고 선명한 텍스트 이모지 프리셋
+   seedLikes / seedDownloads 는 서버 없는 프로토타입에서 "이미 쌓인 인기"를
+   흉내 내는 기준값이며, 실서비스에서는 백엔드 집계값으로 교체하면 됩니다.
+   ========================================================= */
+const FONTS = {
+  gothic:  '"Noto Sans KR", sans-serif',
+  black:   '"Black Han Sans", sans-serif',
+  dohyeon: '"Do Hyeon", sans-serif',
+  jua:     '"Jua", sans-serif',
+  gungseo: '"Nanum Brush Script", cursive',
+};
+
+const BUILTIN_EMOJI_DATA = [
+  // Sheet 2: 회사 찐친 이모지 (friend)
+  { id:'f1', text:'네??', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['네??','뭐라고요','당황','놀람'], seedLikes:62, seedDownloads:40 },
+  { id:'f2', text:'제가요?', cat:'friend', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['제가요','왜저요','당황','억울'], seedLikes:48, seedDownloads:30 },
+  { id:'f3', text:'실화냐?!', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#ea580c', kw:['실화냐','대박','헐','놀람'], seedLikes:210, seedDownloads:150 },
+  { id:'f4', text:'억울', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['억울','서러움','눈물','멘탈'], seedLikes:180, seedDownloads:120 },
+  { id:'f5', text:'빡침', cat:'friend', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['빡침','화남','열받음','분노'], seedLikes:55, seedDownloads:38 },
+  { id:'f6', text:'저기요', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['저기요','눈치','잠깐만','궁금'], seedLikes:40, seedDownloads:25 },
+  { id:'f7', text:'회의중', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['회의중','미팅','바쁨','자리비움'], seedLikes:70, seedDownloads:45 },
+  { id:'f8', text:'점심시간', cat:'friend', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['점심시간','점심','밥','식사'], seedLikes:65, seedDownloads:50 },
+
+  // Sheet 3: 칼퇴/연차 승인요청 — 영혼 없는 넵/확인/승인요청 모음 (offwork)
+  { id:'o1', text:'넵!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['넵','네','확인','오케이','ok'], seedLikes:320, seedDownloads:260 },
+  { id:'o2', text:'확인', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['확인','체크','완료','넵'], seedLikes:150, seedDownloads:110 },
+  { id:'o3', text:'감사!', cat:'offwork', style:'neon', font:'black', textColor:'#fbbf24', bgColor:'#0b1021', kw:['감사','고마워','수고','땡큐'], seedLikes:90, seedDownloads:60 },
+  { id:'o4', text:'인정', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['인정','리스펙','최고','대박'], seedLikes:140, seedDownloads:95 },
+  { id:'o5', text:'퇴근!!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['퇴근','칼퇴','고생하셨습니다'], seedLikes:260, seedDownloads:190 },
+  { id:'o6', text:'연차', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차','휴가','연차씁니다'], seedLikes:300, seedDownloads:230 },
+  { id:'o7', text:'승인요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['승인','결재','컨펌','연차신청'], seedLikes:275, seedDownloads:205 },
+  { id:'o8', text:'칼퇴', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['칼퇴','퇴근','칼퇴근'], seedLikes:250, seedDownloads:200 },
+  { id:'o9', text:'반차', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['반차','오전반차','오후반차'], seedLikes:85, seedDownloads:55 },
+  { id:'o10', text:'휴가중', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['휴가중','바캉스','연차중'], seedLikes:95, seedDownloads:70 },
+
+  // Sheet 4: 자유 이모지 — 유저 제작 예시 시드 (free)
+  { id:'c1', text:'월급루팡', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0B5C30', kw:['월급루팡','월루','땡땡이'], seedLikes:130, seedDownloads:90, createdAt: Date.now() - 1000*60*60*24*2 },
+  { id:'c2', text:'출근하기싫다', cat:'free', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['출근하기싫다','월요병','출근'], seedLikes:95, seedDownloads:70, createdAt: Date.now() - 1000*60*60*24 },
+  { id:'c3', text:'n연차박제', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차박제','연차','기록'], seedLikes:60, seedDownloads:40, createdAt: Date.now() - 1000*60*60*5 },
+];
+
+const CATEGORIES = [
+  { id:'top',       label:'실시간 TOP 20',        icon:'🔥' },
+  { id:'friend',    label:'회사 찐친 이모지',       icon:'💬' },
+  { id:'offwork',   label:'칼퇴/연차 승인요청',      icon:'🏃' },
+  { id:'free',      label:'자유 이모지 (유저 제작)', icon:'🤪' },
+  { id:'generator', label:'나만의 이모지 만들기',    icon:'🛠️' },
+];
+
+const HOT_THRESHOLD = 150; // likes+downloads 합산이 이 값 이상이면 🔥 뱃지
+
+/* =========================================================
+   2. LocalStorage 유틸 — 좋아요 / 다운로드 카운트 / 유저 이모지 / 티켓
+
+   일부 브라우저·미리보기 환경(예: 서드파티 저장소를 차단한 iframe)에서는
+   localStorage 접근 자체가 예외를 던질 수 있습니다. 그런 경우에도 좋아요·
+   갤러리 공유 같은 기능이 "이번 세션 동안은" 정상 동작하도록, 모든 읽기/쓰기를
+   메모리 캐시(memoryStore)와 함께 관리합니다: 쓰기는 항상 메모리에 반영되고,
+   localStorage 저장은 가능할 때만 best-effort로 덧붙입니다.
+   ========================================================= */
+const memoryStore = {};
+function lsGet(key) {
+  try { return localStorage.getItem(key); } catch { return undefined; }
+}
+function lsSet(key, value) {
+  try { localStorage.setItem(key, value); } catch {}
+}
+function lsRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
+function readJSON(key, fallback) {
+  if (Object.prototype.hasOwnProperty.call(memoryStore, key)) return memoryStore[key];
+  const raw = lsGet(key);
+  if (raw === undefined || raw === null) return fallback;
+  try {
+    const parsed = JSON.parse(raw);
+    memoryStore[key] = parsed;
+    return parsed;
+  } catch { return fallback; }
+}
+function writeJSON(key, value) {
+  memoryStore[key] = value;
+  try { lsSet(key, JSON.stringify(value)); } catch {}
+}
+function readStr(key, fallback) {
+  if (Object.prototype.hasOwnProperty.call(memoryStore, key)) return memoryStore[key];
+  const raw = lsGet(key);
+  if (raw === undefined || raw === null) return fallback;
+  memoryStore[key] = raw;
+  return raw;
+}
+function writeStr(key, value) { memoryStore[key] = value; lsSet(key, value); }
+function removeStr(key) { delete memoryStore[key]; lsRemove(key); }
+
+const LIKED_KEY = 'hpz-liked-ids';
+const LIKE_COUNT_KEY = 'hpz-like-counts';
+const DOWNLOAD_COUNT_KEY = 'hpz-download-counts';
+const USER_EMOJIS_KEY = 'hpz-user-emojis';
+
+function getLikedSet() { return readJSON(LIKED_KEY, {}); }
+function getLocalLikeCounts() { return readJSON(LIKE_COUNT_KEY, {}); }
+function getLocalDownloadCounts() { return readJSON(DOWNLOAD_COUNT_KEY, {}); }
+function getUserEmojis() { return readJSON(USER_EMOJIS_KEY, []); }
+function saveUserEmojis(list) { writeJSON(USER_EMOJIS_KEY, list); }
+
+function allItems() { return [...BUILTIN_EMOJI_DATA, ...getUserEmojis()]; }
+
+function getLikes(id) {
+  const item = allItems().find(e => e.id === id);
+  const seed = item ? (item.seedLikes || 0) : 0;
+  return seed + (getLocalLikeCounts()[id] || 0);
+}
+function getDownloads(id) {
+  const item = allItems().find(e => e.id === id);
+  const seed = item ? (item.seedDownloads || 0) : 0;
+  return seed + (getLocalDownloadCounts()[id] || 0);
+}
+function itemScore(item) { return getLikes(item.id) + getDownloads(item.id); }
+
+function hasLiked(id) { return !!getLikedSet()[id]; }
+function toggleLike(id) {
+  if (hasLiked(id)) { showToast('이미 좋아요를 눌렀어요!'); return; }
+  const liked = getLikedSet();
+  liked[id] = true;
+  writeJSON(LIKED_KEY, liked);
+  const counts = getLocalLikeCounts();
+  counts[id] = (counts[id] || 0) + 1;
+  writeJSON(LIKE_COUNT_KEY, counts);
+  showToast('👍 좋아요! 감사합니다');
+  if (state.cat !== 'generator') renderGrid();
+}
+function bumpDownloads(id) {
+  const counts = getLocalDownloadCounts();
+  counts[id] = (counts[id] || 0) + 1;
+  writeJSON(DOWNLOAD_COUNT_KEY, counts);
+}
+
+/* =========================================================
+   3. 상태 & 초성 검색 유틸
+   ========================================================= */
+const state = { cat: 'top', query: '', cols: 5, freeSort: 'latest' };
+
+const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+function toChosung(str) {
+  let out = '';
+  for (const ch of str) {
+    const code = ch.charCodeAt(0) - 0xAC00;
+    if (code >= 0 && code <= 11171) out += CHO[Math.floor(code / 588)];
+    else out += ch;
+  }
+  return out;
+}
+function isChosungQuery(str) {
+  return str.length > 0 && [...str].every(c => CHO.includes(c));
+}
+function matchesSearch(item, query) {
+  if (!query) return true;
+  const q = query.trim().toLowerCase();
+  const kw = item.kw || [];
+  const label = item.text || item.caption || ''; // 이미지 이모지는 text 대신 caption을 씁니다.
+  if (isChosungQuery(q)) {
+    return toChosung(label).includes(q) || kw.some(k => toChosung(k).includes(q));
+  }
+  return label.toLowerCase().includes(q) || kw.some(k => k.toLowerCase().includes(q));
+}
+
+/* =========================================================
+   4. 그리드 렌더링 (엑셀 셀 격자 + 열/행 헤더)
+   ========================================================= */
+function getColCount() {
+  const w = window.innerWidth;
+  if (w >= 1024) return 5;
+  if (w >= 768) return 4;
+  if (w >= 480) return 3;
+  return 2;
+}
+function colLetter(i) {
+  let s = '';
+  i += 1;
+  while (i > 0) { const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); }
+  return s;
+}
+
+function filteredEmojis() {
+  const items = allItems();
+  if (state.query) {
+    return items.filter(e => matchesSearch(e, state.query)).sort((a, b) => itemScore(b) - itemScore(a));
+  }
+  if (state.cat === 'top') {
+    return [...items].sort((a, b) => itemScore(b) - itemScore(a)).slice(0, 20);
+  }
+  if (state.cat === 'free') {
+    const freeItems = items.filter(e => e.cat === 'free');
+    if (state.freeSort === 'popular') return freeItems.sort((a, b) => itemScore(b) - itemScore(a));
+    return freeItems.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  }
+  return items.filter(e => e.cat === state.cat).sort((a, b) => itemScore(b) - itemScore(a));
+}
+
+function renderGrid() {
+  state.cols = getColCount();
+  const grid = document.getElementById('excelGrid');
+  const items = filteredEmojis();
+  grid.style.setProperty('--cols', state.cols);
+  grid.innerHTML = '';
+
+  document.getElementById('topInfoBar').classList.toggle('hidden', !(state.cat === 'top' && !state.query));
+  document.getElementById('topInfoBar').classList.toggle('flex', state.cat === 'top' && !state.query);
+  document.getElementById('freeSortBar').classList.toggle('hidden', !(state.cat === 'free' && !state.query));
+  document.getElementById('freeSortBar').classList.toggle('flex', state.cat === 'free' && !state.query);
+
+  // corner + column headers
+  grid.appendChild(el('div', 'excel-corner'));
+  for (let c = 0; c < state.cols; c++) {
+    const h = el('div', 'excel-headcell'); h.textContent = colLetter(c); grid.appendChild(h);
+  }
+
+  const showRank = state.cat === 'top' && !state.query;
+  const rows = Math.max(1, Math.ceil(items.length / state.cols));
+  for (let r = 0; r < rows; r++) {
+    const rn = el('div', 'excel-rownum'); rn.textContent = String(r + 1); grid.appendChild(rn);
+    for (let c = 0; c < state.cols; c++) {
+      const idx = r * state.cols + c;
+      const item = items[idx];
+      const cell = el('div', 'excel-cell' + (item ? '' : ' excel-cell-empty'));
+      const ref = el('span', 'cell-ref'); ref.textContent = colLetter(c) + (r + 1);
+      cell.appendChild(ref);
+      if (item) {
+        cell.appendChild(buildEmojiCard(item, showRank ? idx + 1 : null));
+      }
+      grid.appendChild(cell);
+    }
+  }
+  document.getElementById('emptyState').classList.toggle('hidden', items.length > 0);
+  document.getElementById('gridPanel').classList.toggle('hidden', items.length === 0 && state.cat !== 'generator');
+}
+
+function buildEmojiCard(item, rank) {
+  const wrap = el('div', 'h-full w-full flex flex-col items-center justify-center gap-1 pt-1 cursor-pointer group relative');
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 200; canvas.height = 200;
+  canvas.className = 'w-20 h-20 sm:w-24 sm:h-24 rounded-lg shadow-sm group-hover:scale-105 group-hover:-translate-y-0.5 transition-transform duration-150';
+  if (item.kind === 'image') { paintItemToCanvas(canvas.getContext('2d'), 200, item); } // 비동기 로드 완료 시 캔버스가 채워집니다.
+  else { drawTextEmoji(canvas.getContext('2d'), 200, item); }
+  wrap.appendChild(canvas);
+
+  if (rank) {
+    const rb = el('span', 'rank-badge'); rb.textContent = `#${rank}`;
+    wrap.appendChild(rb);
+  } else if (itemScore(item) >= HOT_THRESHOLD) {
+    const hot = el('span', 'hot-badge'); hot.textContent = '🔥';
+    wrap.appendChild(hot);
+  }
+
+  const likeBtn = el('button', 'tnum text-[11px] font-bold px-2 py-0.5 rounded-full mt-1 transition ' +
+    (hasLiked(item.id) ? 'bg-brand text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-brand-tint dark:hover:bg-brand-darker/40'));
+  likeBtn.textContent = `👍 ${getLikes(item.id)}`;
+  likeBtn.title = hasLiked(item.id) ? '이미 좋아요를 눌렀어요' : '좋아요';
+  likeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLike(item.id); });
+  wrap.appendChild(likeBtn);
+
+  const badges = el('div', 'flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5');
+  badges.innerHTML = `
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#4A154B]/10 text-[#4A154B] dark:bg-white/10 dark:text-purple-300 font-bold">Slack·Discord</span>
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#464EB8]/10 text-[#464EB8] dark:bg-white/10 dark:text-indigo-300 font-bold">Teams</span>
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-kakao/40 text-[#3C1E1E] dark:bg-white/10 dark:text-yellow-300 font-bold">카톡</span>`;
+  wrap.appendChild(badges);
+
+  wrap.addEventListener('click', () => openEmojiModal(item));
+  return wrap;
+}
+
+function el(tag, cls) { const d = document.createElement(tag); if (cls) d.className = cls; return d; }
+
+/* =========================================================
+   5. 시트 탭 (카테고리 네비게이션) + 자유 이모지 정렬
+   ========================================================= */
+function renderSheetTabs() {
+  const wrap = document.getElementById('sheetTabs');
+  wrap.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    let cls = 'sheet-tab' + (state.cat === c.id ? ' active' : '');
+    if (c.id === 'generator') cls += ' sheet-tab-make';
+    const tab = el('button', cls);
+    tab.innerHTML = `${c.icon} ${c.label}`;
+    tab.addEventListener('click', () => { state.cat = c.id; state.query=''; document.getElementById('searchInput').value=''; onCategoryChange(); });
+    wrap.appendChild(tab);
+  });
+  const plus = el('button', 'sheet-tab opacity-50 cursor-default');
+  plus.textContent = '+';
+  plus.title = '추가 시트는 준비 중이에요';
+  wrap.appendChild(plus);
+}
+
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.freeSort = btn.dataset.sort;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderGrid();
+  });
+});
+
+function onCategoryChange() {
+  renderSheetTabs();
+  const isGen = state.cat === 'generator';
+  document.getElementById('gridPanel').classList.toggle('hidden', isGen);
+  document.getElementById('generatorPanel').classList.toggle('hidden', !isGen);
+  if (isGen) {
+    document.getElementById('topInfoBar').classList.add('hidden');
+    document.getElementById('freeSortBar').classList.add('hidden');
+    drawGenPreview();
+  } else {
+    renderGrid();
+  }
+}
+
+/* =========================================================
+   6. 텍스트 이모지 렌더링 엔진 (Canvas)
+   갤러리 카드 · 모달 미리보기 · 생성기 · 다운로드가 모두 이 함수를 공유합니다.
+   ========================================================= */
+// 여러 줄(\n) 텍스트를 받아, 정사각형 상자(maxWidth x maxHeight)를 '바짝' 채우는
+// 가장 큰 폰트 크기를 계산합니다. 1줄일 때도 동일한 로직을 씁니다.
+//
+// 이전에는 스타일마다 정해둔 startPx(추정치)에서 아래로만 줄여나갔기 때문에,
+// 짧은 문구는 실제로 들어갈 수 있는 크기보다 훨씬 작게 그려지는 문제가 있었습니다.
+// 이제는 항상 (maxWidth, maxHeight)로 계산 가능한 최댓값보다 확실히 큰 지점에서
+// 시작해 1px 단위로 줄여가며 "너비/높이 제약을 동시에 만족하는 가장 큰 값"을 찾습니다.
+function fitMultilineText(ctx, rawText, maxWidth, maxHeight, fontFamily, lineHeightRatio) {
+  let lines = String(rawText).split('\n');
+  while (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+  while (lines.length > 1 && lines[0] === '') lines.shift();
+  if (lines.length === 0) lines = [''];
+
+  // 어떤 텍스트든 이 값보다 큰 font-size는 절대 두 제약을 동시에 만족할 수 없습니다.
+  let px = Math.ceil(Math.max(maxWidth, maxHeight / lineHeightRatio)) + 8;
+  while (px > 8) {
+    ctx.font = `900 ${px}px ${fontFamily}`;
+    const widest = Math.max(...lines.map(l => ctx.measureText(l || ' ').width));
+    const blockHeight = lines.length * px * lineHeightRatio;
+    if (widest <= maxWidth && blockHeight <= maxHeight) break;
+    px -= 1;
+  }
+  ctx.font = `900 ${px}px ${fontFamily}`;
+  return { lines, px, lineHeight: px * lineHeightRatio };
+}
+
+// centerY를 기준으로 각 줄의 세로 중앙 y좌표 배열을 반환합니다 (textBaseline='middle' 전제).
+function lineCenters(centerY, count, lineHeight) {
+  const startY = centerY - (count - 1) * lineHeight / 2;
+  return Array.from({ length: count }, (_, i) => startY + i * lineHeight);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function drawTextEmoji(ctx, size, opts) {
+  const text = opts.text || '텍스트';
+  const style = opts.style || 'bold';
+  const fam = FONTS[opts.font] || opts.font || FONTS.gothic;
+  const textColor = opts.textColor;
+  const bgColor = opts.bgColor;
+  const transparentBg = !!opts.transparentBg;
+  const cx = size / 2, cy = size / 2;
+
+  ctx.clearRect(0, 0, size, size);
+
+  const needsCard = style !== 'pixel' && (style === 'neon' || !transparentBg);
+  if (needsCard) {
+    ctx.fillStyle = style === 'neon' ? (bgColor || '#0b1021') : (bgColor || '#107C41');
+    roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
+    ctx.fill();
+  }
+
+  if (style === 'stamp') {
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(-8 * Math.PI/180); ctx.translate(-cx, -cy);
+    ctx.strokeStyle = textColor || '#C0392B'; ctx.globalAlpha = 0.88;
+    ctx.lineWidth = size * 0.025;
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.47, 0, Math.PI*2); ctx.stroke();
+    ctx.lineWidth = size*0.01;
+    ctx.setLineDash([size*0.015, size*0.015]);
+    ctx.beginPath(); ctx.arc(cx, cy, size*0.40, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.66, size*0.42, fam, 1.06);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = textColor || '#C0392B';
+    lineCenters(cy - size*0.05, lines.length, lineHeight).forEach((y, i) => ctx.fillText(lines[i], cx, y));
+    ctx.font = `700 ${Math.floor(size*0.05)}px ${FONTS.gothic}`;
+    ctx.fillText('★ CONFIRMED ★', cx, cy + size*0.32);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  else if (style === 'neon') {
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.86, size*0.84, fam, 1.08);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const glow = textColor || '#22d3ee';
+    const ys = lineCenters(cy, lines.length, lineHeight);
+    for (const blur of [size*0.06, size*0.035, size*0.015]) {
+      ctx.shadowColor = glow; ctx.shadowBlur = blur;
+      ctx.fillStyle = glow;
+      ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
+    }
+    ctx.shadowBlur = 0; ctx.fillStyle = '#ffffff';
+    ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
+  }
+
+  else if (style === 'bold') {
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.90, size*0.88, fam, 1.08);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = size * 0.02;
+    ctx.strokeStyle = 'rgba(0,0,0,0.28)';
+    const ys = lineCenters(cy, lines.length, lineHeight);
+    ys.forEach((y, i) => ctx.strokeText(lines[i], cx, y));
+    ctx.fillStyle = textColor || '#ffffff';
+    ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
+  }
+
+  else if (style === 'motion') {
+    ctx.strokeStyle = textColor || '#22d3ee'; ctx.globalAlpha = 0.35; ctx.lineWidth = size*0.012;
+    for (let i=0;i<6;i++){
+      const y = size*0.15 + i*size*0.13;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.84, size*0.86, fam, 1.08);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.save();
+    ctx.transform(1, 0, -0.18, 1, size*0.04, 0);
+    const ys = lineCenters(cy, lines.length, lineHeight);
+    [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, textColor || '#22d3ee'], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
+      ctx.globalAlpha = a; ctx.fillStyle = c;
+      ys.forEach((y, i) => ctx.fillText(lines[i], cx - dx, y));
+    });
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  else if (style === 'pixel') {
+    const off = document.createElement('canvas');
+    const scale = 6;
+    off.width = size/scale; off.height = size/scale;
+    const octx = off.getContext('2d');
+    octx.clearRect(0,0,off.width, off.height);
+    if (!transparentBg) { octx.fillStyle = bgColor || '#0b1021'; octx.fillRect(0,0,off.width,off.height); }
+    const hasPixelFont = document.fonts.check('10px "Press Start 2P"');
+    const pfam = hasPixelFont ? '"Press Start 2P"' : 'monospace';
+    const { lines, lineHeight } = fitMultilineText(octx, text, off.width*0.92, off.height*0.90, pfam, 1.25);
+    octx.textAlign='center'; octx.textBaseline='middle';
+    const oys = lineCenters(off.height/2, lines.length, lineHeight);
+    octx.fillStyle = 'rgba(0,0,0,0.35)';
+    oys.forEach((y, i) => octx.fillText(lines[i], off.width/2+1, y+1));
+    octx.fillStyle = textColor || '#ffffff';
+    oys.forEach((y, i) => octx.fillText(lines[i], off.width/2, y));
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(off, 0, 0, size, size);
+  }
+}
+
+function renderItemCanvas(item, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  drawTextEmoji(canvas.getContext('2d'), size, item);
+  return canvas;
+}
+
+/* ---------- 이미지 짤 + 자막 렌더링 (업로드형 이모지) ---------- */
+// 자막에 굵은 외곽선(stroke)을 두른 뒤 채우기(fill)해서, 어떤 배경 사진 위에서도
+// 읽기 쉽도록 합니다. tx/ty는 캔버스 대비 0~1 비율 좌표입니다.
+function drawCaptionOverlay(ctx, size, st) {
+  const caption = (st.caption || '').trim();
+  if (!caption) return;
+  const fam = FONTS[st.font] || FONTS.gothic;
+  const px = Math.max(14, Math.floor(size * (st.fontScale || 0.11)));
+  ctx.font = `900 ${px}px ${fam}`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const x = (st.tx ?? 0.5) * size;
+  const y = (st.ty ?? 0.85) * size;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(3, px * 0.22);
+  ctx.strokeStyle = st.outlineColor || '#000000';
+  ctx.strokeText(caption, x, y);
+  ctx.fillStyle = st.textColor || '#ffffff';
+  ctx.fillText(caption, x, y);
+}
+
+// 갤러리에 저장된 이미지 이모지는 dataURL만 갖고 있으므로, 그릴 때마다 새로
+// 디코딩하지 않도록 로드된 Image를 id별로 캐시합니다.
+const imageElCache = new Map();
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+function getCachedImage(item) {
+  if (imageElCache.has(item.id)) return Promise.resolve(imageElCache.get(item.id));
+  return loadImage(item.imgData).then(img => { imageElCache.set(item.id, img); return img; });
+}
+
+// item.kind === 'image' 인지 여부에 따라 텍스트/이미지 엔진 중 하나로 그립니다.
+// 이미지 로딩은 비동기이므로 Promise를 반환합니다 (텍스트 이모지는 즉시 resolve).
+async function paintItemToCanvas(ctx, size, item) {
+  if (item.kind === 'image') {
+    const img = await getCachedImage(item);
+    ctx.clearRect(0, 0, size, size);
+    ctx.drawImage(img, 0, 0, size, size);
+    drawCaptionOverlay(ctx, size, item);
+  } else {
+    drawTextEmoji(ctx, size, item);
+  }
+}
+async function renderItemCanvasAsync(item, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  await paintItemToCanvas(canvas.getContext('2d'), size, item);
+  return canvas;
+}
+
+/* =========================================================
+   7. 다운로드 / 클립보드 복사 유틸
+   ========================================================= */
+function canvasToBlob(canvas) {
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
+
+// claude.ai 아티팩트 미리보기 등 샌드박스 환경에서는 window.claude.downloads로,
+// 일반 브라우저 배포 환경에서는 표준 <a download> 방식으로 자동 대체됩니다.
+let downloadsCapabilityPromise;
+function getDownloadsCapability() {
+  if (typeof window.claude?.use !== 'function') return Promise.resolve(null);
+  if (!downloadsCapabilityPromise) downloadsCapabilityPromise = window.claude.use('downloads').catch(() => null);
+  return downloadsCapabilityPromise;
+}
+
+async function downloadCanvas(canvas, filename) {
+  const blob = await canvasToBlob(canvas);
+  const downloads = await getDownloadsCapability();
+  if (downloads) {
+    try {
+      await downloads.save({ filename, data: blob });
+      showToast(`${filename} 다운로드 완료!`);
+      return;
+    } catch (err) {
+      if (err && err.code === 'declined') return;
+      // 실패 시 표준 다운로드 방식으로 대체
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast(`${filename} 다운로드 완료!`);
+}
+
+async function copyCanvasToClipboard(canvas) {
+  try {
+    const blob = await canvasToBlob(canvas);
+    if (!navigator.clipboard || !window.ClipboardItem) throw new Error('unsupported');
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    showToast('📋 클립보드에 이미지가 복사됐어요!');
+  } catch (err) {
+    showToast('⚠️ 이 브라우저에서는 이미지 복사가 지원되지 않아요. 다운로드를 이용해주세요.');
+  }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   8. 30분 칼퇴 티켓 (보상형 다운로드 게이트)
+   ========================================================= */
+const TICKET_KEY = 'hpz-ticket-expire';
+const FREE_ACTION_KEY = 'hpz-free-action-used';
+let pendingGatedAction = null;
+let ticketInterval = null;
+
+function ticketExpireAt() {
+  const v = parseInt(readStr(TICKET_KEY, '0') || '0', 10);
+  return Number.isFinite(v) ? v : 0;
+}
+function hasActiveTicket() { return ticketExpireAt() > Date.now(); }
+
+// 브랜드 약속이 "3초 만에 복사"인데 첫 클릭부터 광고 게이트가 뜨면 그 약속이
+// 바로 깨져 보입니다. 그래서 이 브라우저에서의 첫 다운로드/복사 1회는 게이트 없이
+// 통과시키고, 그 이후부터 30분 티켓을 요구합니다.
+function hasUsedFreeAction() { return readStr(FREE_ACTION_KEY, '0') === '1'; }
+function markFreeActionUsed() { writeStr(FREE_ACTION_KEY, '1'); }
+
+function gatedAction(fn) {
+  if (hasActiveTicket()) { fn(); return; }
+  if (!hasUsedFreeAction()) { markFreeActionUsed(); fn(); return; }
+  pendingGatedAction = fn;
+  openTicketModal();
+}
+
+function openTicketModal() {
+  document.getElementById('ticketModal').classList.remove('hidden');
+  document.getElementById('ticketModal').classList.add('flex');
+}
+function closeTicketModal() {
+  document.getElementById('ticketModal').classList.add('hidden');
+  document.getElementById('ticketModal').classList.remove('flex');
+}
+document.getElementById('ticketModalClose').addEventListener('click', () => { pendingGatedAction = null; closeTicketModal(); });
+document.getElementById('ticketModal').addEventListener('click', e => { if (e.target.id === 'ticketModal') { pendingGatedAction = null; closeTicketModal(); } });
+
+// ⚠️ 실서비스 연동 시 반드시 읽어주세요
+// 지금 이 버튼은 "클릭하면 즉시" 티켓을 발급하는 데모입니다. 실제 광고 수익화를
+// 붙일 때 절대 이 버튼을 AdSense 디스플레이 배너 클릭에 연결하지 마세요 —
+// "광고를 누르면 보상을 준다"는 구조는 부정 클릭 유도로 간주되어 Google 광고
+// 정책 위반(계정 정지 사유)이 됩니다. 반드시 별도의 리워드 광고 SDK(Google Ad
+// Manager 리워드 광고, AdMob Rewarded Ad 등)를 연동해서, 광고가 끝까지 재생된
+// 뒤 그 SDK의 "재생 완료" 콜백 안에서만 아래 로직(티켓 발급)을 실행하세요.
+document.getElementById('ticketGrantBtn').addEventListener('click', () => {
+  const expireAt = Date.now() + 30 * 60 * 1000;
+  writeStr(TICKET_KEY, String(expireAt));
+  closeTicketModal();
+  startTicketCountdown();
+  showToast('🎫 30분 무제한 티켓이 발급됐어요!');
+  if (pendingGatedAction) {
+    const fn = pendingGatedAction;
+    pendingGatedAction = null;
+    fn();
+  }
+});
+
+// 광고를 보고 싶지 않은 유저를 위한 대체 채널. 실제 결제 연동(토스페이먼츠,
+// 카카오페이 등) 전까지는 준비 중 안내만 표시합니다.
+document.getElementById('ticketAdFreeBtn').addEventListener('click', () => {
+  showToast('☕ 후원 결제는 준비 중이에요! 조금만 기다려주세요 🙏');
+});
+
+function startTicketCountdown() {
+  clearInterval(ticketInterval);
+  updateTicketBadge();
+  ticketInterval = setInterval(updateTicketBadge, 1000);
+}
+function updateTicketBadge() {
+  const remain = ticketExpireAt() - Date.now();
+  const badge = document.getElementById('ticketBadge');
+  if (remain <= 0) {
+    removeStr(TICKET_KEY);
+    badge.classList.add('hidden');
+    badge.classList.remove('flex');
+    clearInterval(ticketInterval);
+    return;
+  }
+  const m = Math.floor(remain / 60000);
+  const s = Math.floor((remain % 60000) / 1000);
+  badge.textContent = `🎫 ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} 무제한 이용 중`;
+  badge.classList.remove('hidden');
+  badge.classList.add('flex');
+}
+if (hasActiveTicket()) startTicketCountdown();
+
+/* =========================================================
+   9. 이모지 모달
+   ========================================================= */
+let currentModalItem = null;
+function openEmojiModal(item) {
+  currentModalItem = item;
+  document.getElementById('modalTitle').textContent = item.kind === 'image' ? (item.caption || '이미지 이모지') : item.text;
+  const canvas = document.getElementById('modalCanvas');
+  paintItemToCanvas(canvas.getContext('2d'), canvas.width, item);
+  document.getElementById('emojiModal').classList.remove('hidden');
+  document.getElementById('emojiModal').classList.add('flex');
+}
+function closeEmojiModal() {
+  document.getElementById('emojiModal').classList.add('hidden');
+  document.getElementById('emojiModal').classList.remove('flex');
+}
+document.getElementById('modalClose').addEventListener('click', closeEmojiModal);
+document.getElementById('emojiModal').addEventListener('click', e => { if (e.target.id === 'emojiModal') closeEmojiModal(); });
+
+document.querySelectorAll('.modal-dl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!currentModalItem) return;
+    const size = parseInt(btn.dataset.size, 10);
+    const item = currentModalItem;
+    gatedAction(async () => {
+      const canvas = await renderItemCanvasAsync(item, size);
+      const label = item.kind === 'image' ? (item.caption || '이미지이모지') : item.text;
+      downloadCanvas(canvas, `${label.replace(/\n/g, ' ')}_${btn.dataset.label}_${size}px.png`);
+      bumpDownloads(item.id);
+    });
+  });
+});
+document.getElementById('modalCopyBtn').addEventListener('click', () => {
+  if (!currentModalItem) return;
+  const item = currentModalItem;
+  gatedAction(async () => {
+    const canvas = await renderItemCanvasAsync(item, 256);
+    copyCanvasToClipboard(canvas);
+    bumpDownloads(item.id);
+  });
+});
+
+/* =========================================================
+   10. 퀵 북마크 모달 (Ctrl+D / Cmd+D)
+   ========================================================= */
+function openBookmarkModal() {
+  const url = window.location.href;
+  document.getElementById('bookmarkUrl').textContent = url;
+  document.getElementById('bookmarkModal').classList.remove('hidden');
+  document.getElementById('bookmarkModal').classList.add('flex');
+  navigator.clipboard?.writeText(url)
+    .then(() => showToast('🔗 링크가 클립보드에 복사됐어요!'))
+    .catch(() => {});
+}
+function closeBookmarkModal() {
+  document.getElementById('bookmarkModal').classList.add('hidden');
+  document.getElementById('bookmarkModal').classList.remove('flex');
+}
+document.getElementById('bookmarkBtn').addEventListener('click', openBookmarkModal);
+document.getElementById('bookmarkModalClose').addEventListener('click', closeBookmarkModal);
+document.getElementById('bookmarkModal').addEventListener('click', e => { if (e.target.id === 'bookmarkModal') closeBookmarkModal(); });
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+    e.preventDefault();
+    openBookmarkModal();
+  }
+});
+
+/* =========================================================
+   11. 텍스트 이모지 생성기 (Sheet 5)
+   ========================================================= */
+const STYLE_DEFAULTS = {
+  stamp:  { font:'dohyeon', textColor:'#C0392B', bgColor:'#107C41', transparentBg:true },
+  neon:   { font:'black',   textColor:'#22d3ee', bgColor:'#0b1021', transparentBg:false },
+  bold:   { font:'jua',     textColor:'#ffffff', bgColor:'#107C41', transparentBg:false },
+  pixel:  { font:'black',   textColor:'#ffffff', bgColor:'#0b1021', transparentBg:true },
+  motion: { font:'black',   textColor:'#22d3ee', bgColor:'#107C41', transparentBg:true },
+};
+let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false };
+
+function applyStyleDefaults(style) {
+  const d = STYLE_DEFAULTS[style];
+  genState = { ...genState, style, ...d };
+  document.getElementById('genTextColor').value = d.textColor;
+  document.getElementById('genBgColor').value = d.bgColor;
+  const cb = document.getElementById('genTransparent');
+  cb.checked = d.transparentBg;
+  cb.disabled = style === 'neon';
+  document.querySelectorAll('.gen-font-btn').forEach(b => b.classList.toggle('active', b.dataset.font === d.font));
+}
+
+document.querySelectorAll('.gen-style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gen-style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyStyleDefaults(btn.dataset.style);
+    drawGenPreview();
+  });
+});
+document.querySelectorAll('.gen-font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gen-font-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    genState.font = btn.dataset.font;
+    drawGenPreview();
+  });
+});
+document.getElementById('genText').addEventListener('input', drawGenPreview);
+document.getElementById('genTextColor').addEventListener('input', (e) => { genState.textColor = e.target.value; drawGenPreview(); });
+document.getElementById('genBgColor').addEventListener('input', (e) => { genState.bgColor = e.target.value; drawGenPreview(); });
+document.getElementById('genTransparent').addEventListener('change', (e) => { genState.transparentBg = e.target.checked; drawGenPreview(); });
+
+function currentGenItem() {
+  return {
+    text: document.getElementById('genText').value || '텍스트',
+    style: genState.style,
+    font: genState.font,
+    textColor: genState.textColor,
+    bgColor: genState.bgColor,
+    transparentBg: genState.transparentBg,
+  };
+}
+
+function drawGenPreview() {
+  const canvas = document.getElementById('genPreview');
+  drawTextEmoji(canvas.getContext('2d'), canvas.width, currentGenItem());
+}
+
+document.querySelectorAll('.gen-download-btn').forEach(btn => {
+  if (!btn.dataset.size) return;
+  btn.addEventListener('click', () => {
+    const size = parseInt(btn.dataset.size, 10);
+    gatedAction(() => {
+      const item = currentGenItem();
+      const canvas = renderItemCanvas(item, size);
+      downloadCanvas(canvas, `${item.text.replace(/\n/g,' ')}_${btn.dataset.name}_${size}px.png`);
+    });
+  });
+});
+document.getElementById('genCopyBtn').addEventListener('click', () => {
+  gatedAction(() => copyCanvasToClipboard(renderItemCanvas(currentGenItem(), 256)));
+});
+
+/* =========================================================
+   12. 유해어 필터링 & 갤러리 공유
+   ========================================================= */
+// 성적/음란성 어휘만 차단합니다 (직장인 유머·평범한 욕설은 허용).
+// 실서비스에서는 별도 모더레이션 API/서버 검증과 병행하는 것을 권장합니다.
+const BANNED_WORDS = [
+  '섹스', '자위', '보지', '자지', '젖꼭지', '성기', '음란', '몸캠',
+  '야동', '야설', '떡치', '박아줘', '오르가즘', '삽입', '성인용품',
+  '폰섹', '변태행위', '불륜만남', '성매매', '유흥알바',
+];
+function containsBannedWord(text) {
+  const norm = text.replace(/\s+/g, '').toLowerCase();
+  return BANNED_WORDS.some(w => norm.includes(w));
+}
+
+function openShareModal() {
+  document.getElementById('shareModal').classList.remove('hidden');
+  document.getElementById('shareModal').classList.add('flex');
+}
+function closeShareModal() {
+  document.getElementById('shareModal').classList.add('hidden');
+  document.getElementById('shareModal').classList.remove('flex');
+}
+document.getElementById('shareModalClose').addEventListener('click', closeShareModal);
+document.getElementById('shareModal').addEventListener('click', e => { if (e.target.id === 'shareModal') closeShareModal(); });
+
+// 공유 모달은 텍스트 생성기(Sheet5-1)와 이미지 업로드(Sheet5-2) 양쪽에서 공용으로 씁니다.
+// 어느 쪽에서 열었는지를 기억해뒀다가, 확인 버튼에서 그에 맞는 아이템을 저장합니다.
+let shareSource = 'text';
+
+document.getElementById('genShareBtn').addEventListener('click', () => {
+  const text = document.getElementById('genText').value.trim();
+  if (!text) { showToast('문구를 먼저 입력해주세요!'); return; }
+  if (containsBannedWord(text)) {
+    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+    return;
+  }
+  shareSource = 'text';
+  openShareModal();
+});
+
+document.getElementById('shareConfirmBtn').addEventListener('click', () => {
+  const cat = document.querySelector('input[name="shareCat"]:checked').value;
+
+  if (shareSource === 'image') {
+    if (!imgState.image) { closeShareModal(); return; }
+    const caption = document.getElementById('imgCaptionText').value.trim();
+    if (caption && containsBannedWord(caption)) {
+      closeShareModal();
+      alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+      return;
+    }
+    const newItem = {
+      id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      kind: 'image', cat,
+      imgData: imgState.dataUrl,
+      caption, font: imgState.font, textColor: imgState.textColor, outlineColor: imgState.outlineColor,
+      tx: imgState.tx, ty: imgState.ty, fontScale: imgState.fontScale,
+      kw: caption ? [caption] : ['이미지이모지'], source: 'user', createdAt: Date.now(),
+      seedLikes: 0, seedDownloads: 0,
+    };
+    const list = getUserEmojis();
+    list.unshift(newItem);
+    saveUserEmojis(list);
+  } else {
+    const text = document.getElementById('genText').value.trim();
+    if (!text) { closeShareModal(); return; }
+    if (containsBannedWord(text)) {
+      closeShareModal();
+      alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+      return;
+    }
+    const draft = currentGenItem();
+    const newItem = {
+      id: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      text: draft.text, cat,
+      style: draft.style, font: draft.font, textColor: draft.textColor,
+      bgColor: draft.bgColor, transparentBg: draft.transparentBg,
+      kw: [draft.text], source: 'user', createdAt: Date.now(),
+      seedLikes: 0, seedDownloads: 0,
+    };
+    const list = getUserEmojis();
+    list.unshift(newItem);
+    saveUserEmojis(list);
+  }
+
+  closeShareModal();
+  showToast('🎉 갤러리에 공유됐어요!');
+  state.cat = cat; state.query = '';
+  document.getElementById('searchInput').value = '';
+  onCategoryChange();
+});
+
+/* =========================================================
+   13. 이미지/짤 업로드 이모지 편집기 (Sheet 5 모드 2)
+   ========================================================= */
+document.querySelectorAll('.gen-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gen-mode-btn').forEach(b => b.classList.toggle('active', b === btn));
+    const mode = btn.dataset.mode;
+    document.getElementById('textModePanel').classList.toggle('hidden', mode !== 'text');
+    document.getElementById('imageModePanel').classList.toggle('hidden', mode !== 'image');
+  });
+});
+
+const imgState = {
+  image: null,       // 업로드 후 정사각형으로 잘라 로드해둔 HTMLImageElement
+  dataUrl: null,     // 위 이미지를 저장용으로 인코딩한 dataURL (JPEG)
+  caption: '', font: 'gothic', textColor: '#ffffff', outlineColor: '#000000',
+  tx: 0.5, ty: 0.85, fontScale: 0.11,
+};
+
+function drawImagePreview() {
+  const canvas = document.getElementById('imgPreviewCanvas');
+  if (!imgState.image) return;
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+  ctx.clearRect(0, 0, size, size);
+  ctx.drawImage(imgState.image, 0, 0, size, size);
+  drawCaptionOverlay(ctx, size, imgState);
+}
+
+function handleImageFile(file) {
+  if (!file || !file.type.startsWith('image/')) { showToast('이미지 파일만 업로드할 수 있어요.'); return; }
+  if (file.size > 8 * 1024 * 1024) { showToast('이미지 용량은 8MB 이하로 올려주세요.'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const raw = new Image();
+    raw.onload = () => {
+      // 업로드된 이미지를 정사각형 Canvas에 꽉 차도록(cover) 잘라서 저장합니다.
+      const SQUARE = 640;
+      const off = document.createElement('canvas');
+      off.width = SQUARE; off.height = SQUARE;
+      const octx = off.getContext('2d');
+      const scale = Math.max(SQUARE / raw.width, SQUARE / raw.height);
+      const w = raw.width * scale, h = raw.height * scale;
+      octx.drawImage(raw, (SQUARE - w) / 2, (SQUARE - h) / 2, w, h);
+      const squareDataUrl = off.toDataURL('image/jpeg', 0.9);
+
+      const finalImg = new Image();
+      finalImg.onload = () => {
+        imgState.image = finalImg;
+        imgState.dataUrl = squareDataUrl;
+        document.getElementById('imgDropZone').classList.add('hidden');
+        document.getElementById('imgEditor').classList.remove('hidden');
+        drawImagePreview();
+      };
+      finalImg.src = squareDataUrl;
+    };
+    raw.onerror = () => showToast('이미지를 불러오지 못했어요. 다른 파일을 시도해주세요.');
+    raw.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+const imgDropZone = document.getElementById('imgDropZone');
+const imgFileInput = document.getElementById('imgFileInput');
+imgDropZone.addEventListener('click', () => imgFileInput.click());
+imgDropZone.addEventListener('dragover', (e) => { e.preventDefault(); imgDropZone.classList.add('border-brand'); });
+imgDropZone.addEventListener('dragleave', () => imgDropZone.classList.remove('border-brand'));
+imgDropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  imgDropZone.classList.remove('border-brand');
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) handleImageFile(file);
+});
+imgFileInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (file) handleImageFile(file);
+  imgFileInput.value = ''; // 같은 파일을 다시 선택해도 change가 발생하도록
+});
+document.getElementById('imgChangeBtn').addEventListener('click', () => {
+  imgState.image = null; imgState.dataUrl = null; imgState.caption = '';
+  document.getElementById('imgCaptionText').value = '';
+  document.getElementById('imgEditor').classList.add('hidden');
+  document.getElementById('imgDropZone').classList.remove('hidden');
+});
+
+document.getElementById('imgCaptionText').addEventListener('input', (e) => {
+  imgState.caption = e.target.value;
+  drawImagePreview();
+});
+document.querySelectorAll('.img-font-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.img-font-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    imgState.font = btn.dataset.font;
+    drawImagePreview();
+  });
+});
+document.getElementById('imgTextColor').addEventListener('input', (e) => { imgState.textColor = e.target.value; drawImagePreview(); });
+document.getElementById('imgOutlineColor').addEventListener('input', (e) => { imgState.outlineColor = e.target.value; drawImagePreview(); });
+
+// 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율)를 옮길 수 있습니다.
+(function setupCaptionDrag() {
+  const canvas = document.getElementById('imgPreviewCanvas');
+  let dragging = false;
+  function moveTo(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    imgState.tx = Math.min(0.95, Math.max(0.05, (clientX - rect.left) / rect.width));
+    imgState.ty = Math.min(0.95, Math.max(0.05, (clientY - rect.top) / rect.height));
+    drawImagePreview();
+  }
+  canvas.addEventListener('pointerdown', (e) => {
+    if (!imgState.image) return;
+    dragging = true;
+    canvas.setPointerCapture(e.pointerId);
+    moveTo(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('pointermove', (e) => { if (dragging) moveTo(e.clientX, e.clientY); });
+  canvas.addEventListener('pointerup', () => { dragging = false; });
+  canvas.addEventListener('pointercancel', () => { dragging = false; });
+})();
+
+document.querySelectorAll('.img-download-btn').forEach(btn => {
+  if (!btn.dataset.size) return;
+  btn.addEventListener('click', () => {
+    if (!imgState.image) { showToast('이미지를 먼저 업로드해주세요!'); return; }
+    const size = parseInt(btn.dataset.size, 10);
+    gatedAction(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgState.image, 0, 0, size, size);
+      drawCaptionOverlay(ctx, size, imgState);
+      const label = (imgState.caption || '이미지이모지').replace(/\n/g, ' ');
+      downloadCanvas(canvas, `${label}_${btn.dataset.name}_${size}px.png`);
+    });
+  });
+});
+document.getElementById('imgCopyBtn').addEventListener('click', () => {
+  if (!imgState.image) { showToast('이미지를 먼저 업로드해주세요!'); return; }
+  gatedAction(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgState.image, 0, 0, 256, 256);
+    drawCaptionOverlay(ctx, 256, imgState);
+    copyCanvasToClipboard(canvas);
+  });
+});
+document.getElementById('imgShareBtn').addEventListener('click', () => {
+  if (!imgState.image) { showToast('이미지를 먼저 업로드해주세요!'); return; }
+  const caption = document.getElementById('imgCaptionText').value.trim();
+  if (caption && containsBannedWord(caption)) {
+    alert('성적 표현이 포함된 단어는 등록할 수 없습니다.');
+    return;
+  }
+  shareSource = 'image';
+  openShareModal();
+});
+
+/* =========================================================
+   14. 검색
+   ========================================================= */
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  state.query = searchInput.value;
+  document.getElementById('searchClear').classList.toggle('hidden', !state.query);
+  if (state.cat === 'generator') { state.cat = 'top'; onCategoryChange(); }
+  else renderGrid();
+});
+document.getElementById('searchClear').addEventListener('click', () => {
+  searchInput.value = ''; state.query = ''; renderGrid();
+  document.getElementById('searchClear').classList.add('hidden');
+});
+
+/* =========================================================
+   15. 다크모드
+   ========================================================= */
+function applyTheme(dark) {
+  document.documentElement.classList.toggle('dark', dark);
+  document.getElementById('themeToggle').textContent = dark ? '☀️' : '🌙';
+  writeStr('hpz-theme', dark ? 'dark' : 'light');
+}
+document.getElementById('themeToggle').addEventListener('click', () => {
+  applyTheme(!document.documentElement.classList.contains('dark'));
+});
+(function initTheme(){
+  const saved = readStr('hpz-theme', null);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved ? saved === 'dark' : prefersDark);
+})();
+
+/* =========================================================
+   16. 보스키
+   ========================================================= */
+function buildBossTable() {
+  const table = document.getElementById('bossTable');
+  const cols = 8, rows = 30;
+  const header = document.createElement('tr');
+  header.innerHTML = '<th class="w-9 bg-gray-100 border border-gray-300"></th>' +
+    Array.from({length: cols}, (_,i)=>`<th class="min-w-[90px] bg-gray-100 border border-gray-300 font-normal text-gray-500 py-1">${colLetter(i)}</th>`).join('');
+  table.appendChild(header);
+  const fakeHeaders = ['부서','담당자','1분기','2분기','3분기','4분기','목표달성률','비고'];
+  for (let r=0;r<rows;r++) {
+    const tr = document.createElement('tr');
+    let rowHtml = `<td class="bg-gray-100 border border-gray-300 text-center text-gray-500">${r+1}</td>`;
+    for (let c=0;c<cols;c++) {
+      let v = '';
+      if (r===0) v = fakeHeaders[c];
+      else if (c>=2 && c<=5) v = (Math.random()*100).toFixed(1);
+      else if (c===6 && r>0) v = (Math.random()*100).toFixed(0)+'%';
+      else if (c<2 && r>0) v = ['영업1팀','영업2팀','마케팅','개발','인사','재무'][r%6];
+      rowHtml += `<td class="border border-gray-300 px-2 py-1 text-gray-700 whitespace-nowrap">${v}</td>`;
+    }
+    tr.innerHTML = rowHtml;
+    table.appendChild(tr);
+  }
+}
+buildBossTable();
+
+function showBoss() { document.getElementById('bossOverlay').classList.remove('hidden'); }
+function hideBoss() { document.getElementById('bossOverlay').classList.add('hidden'); }
+document.getElementById('bossKeyBtn').addEventListener('click', showBoss);
+document.getElementById('bossExitTab').addEventListener('click', hideBoss);
+document.getElementById('bossCloseBtn').addEventListener('click', hideBoss);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('bossOverlay');
+    overlay.classList.contains('hidden') ? showBoss() : hideBoss();
+  }
+});
+
+/* =========================================================
+   17. 바이럴: 칼퇴 확률 테스트 & 카카오 공유
+   ========================================================= */
+document.getElementById('kalToeBtn').addEventListener('click', () => {
+  const pct = Math.floor(Math.random()*101);
+  const msgs = pct>80?'오늘은 칼퇴 각! 🏃‍♂️💨' : pct>50?'반반이에요, 눈치껏 퇴근하세요 👀' : pct>20?'야근각... 커피 한 잔 하시죠 ☕' : '오늘은... 힘내세요 🥲';
+  const resultEl = document.getElementById('kalToeResult');
+  resultEl.textContent = `${pct}% · ${msgs}`;
+  resultEl.classList.remove('hidden');
+});
+
+document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
+  const shareData = {
+    title: '회피즐~',
+    text: '오늘도 회피즐~ 3초 만에 복사하는 K-직장인 이모지 시트',
+    url: window.location.href,
+  };
+  try {
+    if (navigator.share) { await navigator.share(shareData); return; }
+    throw new Error('no web share');
+  } catch {
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      showToast('🔗 링크가 복사됐어요! 팀원에게 붙여넣기 해보세요.');
+    } catch {
+      showToast('공유하기를 지원하지 않는 환경이에요.');
+    }
+  }
+  // 실서비스 배포 시: Kakao SDK 초기화 후 아래 사용
+  // Kaka.Share.sendDefault({ objectType:'feed', content:{ title:shareData.title, description:shareData.text, imageUrl:'https://.../og-image.png', link:{ mobileWebUrl:shareData.url, webUrl:shareData.url }}});
+});
+
+/* =========================================================
+   18. 초기화
+   ========================================================= */
+renderSheetTabs();
+renderGrid();
+applyStyleDefaults(genState.style);
+drawGenPreview();
+window.addEventListener('resize', () => { if (state.cat !== 'generator') renderGrid(); });
+</script>
+</body>
+</html>
