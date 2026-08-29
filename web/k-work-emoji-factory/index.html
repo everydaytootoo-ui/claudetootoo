@@ -191,12 +191,12 @@
   }
   .slogan-pill .balance :where(b, .accent) { color: #FFD666; }
 
-  /* 기능 요약 칩 */
-  .feature-chip { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+  /* 기능 요약 칩 — 생성기가 스크롤 없이 더 빨리 보이도록 높이를 압축함 */
+  .feature-chip { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
   .feature-icon {
-    width: 42px; height: 42px; border-radius: 999px;
+    width: 26px; height: 26px; border-radius: 999px;
     background: #ffffff; box-shadow: 0 2px 6px rgba(16,124,65,0.18);
-    display: flex; align-items: center; justify-content: center; font-size: 19px;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
   }
   html.dark .feature-icon { background: #1b2620; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
@@ -302,8 +302,8 @@
   </div>
 
   <!-- 슬로건 배너 (스티커 필 스타일) -->
-  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-5">
-    <div class="slogan-pill rounded-full px-5 sm:px-8 py-3.5 sm:py-4 shadow-lg flex items-center justify-center gap-2.5 text-center">
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-3">
+    <div class="slogan-pill rounded-full px-5 sm:px-8 py-2 sm:py-2.5 shadow-lg flex items-center justify-center gap-2.5 text-center">
       <span class="ref-tag">A1:E1 병합됨</span>
       <span class="text-xl sm:text-2xl shrink-0">⚡</span>
       <p class="font-brand text-sm sm:text-xl text-white balance leading-snug">
@@ -312,33 +312,29 @@
     </div>
   </div>
 
-  <!-- 기능 요약 -->
-  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-4">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+  <!-- 기능 요약 (한 줄로 압축해 생성기가 스크롤 없이 더 빨리 보이도록 함) -->
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">⏱️</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">10초 완성</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">간단한 3단계로<br class="hidden sm:block">빠르게 만들기</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">10초 완성</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">😊</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">다양한 표현</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">직장인 공감<br class="hidden sm:block">이모지 모음</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">다양한 표현</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">📊</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">엑셀 디자인</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">익숙해서 편안한<br class="hidden sm:block">엑셀 컨셉</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">엑셀 디자인</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">💬</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">팀즈/슬랙용</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">업무 채팅에 딱!<br class="hidden sm:block">부담 없이 사용</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">팀즈/슬랙용</p>
       </div>
     </div>
   </div>
 
-  <main class="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
+  <main class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2 pb-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
 
     <!-- 좌측: 엑셀 그리드 / 생성기 -->
     <section class="min-w-0">
