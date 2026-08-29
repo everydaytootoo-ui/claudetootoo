@@ -245,7 +245,7 @@
 
   <!-- 가짜 윈도우 타이틀바 -->
   <div class="win-titlebar h-7 flex items-center px-3 text-[11px] gap-2 select-none border-b border-gray-300 dark:border-gray-800">
-    <span>📊</span><span class="font-mono">회피즐_월급루팡_이모지모음.xlsx - Excel</span>
+    <span>📊</span><span class="font-mono">회피즐_회사에서즐기기프로젝트_이모지모음.xlsx - Excel</span>
     <span class="ml-auto opacity-60 hidden sm:inline">자동 저장 켬</span>
   </div>
   <!-- 빠른 실행 도구 모음 (Quick Access Toolbar) -->
@@ -453,6 +453,13 @@
                 <button data-font="gungseo" class="img-font-btn">궁서체</button>
               </div>
 
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 flex items-center justify-between">
+                <span>글자 크기</span>
+                <span id="imgFontSizeValue" class="text-gray-400 dark:text-gray-500 font-mono">11%</span>
+              </label>
+              <input id="imgFontSize" type="range" min="4" max="30" step="1" value="11"
+                class="mt-1 w-full accent-brand cursor-pointer" />
+
               <div class="grid grid-cols-2 gap-3 mt-4">
                 <div>
                   <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
@@ -463,7 +470,7 @@
                   <input id="imgOutlineColor" type="color" value="#000000" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
                 </div>
               </div>
-              <button id="imgChangeBtn" class="text-xs font-bold text-gray-400 hover:text-brand dark:hover:text-emerald-400 underline mt-2">🔄 다른 이미지로 변경</button>
+              <button id="imgChangeBtn" class="mt-2 w-full rounded px-3 py-2 text-xs font-bold border-2 border-dashed border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-brand hover:text-brand dark:hover:border-emerald-500 dark:hover:text-emerald-400 transition">🔄 다른 이미지로 변경</button>
 
               <div class="mt-5 flex flex-wrap gap-2">
                 <button data-size="128" data-name="slack-discord" class="img-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
@@ -477,7 +484,7 @@
             </div>
 
             <div class="flex flex-col items-center justify-start">
-              <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 캔버스를 드래그해서 자막 위치를 옮겨보세요</p>
+              <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요</p>
               <canvas id="imgPreviewCanvas" width="300" height="300" class="max-w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-move touch-none"></canvas>
             </div>
           </div>
@@ -1729,6 +1736,12 @@ document.querySelectorAll('.img-font-btn').forEach(btn => {
 });
 document.getElementById('imgTextColor').addEventListener('input', (e) => { imgState.textColor = e.target.value; drawImagePreview(); });
 document.getElementById('imgOutlineColor').addEventListener('input', (e) => { imgState.outlineColor = e.target.value; drawImagePreview(); });
+document.getElementById('imgFontSize').addEventListener('input', (e) => {
+  const percent = parseInt(e.target.value, 10);
+  imgState.fontScale = percent / 100;
+  document.getElementById('imgFontSizeValue').textContent = percent + '%';
+  drawImagePreview();
+});
 
 // 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율)를 옮길 수 있습니다.
 (function setupCaptionDrag() {
@@ -1749,6 +1762,15 @@ document.getElementById('imgOutlineColor').addEventListener('input', (e) => { im
   canvas.addEventListener('pointermove', (e) => { if (dragging) moveTo(e.clientX, e.clientY); });
   canvas.addEventListener('pointerup', () => { dragging = false; });
   canvas.addEventListener('pointercancel', () => { dragging = false; });
+
+  // 이미 이미지가 올라간 상태에서도 새 이미지를 캔버스 위로 끌어놓으면 바로 교체됩니다
+  // (자막/글꼴/색/크기/위치 설정은 그대로 유지) — 작은 "변경" 버튼을 못 찾는 경우를 위한 보조 경로.
+  canvas.addEventListener('dragover', (e) => { e.preventDefault(); });
+  canvas.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleImageFile(file);
+  });
 })();
 
 document.querySelectorAll('.img-download-btn').forEach(btn => {
