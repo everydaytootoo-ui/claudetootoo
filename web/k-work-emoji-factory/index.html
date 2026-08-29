@@ -27,6 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<!-- Pretendard: 무료 상업적 이용 가능(SIL OFL 1.1) 한글 폰트, 공식 배포 CDN -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -191,12 +193,12 @@
   }
   .slogan-pill .balance :where(b, .accent) { color: #FFD666; }
 
-  /* 기능 요약 칩 */
-  .feature-chip { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+  /* 기능 요약 칩 — 생성기가 스크롤 없이 더 빨리 보이도록 높이를 압축함 */
+  .feature-chip { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
   .feature-icon {
-    width: 42px; height: 42px; border-radius: 999px;
+    width: 26px; height: 26px; border-radius: 999px;
     background: #ffffff; box-shadow: 0 2px 6px rgba(16,124,65,0.18);
-    display: flex; align-items: center; justify-content: center; font-size: 19px;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
   }
   html.dark .feature-icon { background: #1b2620; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
@@ -302,8 +304,8 @@
   </div>
 
   <!-- 슬로건 배너 (스티커 필 스타일) -->
-  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-5">
-    <div class="slogan-pill rounded-full px-5 sm:px-8 py-3.5 sm:py-4 shadow-lg flex items-center justify-center gap-2.5 text-center">
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-3">
+    <div class="slogan-pill rounded-full px-5 sm:px-8 py-2 sm:py-2.5 shadow-lg flex items-center justify-center gap-2.5 text-center">
       <span class="ref-tag">A1:E1 병합됨</span>
       <span class="text-xl sm:text-2xl shrink-0">⚡</span>
       <p class="font-brand text-sm sm:text-xl text-white balance leading-snug">
@@ -312,33 +314,29 @@
     </div>
   </div>
 
-  <!-- 기능 요약 -->
-  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-4">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+  <!-- 기능 요약 (한 줄로 압축해 생성기가 스크롤 없이 더 빨리 보이도록 함) -->
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">⏱️</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">10초 완성</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">간단한 3단계로<br class="hidden sm:block">빠르게 만들기</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">무료 제작 10초 완성</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">😊</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">다양한 표현</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">직장인 공감<br class="hidden sm:block">이모지 모음</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">다양한 표현</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">📊</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">엑셀 디자인</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">익숙해서 편안한<br class="hidden sm:block">엑셀 컨셉</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">엑셀 디자인</p>
       </div>
-      <div class="feature-chip bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-2 py-3.5">
+      <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">💬</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100 mt-0.5">팀즈/슬랙용</p>
-        <p class="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">업무 채팅에 딱!<br class="hidden sm:block">부담 없이 사용</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">팀즈/슬랙용</p>
       </div>
     </div>
   </div>
 
-  <main class="max-w-[1400px] mx-auto px-3 sm:px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
+  <main class="max-w-[1400px] mx-auto px-3 sm:px-4 pt-2 pb-4 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
 
     <!-- 좌측: 엑셀 그리드 / 생성기 -->
     <section class="min-w-0">
@@ -381,7 +379,7 @@
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
             <div id="fontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
               <button data-font="gothic" class="gen-font-btn">고딕</button>
-              <button data-font="black" class="gen-font-btn active">블랙한</button>
+              <button data-font="black" class="gen-font-btn active">Pretendard</button>
               <button data-font="dohyeon" class="gen-font-btn">두헌</button>
               <button data-font="jua" class="gen-font-btn">주아</button>
               <button data-font="gungseo" class="gen-font-btn">궁서체</button>
@@ -398,11 +396,11 @@
 
             <div class="grid grid-cols-2 gap-3 mt-4">
               <div>
-                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                <label for="genTextColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">글자색</label>
                 <input id="genTextColor" type="color" value="#22d3ee" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
               </div>
               <div>
-                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">배경색</label>
+                <label for="genBgColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">배경색</label>
                 <input id="genBgColor" type="color" value="#0b1021" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
               </div>
             </div>
@@ -447,7 +445,7 @@
               <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
               <div id="imgFontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
                 <button data-font="gothic" class="img-font-btn active">고딕</button>
-                <button data-font="black" class="img-font-btn">블랙한</button>
+                <button data-font="black" class="img-font-btn">Pretendard</button>
                 <button data-font="dohyeon" class="img-font-btn">두헌</button>
                 <button data-font="jua" class="img-font-btn">주아</button>
                 <button data-font="gungseo" class="img-font-btn">궁서체</button>
@@ -462,11 +460,11 @@
 
               <div class="grid grid-cols-2 gap-3 mt-4">
                 <div>
-                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                  <label for="imgTextColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">글자색</label>
                   <input id="imgTextColor" type="color" value="#ffffff" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
                 </div>
                 <div>
-                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">외곽선색</label>
+                  <label for="imgOutlineColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">외곽선색</label>
                   <input id="imgOutlineColor" type="color" value="#000000" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
                 </div>
               </div>
@@ -483,8 +481,18 @@
               </button>
             </div>
 
-            <div class="flex flex-col items-center justify-start">
-              <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요</p>
+            <div class="flex flex-col items-center justify-start w-full">
+              <div class="flex gap-2 mb-2 self-start">
+                <button id="dragModeCaptionBtn" class="drag-mode-btn active" data-mode="caption">🔤 자막 이동</button>
+                <button id="dragModePhotoBtn" class="drag-mode-btn" data-mode="photo">🖼️ 사진 이동</button>
+              </div>
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start w-full flex items-center justify-between">
+                <span>사진 확대</span>
+                <span id="imgZoomValue" class="text-gray-400 dark:text-gray-500 font-mono">100%</span>
+              </label>
+              <input id="imgZoom" type="range" min="100" max="300" step="5" value="100"
+                class="w-full accent-brand cursor-pointer mb-2" />
+              <p id="imgDragHint" class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요</p>
               <canvas id="imgPreviewCanvas" width="300" height="300" class="max-w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-move touch-none"></canvas>
             </div>
           </div>
@@ -660,10 +668,21 @@
 <div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
 
 <style>
-  .gen-style-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
-  .gen-style-btn.active { @apply bg-brand text-white border-brand; }
-  .gen-font-btn, .img-font-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
-  .gen-font-btn.active, .img-font-btn.active { @apply bg-gray-800 text-white border-gray-800 dark:bg-emerald-600 dark:border-emerald-600; }
+  /* 폰트/스타일 선택 버튼 — Tailwind CDN의 커스텀 팔레트 @apply 해석에 기대지 않고
+     항상 확실하게 보이도록 순수 CSS로 색상을 직접 지정함 (viewer feedback: 글자색이 안 보임) */
+  .gen-style-btn, .gen-font-btn, .img-font-btn {
+    font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 6px;
+    border: 1px solid #C9D4CC; background: #F7FAF8; color: #54685C; cursor: pointer; transition: all .15s ease;
+  }
+  .gen-style-btn:hover, .gen-font-btn:hover, .img-font-btn:hover { border-color: #107C41; }
+  .gen-style-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
+  .gen-font-btn.active, .img-font-btn.active { background: #283730; color: #ffffff; border-color: #283730; }
+  html.dark .gen-style-btn, html.dark .gen-font-btn, html.dark .img-font-btn {
+    background: #1b2620; color: #C9D4CC; border-color: #2c3a33;
+  }
+  html.dark .gen-style-btn:hover, html.dark .gen-font-btn:hover, html.dark .img-font-btn:hover { border-color: #34d399; }
+  html.dark .gen-style-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
+  html.dark .gen-font-btn.active, html.dark .img-font-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
   .gen-download-btn, .img-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
   .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
   /* 텍스트/이미지 모드 버튼을 각각 고유 색(인디고/마젠타)으로 구분해
@@ -681,6 +700,13 @@
   html.dark .gen-mode-btn[data-mode="image"] { background: #3b0764; color: #F0ABFC; border-color: #86198F; }
   html.dark .gen-mode-btn[data-mode="image"]:hover { background: #4a047e; }
   html.dark .gen-mode-btn[data-mode="image"].active { background: #C026D3; color: #ffffff; border-color: #E879F9; }
+  /* 캔버스 드래그가 자막을 옮길지 사진을 옮길지 선택하는 토글 */
+  .drag-mode-btn { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; border: 1px solid #C9D4CC; background: #F0F4F1; color: #54685C; cursor: pointer; transition: all .15s ease; }
+  .drag-mode-btn:hover { background: #E1E8E3; }
+  .drag-mode-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
+  html.dark .drag-mode-btn { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
+  html.dark .drag-mode-btn:hover { background: #223028; }
+  html.dark .drag-mode-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
   /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
      다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
   .kakao-btn { color: #3C1E1E !important; }
@@ -694,7 +720,7 @@
    ========================================================= */
 const FONTS = {
   gothic:  '"Noto Sans KR", sans-serif',
-  black:   '"Black Han Sans", sans-serif',
+  black:   '"Pretendard", "Noto Sans KR", sans-serif', // 이모지용으로 너무 두꺼운 Black Han Sans 대신 Pretendard 사용 (viewer feedback)
   dohyeon: '"Do Hyeon", sans-serif',
   jua:     '"Jua", sans-serif',
   gungseo: '"Nanum Brush Script", cursive',
@@ -1677,7 +1703,33 @@ const imgState = {
   dataUrl: null,     // 위 이미지를 저장용으로 인코딩한 dataURL (JPEG)
   caption: '', font: 'gothic', textColor: '#ffffff', outlineColor: '#000000',
   tx: 0.5, ty: 0.85, fontScale: 0.11,
+  rawImage: null,       // 크롭 전 원본 이미지 (확대/이동 계산의 기준)
+  zoom: 1, panX: 0.5, panY: 0.5, // 사진 확대 배율과, 정사각형 안에서 보여줄 위치(0~1)
 };
+
+const IMG_SQUARE = 640;
+
+// rawImage를 현재 zoom/panX/panY 값으로 정사각형에 맞게 다시 크롭해서
+// imgState.image(캔버스)/imgState.dataUrl에 반영합니다. 사진을 옮기거나
+// 확대할 때마다 다시 호출됩니다. 항상 정사각형을 빈틈없이 채우도록(cover)
+// dx/dy를 클램프합니다.
+function bakeSquareImage() {
+  const img = imgState.rawImage;
+  if (!img) return;
+  const baseScale = Math.max(IMG_SQUARE / img.width, IMG_SQUARE / img.height);
+  const scale = baseScale * (imgState.zoom || 1);
+  const w = img.width * scale, h = img.height * scale;
+  let dx = IMG_SQUARE / 2 - imgState.panX * w;
+  let dy = IMG_SQUARE / 2 - imgState.panY * h;
+  dx = Math.min(0, Math.max(IMG_SQUARE - w, dx));
+  dy = Math.min(0, Math.max(IMG_SQUARE - h, dy));
+  const off = document.createElement('canvas');
+  off.width = IMG_SQUARE; off.height = IMG_SQUARE;
+  const octx = off.getContext('2d');
+  octx.drawImage(img, dx, dy, w, h);
+  imgState.image = off;
+  imgState.dataUrl = off.toDataURL('image/jpeg', 0.9);
+}
 
 function drawImagePreview() {
   const canvas = document.getElementById('imgPreviewCanvas');
@@ -1696,25 +1748,14 @@ function handleImageFile(file) {
   reader.onload = (e) => {
     const raw = new Image();
     raw.onload = () => {
-      // 업로드된 이미지를 정사각형 Canvas에 꽉 차도록(cover) 잘라서 저장합니다.
-      const SQUARE = 640;
-      const off = document.createElement('canvas');
-      off.width = SQUARE; off.height = SQUARE;
-      const octx = off.getContext('2d');
-      const scale = Math.max(SQUARE / raw.width, SQUARE / raw.height);
-      const w = raw.width * scale, h = raw.height * scale;
-      octx.drawImage(raw, (SQUARE - w) / 2, (SQUARE - h) / 2, w, h);
-      const squareDataUrl = off.toDataURL('image/jpeg', 0.9);
-
-      const finalImg = new Image();
-      finalImg.onload = () => {
-        imgState.image = finalImg;
-        imgState.dataUrl = squareDataUrl;
-        document.getElementById('imgDropZone').classList.add('hidden');
-        document.getElementById('imgEditor').classList.remove('hidden');
-        drawImagePreview();
-      };
-      finalImg.src = squareDataUrl;
+      imgState.rawImage = raw;
+      imgState.zoom = 1; imgState.panX = 0.5; imgState.panY = 0.5;
+      bakeSquareImage();
+      document.getElementById('imgDropZone').classList.add('hidden');
+      document.getElementById('imgEditor').classList.remove('hidden');
+      const zoomInput = document.getElementById('imgZoom');
+      if (zoomInput) { zoomInput.value = '100'; document.getElementById('imgZoomValue').textContent = '100%'; }
+      drawImagePreview();
     };
     raw.onerror = () => showToast('이미지를 불러오지 못했어요. 다른 파일을 시도해주세요.');
     raw.src = e.target.result;
@@ -1740,6 +1781,7 @@ imgFileInput.addEventListener('change', (e) => {
 });
 document.getElementById('imgChangeBtn').addEventListener('click', () => {
   imgState.image = null; imgState.dataUrl = null; imgState.caption = '';
+  imgState.rawImage = null; imgState.zoom = 1; imgState.panX = 0.5; imgState.panY = 0.5;
   document.getElementById('imgCaptionText').value = '';
   document.getElementById('imgEditor').classList.add('hidden');
   document.getElementById('imgDropZone').classList.remove('hidden');
@@ -1766,23 +1808,69 @@ document.getElementById('imgFontSize').addEventListener('input', (e) => {
   drawImagePreview();
 });
 
-// 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율)를 옮길 수 있습니다.
+document.getElementById('imgZoom').addEventListener('input', (e) => {
+  const percent = parseInt(e.target.value, 10);
+  imgState.zoom = percent / 100;
+  document.getElementById('imgZoomValue').textContent = percent + '%';
+  bakeSquareImage();
+  drawImagePreview();
+});
+
+// 캔버스 드래그가 자막을 옮길지 사진 위치를 옮길지 선택하는 토글입니다.
+let imgDragMode = 'caption';
+document.querySelectorAll('.drag-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.drag-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    imgDragMode = btn.dataset.mode;
+    document.getElementById('imgDragHint').textContent = imgDragMode === 'caption'
+      ? '🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요'
+      : '🖱️ 드래그로 사진 위치 이동 · 확대는 위 슬라이더로 조절하세요';
+  });
+});
+
+// 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율) 또는 사진 위치(panX, panY)를 옮길 수 있습니다.
 (function setupCaptionDrag() {
   const canvas = document.getElementById('imgPreviewCanvas');
   let dragging = false;
-  function moveTo(clientX, clientY) {
+  let lastX = 0, lastY = 0;
+  function moveCaptionTo(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     imgState.tx = Math.min(0.95, Math.max(0.05, (clientX - rect.left) / rect.width));
     imgState.ty = Math.min(0.95, Math.max(0.05, (clientY - rect.top) / rect.height));
     drawImagePreview();
   }
+  // 화면상 드래그 이동량(px)을 정사각형 캔버스(IMG_SQUARE) 기준 픽셀로 환산해
+  // panX/panY(0~1, 이미지가 확대된 상태에서 정사각형 중심에 오는 지점)에 반영합니다.
+  function panPhotoBy(dxClient, dyClient) {
+    const img = imgState.rawImage;
+    if (!img) return;
+    const rect = canvas.getBoundingClientRect();
+    const toBaked = canvas.width / rect.width;
+    const baseScale = Math.max(IMG_SQUARE / img.width, IMG_SQUARE / img.height);
+    const scale = baseScale * (imgState.zoom || 1);
+    const w = img.width * scale, h = img.height * scale;
+    imgState.panX = Math.min(1, Math.max(0, imgState.panX - (dxClient * toBaked) / w));
+    imgState.panY = Math.min(1, Math.max(0, imgState.panY - (dyClient * toBaked) / h));
+    bakeSquareImage();
+    drawImagePreview();
+  }
   canvas.addEventListener('pointerdown', (e) => {
     if (!imgState.image) return;
     dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
     canvas.setPointerCapture(e.pointerId);
-    moveTo(e.clientX, e.clientY);
+    if (imgDragMode === 'caption') moveCaptionTo(e.clientX, e.clientY);
   });
-  canvas.addEventListener('pointermove', (e) => { if (dragging) moveTo(e.clientX, e.clientY); });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    if (imgDragMode === 'caption') {
+      moveCaptionTo(e.clientX, e.clientY);
+    } else {
+      panPhotoBy(e.clientX - lastX, e.clientY - lastY);
+      lastX = e.clientX; lastY = e.clientY;
+    }
+  });
   canvas.addEventListener('pointerup', () => { dragging = false; });
   canvas.addEventListener('pointercancel', () => { dragging = false; });
 
