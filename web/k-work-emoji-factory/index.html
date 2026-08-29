@@ -138,13 +138,13 @@
   html.dark .sheet-tab:hover { background: #223028; }
   html.dark .sheet-tab.active { background: #16231c; color: #34d399; border-top-color: #34d399; }
 
-  /* '나만의 이모지 만들기' 탭만 만들기 도구임을 한눈에 알 수 있도록 청록색으로 구분 */
-  .sheet-tab-make { background: #CCFBF1; color: #0F766E; border-color: #5EEAD4; }
-  .sheet-tab-make:hover { background: #99F6E4; }
-  .sheet-tab-make.active { background: #ffffff; color: #0D9488; border-top-color: #0D9488; }
-  html.dark .sheet-tab-make { background: #0f2e2b; color: #5EEAD4; border-color: #115e59; }
-  html.dark .sheet-tab-make:hover { background: #134e4a; }
-  html.dark .sheet-tab-make.active { background: #16231c; color: #2DD4BF; border-top-color: #2DD4BF; }
+  /* '나만의 이모지 만들기' 탭만 만들기 도구임을 한눈에 알 수 있도록 비비드한 그라디언트로 강조 */
+  .sheet-tab-make { background: linear-gradient(135deg, #FB7185, #F97316); color: #ffffff; border-color: transparent; text-shadow: 0 1px 1px rgba(0,0,0,0.12); }
+  .sheet-tab-make:hover { filter: brightness(1.06); }
+  .sheet-tab-make.active { background: #ffffff; color: #E11D48; text-shadow: none; border-top: 2px solid #E11D48; }
+  html.dark .sheet-tab-make { background: linear-gradient(135deg, #FB7185, #F97316); color: #ffffff; border-color: transparent; }
+  html.dark .sheet-tab-make:hover { filter: brightness(1.1); }
+  html.dark .sheet-tab-make.active { background: #16231c; color: #FB7185; text-shadow: none; border-top-color: #FB7185; }
 
   .toast { transform: translateY(20px); opacity: 0; transition: all .25s ease; }
   .toast.show { transform: translateY(0); opacity: 1; }
@@ -724,11 +724,11 @@ const BUILTIN_EMOJI_DATA = [
 ];
 
 const CATEGORIES = [
+  { id:'generator', label:'나만의 이모지 만들기',    icon:'🛠️' },
   { id:'top',       label:'실시간 TOP 20',        icon:'🔥' },
   { id:'friend',    label:'회사 찐친 이모지',       icon:'💬' },
   { id:'offwork',   label:'칼퇴/연차 승인요청',      icon:'🏃' },
   { id:'free',      label:'자유 이모지 (유저 제작)', icon:'🤪' },
-  { id:'generator', label:'나만의 이모지 만들기',    icon:'🛠️' },
 ];
 
 const HOT_THRESHOLD = 150; // likes+downloads 합산이 이 값 이상이면 🔥 뱃지
