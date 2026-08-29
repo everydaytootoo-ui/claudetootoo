@@ -1956,12 +1956,10 @@ document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
     copied = copyTextFallback(shareData.url);
   }
   showToast(copied ? '🔗 링크가 복사됐어요! 팀원에게 붙여넣기 해보세요.' : '공유하기를 지원하지 않는 환경이에요.');
-
-  // 링크 복사와 별개로, 기기가 지원하면 OS 공유 시트도 함께 띄워줍니다
-  // (실패/취소해도 위에서 이미 복사는 끝난 상태이므로 무시해도 안전합니다).
-  if (navigator.share) {
-    try { await navigator.share(shareData); } catch {}
-  }
+  // (이전에는 복사 후 navigator.share()로 OS 공유 시트도 함께 띄웠는데, 데스크톱
+  // Chrome/ChromeOS 등에서 공유 대상을 찾지 못해 "다시 시도하세요" 오류 시트가
+  // 복사 성공 토스트 위에 떠서 마치 실패한 것처럼 보이는 문제가 있어 제거했습니다.
+  // 이 버튼의 역할은 링크 복사이므로, 복사가 끝나면 그걸로 완료입니다.)
   // 실서비스 배포 시: Kakao SDK 초기화 후 아래 사용
   // Kaka.Share.sendDefault({ objectType:'feed', content:{ title:shareData.title, description:shareData.text, imageUrl:'https://.../og-image.png', link:{ mobileWebUrl:shareData.url, webUrl:shareData.url }}});
 });
