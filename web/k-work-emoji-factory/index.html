@@ -1352,14 +1352,9 @@ function closeTicketModal() {
 document.getElementById('ticketModalClose').addEventListener('click', () => { pendingGatedAction = null; closeTicketModal(); });
 document.getElementById('ticketModal').addEventListener('click', e => { if (e.target.id === 'ticketModal') { pendingGatedAction = null; closeTicketModal(); } });
 
-// ⚠️ 실서비스 연동 시 반드시 읽어주세요
-// 지금 이 버튼은 "클릭하면 즉시" 티켓을 발급하는 데모입니다. 실제 광고 수익화를
-// 붙일 때 절대 이 버튼을 AdSense 디스플레이 배너 클릭에 연결하지 마세요 —
-// "광고를 누르면 보상을 준다"는 구조는 부정 클릭 유도로 간주되어 Google 광고
-// 정책 위반(계정 정지 사유)이 됩니다. 반드시 별도의 리워드 광고 SDK(Google Ad
-// Manager 리워드 광고, AdMob Rewarded Ad 등)를 연동해서, 광고가 끝까지 재생된
-// 뒤 그 SDK의 "재생 완료" 콜백 안에서만 아래 로직(티켓 발급)을 실행하세요.
-document.getElementById('ticketGrantBtn').addEventListener('click', () => {
+// 실제로 티켓을 발급하는 로직입니다. 광고 재생 여부와 무관하게 항상 이 함수를
+// 통해서만 발급되도록 분리해뒀습니다 — 아래 requestTicketViaAd()를 참고하세요.
+function grantTicket() {
   const expireAt = Date.now() + 30 * 60 * 1000;
   writeStr(TICKET_KEY, String(expireAt));
   closeTicketModal();
@@ -1370,7 +1365,35 @@ document.getElementById('ticketGrantBtn').addEventListener('click', () => {
     pendingGatedAction = null;
     fn();
   }
-});
+}
+
+// ⚠️ 실서비스 연동 시 반드시 읽어주세요
+// 아직 광고 SDK 연동 링크(광고 단위 ID)를 받지 못해서, 지금은 광고 재생/완료
+// 검증 없이 클릭 즉시 grantTicket()을 호출하는 임시 상태입니다.
+// 절대 이 버튼을 AdSense 디스플레이 배너 클릭에 연결하지 마세요 — "광고를
+// 누르면 보상을 준다"는 구조는 부정 클릭 유도로 간주되어 Google 광고 정책
+// 위반(계정 정지 사유)이 됩니다. 반드시 별도의 리워드 광고 SDK(Google Ad
+// Manager 리워드 광고, AdMob Rewarded Ad 등)를 연동해서, 광고가 끝까지
+// 재생된 뒤 그 SDK의 "재생 완료" 콜백 안에서만 grantTicket()을 호출하세요.
+function requestTicketViaAd() {
+  // ▼▼▼ [Google Ad Manager 리워드 광고 SDK 연동 위치] ▼▼▼
+  // 광고 단위 ID를 받으면 아래를 예를 들어 이렇게 교체하면 됩니다:
+  //
+  //   googletag.cmd.push(function () {
+  //     const slot = googletag.defineOutOfPageSlot('/광고단위경로', googletag.enums.OutOfPageFormat.REWARDED);
+  //     if (!slot) return; // 리워드 광고 로드 실패 시 티켓을 발급하지 않음
+  //     slot.addService(googletag.pubads());
+  //     googletag.pubads().addEventListener('rewardedSlotGranted', () => grantTicket());
+  //     googletag.enableServices();
+  //     googletag.display(slot);
+  //   });
+  //
+  // 지금은 그 자리에 바로 grantTicket()을 호출합니다 (검증 없음, 임시).
+  grantTicket();
+  // ▲▲▲ [Google Ad Manager 리워드 광고 SDK 연동 위치] ▲▲▲
+}
+
+document.getElementById('ticketGrantBtn').addEventListener('click', requestTicketViaAd);
 
 // 광고를 보고 싶지 않은 유저를 위한 대체 채널. 실제 결제 연동(토스페이먼츠,
 // 카카오페이 등) 전까지는 준비 중 안내만 표시합니다.
@@ -1894,22 +1917,50 @@ document.getElementById('kalToeBtn').addEventListener('click', () => {
   resultEl.classList.remove('hidden');
 });
 
+// document.execCommand('copy')는 폐기 예정(deprecated) API지만, Clipboard API를
+// 지원하지 않거나 비보안 컨텍스트인 구형 브라우저를 위한 최후의 대비책으로 둡니다.
+function copyTextFallback(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    ta.style.top = '0'; ta.style.left = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
   const shareData = {
     title: '회피즐~',
     text: '오늘도 회피즐~ 3초 만에 복사하는 K-직장인 이모지 시트',
     url: window.location.href,
   };
+  // 링크 복사를 항상 가장 먼저·확실하게 시도합니다. 예전에는 navigator.share()를
+  // 먼저 await한 뒤 실패(취소 포함)했을 때만 클립보드로 넘어갔는데, 실배포
+  // 환경(특히 iOS Safari)에서는 await로 시간이 지나며 "사용자 동작(user
+  // activation)"이 소멸돼 그 뒤의 clipboard.writeText()가 조용히 실패하는
+  // 문제가 있었습니다 — 그래서 복사부터 클릭 직후 바로 실행하도록 순서를
+  // 바꿨습니다.
+  let copied = false;
   try {
-    if (navigator.share) { await navigator.share(shareData); return; }
-    throw new Error('no web share');
+    await navigator.clipboard.writeText(shareData.url);
+    copied = true;
   } catch {
-    try {
-      await navigator.clipboard.writeText(shareData.url);
-      showToast('🔗 링크가 복사됐어요! 팀원에게 붙여넣기 해보세요.');
-    } catch {
-      showToast('공유하기를 지원하지 않는 환경이에요.');
-    }
+    copied = copyTextFallback(shareData.url);
+  }
+  showToast(copied ? '🔗 링크가 복사됐어요! 팀원에게 붙여넣기 해보세요.' : '공유하기를 지원하지 않는 환경이에요.');
+
+  // 링크 복사와 별개로, 기기가 지원하면 OS 공유 시트도 함께 띄워줍니다
+  // (실패/취소해도 위에서 이미 복사는 끝난 상태이므로 무시해도 안전합니다).
+  if (navigator.share) {
+    try { await navigator.share(shareData); } catch {}
   }
   // 실서비스 배포 시: Kakao SDK 초기화 후 아래 사용
   // Kaka.Share.sendDefault({ objectType:'feed', content:{ title:shareData.title, description:shareData.text, imageUrl:'https://.../og-image.png', link:{ mobileWebUrl:shareData.url, webUrl:shareData.url }}});
