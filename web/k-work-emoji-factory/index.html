@@ -36,7 +36,7 @@
       extend: {
         fontFamily: {
           sans: ['"Noto Sans KR"', 'sans-serif'],
-          brand: ['"Black Han Sans"', 'sans-serif'],
+          brand: ['"Do Hyeon"', 'sans-serif'],
           mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
           pixel: ['"Press Start 2P"', 'monospace'],
         },
@@ -650,8 +650,21 @@
   .gen-font-btn.active, .img-font-btn.active { @apply bg-gray-800 text-white border-gray-800 dark:bg-emerald-600 dark:border-emerald-600; }
   .gen-download-btn, .img-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
   .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
-  .gen-mode-btn { @apply flex-1 text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
-  .gen-mode-btn.active { @apply bg-brand text-white border-brand; }
+  /* 텍스트/이미지 모드 버튼을 각각 고유 색(인디고/마젠타)으로 구분해
+     active 여부와 상관없이 어떤 버튼이 어떤 기능인지 한눈에 알 수 있도록 함 */
+  .gen-mode-btn { flex: 1 1 0%; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; padding: 11px 14px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all .15s ease; }
+  .gen-mode-btn[data-mode="text"] { background: #EEF2FF; color: #4338CA; border-color: #C7D2FE; }
+  .gen-mode-btn[data-mode="text"]:hover { background: #E0E7FF; }
+  .gen-mode-btn[data-mode="text"].active { background: #4F46E5; color: #ffffff; border-color: #4F46E5; box-shadow: 0 4px 12px rgba(79,70,229,0.35); }
+  .gen-mode-btn[data-mode="image"] { background: #FDF4FF; color: #A21CAF; border-color: #F5D0FE; }
+  .gen-mode-btn[data-mode="image"]:hover { background: #FAE8FF; }
+  .gen-mode-btn[data-mode="image"].active { background: #C026D3; color: #ffffff; border-color: #C026D3; box-shadow: 0 4px 12px rgba(192,38,211,0.35); }
+  html.dark .gen-mode-btn[data-mode="text"] { background: #1e1b4b; color: #A5B4FC; border-color: #3730A3; }
+  html.dark .gen-mode-btn[data-mode="text"]:hover { background: #272357; }
+  html.dark .gen-mode-btn[data-mode="text"].active { background: #4F46E5; color: #ffffff; border-color: #6366F1; }
+  html.dark .gen-mode-btn[data-mode="image"] { background: #3b0764; color: #F0ABFC; border-color: #86198F; }
+  html.dark .gen-mode-btn[data-mode="image"]:hover { background: #4a047e; }
+  html.dark .gen-mode-btn[data-mode="image"].active { background: #C026D3; color: #ffffff; border-color: #E879F9; }
   /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
      다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
   .kakao-btn { color: #3C1E1E !important; }
@@ -681,6 +694,18 @@ const BUILTIN_EMOJI_DATA = [
   { id:'f6', text:'저기요', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['저기요','눈치','잠깐만','궁금'], seedLikes:40, seedDownloads:25 },
   { id:'f7', text:'회의중', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['회의중','미팅','바쁨','자리비움'], seedLikes:70, seedDownloads:45 },
   { id:'f8', text:'점심시간', cat:'friend', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['점심시간','점심','밥','식사'], seedLikes:65, seedDownloads:50 },
+  { id:'f9', text:'대박사건', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#db2777', kw:['대박사건','대박','사건','놀람'], seedLikes:175, seedDownloads:130 },
+  { id:'f10', text:'소름', cat:'friend', style:'neon', font:'black', textColor:'#a78bfa', bgColor:'#0b1021', kw:['소름','소름돋음','전율'], seedLikes:120, seedDownloads:85 },
+  { id:'f11', text:'이불킥', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['이불킥','흑역사','부끄러움'], seedLikes:98, seedDownloads:70 },
+  { id:'f12', text:'현타옴', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#475569', kw:['현타','현자타임','현타옴'], seedLikes:145, seedDownloads:100 },
+  { id:'f13', text:'웃참실패', cat:'friend', style:'neon', font:'black', textColor:'#fde047', bgColor:'#0b1021', kw:['웃참실패','빵터짐','웃김'], seedLikes:88, seedDownloads:60 },
+  { id:'f14', text:'급발진', cat:'friend', style:'motion', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['급발진','당황','화들짝'], seedLikes:76, seedDownloads:52 },
+  { id:'f15', text:'개웃김ㅋㅋ', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#f59e0b', kw:['개웃김','ㅋㅋㅋ','웃김'], seedLikes:132, seedDownloads:95 },
+  { id:'f16', text:'심쿵', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['심쿵','설렘','두근'], seedLikes:60, seedDownloads:40 },
+  { id:'f17', text:'멘붕', cat:'friend', style:'pixel', font:'black', textColor:'#ffffff', bgColor:'#1e1b4b', kw:['멘붕','멘탈붕괴','당황'], seedLikes:104, seedDownloads:72 },
+  { id:'f18', text:'급뭐임', cat:'friend', style:'neon', font:'black', textColor:'#34d399', bgColor:'#0b1021', kw:['급뭐임','뭐지','어리둥절'], seedLikes:45, seedDownloads:30 },
+  { id:'f19', text:'노잼', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#64748b', kw:['노잼','재미없음','시큰둥'], seedLikes:52, seedDownloads:35 },
+  { id:'f20', text:'킹받네', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['킹받네','열받음','킹받아'], seedLikes:168, seedDownloads:120 },
 
   // Sheet 3: 칼퇴/연차 승인요청 — 영혼 없는 넵/확인/승인요청 모음 (offwork)
   { id:'o1', text:'넵!', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['넵','네','확인','오케이','ok'], seedLikes:320, seedDownloads:260 },
@@ -693,11 +718,38 @@ const BUILTIN_EMOJI_DATA = [
   { id:'o8', text:'칼퇴', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['칼퇴','퇴근','칼퇴근'], seedLikes:250, seedDownloads:200 },
   { id:'o9', text:'반차', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['반차','오전반차','오후반차'], seedLikes:85, seedDownloads:55 },
   { id:'o10', text:'휴가중', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['휴가중','바캉스','연차중'], seedLikes:95, seedDownloads:70 },
+  { id:'o11', text:'네넵', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['네넵','넵넵','알겠습니다'], seedLikes:190, seedDownloads:140 },
+  { id:'o12', text:'컨펌요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['컨펌','컨펌요청','확인요청'], seedLikes:80, seedDownloads:55 },
+  { id:'o13', text:'결재요청', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['결재','결재요청','승인'], seedLikes:70, seedDownloads:48 },
+  { id:'o14', text:'재택신청', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['재택신청','재택근무','홈오피스'], seedLikes:110, seedDownloads:78 },
+  { id:'o15', text:'출근완료', cat:'offwork', style:'neon', font:'black', textColor:'#a3e635', bgColor:'#0b1021', kw:['출근완료','출근','도착'], seedLikes:64, seedDownloads:44 },
+  { id:'o16', text:'야근없음', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['야근없음','정시퇴근','워라밸'], seedLikes:158, seedDownloads:112 },
+  { id:'o17', text:'오후반차', cat:'offwork', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['오후반차','반차','반반차'], seedLikes:92, seedDownloads:66 },
+  { id:'o18', text:'육아휴직', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#7c3aed', kw:['육아휴직','출산휴가','휴직'], seedLikes:58, seedDownloads:40 },
+  { id:'o19', text:'워라밸', cat:'offwork', style:'neon', font:'black', textColor:'#22d3ee', bgColor:'#0b1021', kw:['워라밸','워크라이프밸런스','저녁있는삶'], seedLikes:135, seedDownloads:96 },
+  { id:'o20', text:'정시퇴근', cat:'offwork', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['정시퇴근','칼퇴','퇴근'], seedLikes:172, seedDownloads:128 },
 
   // Sheet 4: 자유 이모지 — 유저 제작 예시 시드 (free)
   { id:'c1', text:'월급루팡', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0B5C30', kw:['월급루팡','월루','땡땡이'], seedLikes:130, seedDownloads:90, createdAt: Date.now() - 1000*60*60*24*2 },
   { id:'c2', text:'출근하기싫다', cat:'free', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['출근하기싫다','월요병','출근'], seedLikes:95, seedDownloads:70, createdAt: Date.now() - 1000*60*60*24 },
   { id:'c3', text:'n연차박제', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['연차박제','연차','기록'], seedLikes:60, seedDownloads:40, createdAt: Date.now() - 1000*60*60*5 },
+  { id:'c4', text:'오늘도무사히', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['오늘도무사히','무사히','버티기'], seedLikes:74, seedDownloads:50, createdAt: Date.now() - 1000*60*60*8 },
+  { id:'c5', text:'존버중', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#78350f', kw:['존버중','존버','버티기'], seedLikes:112, seedDownloads:80, createdAt: Date.now() - 1000*60*60*12 },
+  { id:'c6', text:'반박시내말이맞음', cat:'free', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['반박시내말이맞음','반박불가'], seedLikes:200, seedDownloads:150, createdAt: Date.now() - 1000*60*60*20 },
+  { id:'c7', text:'정신줄놓음', cat:'free', style:'motion', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['정신줄놓음','멘붕','정신없음'], seedLikes:66, seedDownloads:45, createdAt: Date.now() - 1000*60*60*30 },
+  { id:'c8', text:'텅장', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['텅장','텅빈통장','월급'], seedLikes:150, seedDownloads:105, createdAt: Date.now() - 1000*60*60*36 },
+  { id:'c9', text:'커피가필요해', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#92400e', kw:['커피가필요해','카페인','커피'], seedLikes:88, seedDownloads:62, createdAt: Date.now() - 1000*60*60*48 },
+  { id:'c10', text:'살려주세요', cat:'free', style:'neon', font:'black', textColor:'#f87171', bgColor:'#0b1021', kw:['살려주세요','힘듦','도와줘'], seedLikes:96, seedDownloads:68, createdAt: Date.now() - 1000*60*60*55 },
+  { id:'c11', text:'현생살기힘듦', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['현생살기힘듦','현생','힘듦'], seedLikes:70, seedDownloads:48, createdAt: Date.now() - 1000*60*60*60 },
+  { id:'c12', text:'유급휴가주세요', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['유급휴가주세요','휴가','유급휴가'], seedLikes:118, seedDownloads:84, createdAt: Date.now() - 1000*60*60*70 },
+  { id:'c13', text:'상사눈치', cat:'free', style:'pixel', font:'black', textColor:'#ffffff', bgColor:'#1e1b4b', kw:['상사눈치','눈치보기','상사'], seedLikes:82, seedDownloads:56, createdAt: Date.now() - 1000*60*60*80 },
+  { id:'c14', text:'팀장님오셨다', cat:'free', style:'motion', font:'jua', textColor:'#facc15', transparentBg:true, kw:['팀장님오셨다','상사출현','비상'], seedLikes:128, seedDownloads:90, createdAt: Date.now() - 1000*60*60*90 },
+  { id:'c15', text:'몰래딴짓중', cat:'free', style:'neon', font:'black', textColor:'#a78bfa', bgColor:'#0b1021', kw:['몰래딴짓중','딴짓','땡땡이'], seedLikes:56, seedDownloads:38, createdAt: Date.now() - 1000*60*60*100 },
+  { id:'c16', text:'점심메뉴고민', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['점심메뉴고민','점심','메뉴고민'], seedLikes:44, seedDownloads:30, createdAt: Date.now() - 1000*60*60*110 },
+  { id:'c17', text:'금요일이좋아', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['금요일이좋아','불금','금요일'], seedLikes:210, seedDownloads:160, createdAt: Date.now() - 1000*60*60*120 },
+  { id:'c18', text:'월요병도짐', cat:'free', style:'neon', font:'black', textColor:'#38bdf8', bgColor:'#0b1021', kw:['월요병도짐','월요병','월요일'], seedLikes:140, seedDownloads:100, createdAt: Date.now() - 1000*60*60*130 },
+  { id:'c19', text:'재택인정', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#1d4ed8', kw:['재택인정','재택','인정'], seedLikes:62, seedDownloads:42, createdAt: Date.now() - 1000*60*60*140 },
+  { id:'c20', text:'칼퇴각', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['칼퇴각','칼퇴','각'], seedLikes:184, seedDownloads:138, createdAt: Date.now() - 1000*60*60*150 },
 ];
 
 const CATEGORIES = [
@@ -799,7 +851,7 @@ function bumpDownloads(id) {
 /* =========================================================
    3. 상태 & 초성 검색 유틸
    ========================================================= */
-const state = { cat: 'top', query: '', cols: 5, freeSort: 'latest' };
+const state = { cat: 'generator', query: '', cols: 5, freeSort: 'latest' };
 
 const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
 function toChosung(str) {
@@ -1836,9 +1888,8 @@ document.getElementById('kakaoShareBtn').addEventListener('click', async () => {
    18. 초기화
    ========================================================= */
 renderSheetTabs();
-renderGrid();
 applyStyleDefaults(genState.style);
-drawGenPreview();
+onCategoryChange();
 window.addEventListener('resize', () => { if (state.cat !== 'generator') renderGrid(); });
 </script>
 </body>
