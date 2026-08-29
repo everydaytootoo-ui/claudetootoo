@@ -483,8 +483,18 @@
               </button>
             </div>
 
-            <div class="flex flex-col items-center justify-start">
-              <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요</p>
+            <div class="flex flex-col items-center justify-start w-full">
+              <div class="flex gap-2 mb-2 self-start">
+                <button id="dragModeCaptionBtn" class="drag-mode-btn active" data-mode="caption">🔤 자막 이동</button>
+                <button id="dragModePhotoBtn" class="drag-mode-btn" data-mode="photo">🖼️ 사진 이동</button>
+              </div>
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start w-full flex items-center justify-between">
+                <span>사진 확대</span>
+                <span id="imgZoomValue" class="text-gray-400 dark:text-gray-500 font-mono">100%</span>
+              </label>
+              <input id="imgZoom" type="range" min="100" max="300" step="5" value="100"
+                class="w-full accent-brand cursor-pointer mb-2" />
+              <p id="imgDragHint" class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요</p>
               <canvas id="imgPreviewCanvas" width="300" height="300" class="max-w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-move touch-none"></canvas>
             </div>
           </div>
@@ -681,6 +691,13 @@
   html.dark .gen-mode-btn[data-mode="image"] { background: #3b0764; color: #F0ABFC; border-color: #86198F; }
   html.dark .gen-mode-btn[data-mode="image"]:hover { background: #4a047e; }
   html.dark .gen-mode-btn[data-mode="image"].active { background: #C026D3; color: #ffffff; border-color: #E879F9; }
+  /* 캔버스 드래그가 자막을 옮길지 사진을 옮길지 선택하는 토글 */
+  .drag-mode-btn { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; border: 1px solid #C9D4CC; background: #F0F4F1; color: #54685C; cursor: pointer; transition: all .15s ease; }
+  .drag-mode-btn:hover { background: #E1E8E3; }
+  .drag-mode-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
+  html.dark .drag-mode-btn { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
+  html.dark .drag-mode-btn:hover { background: #223028; }
+  html.dark .drag-mode-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
   /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
      다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
   .kakao-btn { color: #3C1E1E !important; }
@@ -1677,7 +1694,33 @@ const imgState = {
   dataUrl: null,     // 위 이미지를 저장용으로 인코딩한 dataURL (JPEG)
   caption: '', font: 'gothic', textColor: '#ffffff', outlineColor: '#000000',
   tx: 0.5, ty: 0.85, fontScale: 0.11,
+  rawImage: null,       // 크롭 전 원본 이미지 (확대/이동 계산의 기준)
+  zoom: 1, panX: 0.5, panY: 0.5, // 사진 확대 배율과, 정사각형 안에서 보여줄 위치(0~1)
 };
+
+const IMG_SQUARE = 640;
+
+// rawImage를 현재 zoom/panX/panY 값으로 정사각형에 맞게 다시 크롭해서
+// imgState.image(캔버스)/imgState.dataUrl에 반영합니다. 사진을 옮기거나
+// 확대할 때마다 다시 호출됩니다. 항상 정사각형을 빈틈없이 채우도록(cover)
+// dx/dy를 클램프합니다.
+function bakeSquareImage() {
+  const img = imgState.rawImage;
+  if (!img) return;
+  const baseScale = Math.max(IMG_SQUARE / img.width, IMG_SQUARE / img.height);
+  const scale = baseScale * (imgState.zoom || 1);
+  const w = img.width * scale, h = img.height * scale;
+  let dx = IMG_SQUARE / 2 - imgState.panX * w;
+  let dy = IMG_SQUARE / 2 - imgState.panY * h;
+  dx = Math.min(0, Math.max(IMG_SQUARE - w, dx));
+  dy = Math.min(0, Math.max(IMG_SQUARE - h, dy));
+  const off = document.createElement('canvas');
+  off.width = IMG_SQUARE; off.height = IMG_SQUARE;
+  const octx = off.getContext('2d');
+  octx.drawImage(img, dx, dy, w, h);
+  imgState.image = off;
+  imgState.dataUrl = off.toDataURL('image/jpeg', 0.9);
+}
 
 function drawImagePreview() {
   const canvas = document.getElementById('imgPreviewCanvas');
@@ -1696,25 +1739,14 @@ function handleImageFile(file) {
   reader.onload = (e) => {
     const raw = new Image();
     raw.onload = () => {
-      // 업로드된 이미지를 정사각형 Canvas에 꽉 차도록(cover) 잘라서 저장합니다.
-      const SQUARE = 640;
-      const off = document.createElement('canvas');
-      off.width = SQUARE; off.height = SQUARE;
-      const octx = off.getContext('2d');
-      const scale = Math.max(SQUARE / raw.width, SQUARE / raw.height);
-      const w = raw.width * scale, h = raw.height * scale;
-      octx.drawImage(raw, (SQUARE - w) / 2, (SQUARE - h) / 2, w, h);
-      const squareDataUrl = off.toDataURL('image/jpeg', 0.9);
-
-      const finalImg = new Image();
-      finalImg.onload = () => {
-        imgState.image = finalImg;
-        imgState.dataUrl = squareDataUrl;
-        document.getElementById('imgDropZone').classList.add('hidden');
-        document.getElementById('imgEditor').classList.remove('hidden');
-        drawImagePreview();
-      };
-      finalImg.src = squareDataUrl;
+      imgState.rawImage = raw;
+      imgState.zoom = 1; imgState.panX = 0.5; imgState.panY = 0.5;
+      bakeSquareImage();
+      document.getElementById('imgDropZone').classList.add('hidden');
+      document.getElementById('imgEditor').classList.remove('hidden');
+      const zoomInput = document.getElementById('imgZoom');
+      if (zoomInput) { zoomInput.value = '100'; document.getElementById('imgZoomValue').textContent = '100%'; }
+      drawImagePreview();
     };
     raw.onerror = () => showToast('이미지를 불러오지 못했어요. 다른 파일을 시도해주세요.');
     raw.src = e.target.result;
@@ -1740,6 +1772,7 @@ imgFileInput.addEventListener('change', (e) => {
 });
 document.getElementById('imgChangeBtn').addEventListener('click', () => {
   imgState.image = null; imgState.dataUrl = null; imgState.caption = '';
+  imgState.rawImage = null; imgState.zoom = 1; imgState.panX = 0.5; imgState.panY = 0.5;
   document.getElementById('imgCaptionText').value = '';
   document.getElementById('imgEditor').classList.add('hidden');
   document.getElementById('imgDropZone').classList.remove('hidden');
@@ -1766,23 +1799,69 @@ document.getElementById('imgFontSize').addEventListener('input', (e) => {
   drawImagePreview();
 });
 
-// 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율)를 옮길 수 있습니다.
+document.getElementById('imgZoom').addEventListener('input', (e) => {
+  const percent = parseInt(e.target.value, 10);
+  imgState.zoom = percent / 100;
+  document.getElementById('imgZoomValue').textContent = percent + '%';
+  bakeSquareImage();
+  drawImagePreview();
+});
+
+// 캔버스 드래그가 자막을 옮길지 사진 위치를 옮길지 선택하는 토글입니다.
+let imgDragMode = 'caption';
+document.querySelectorAll('.drag-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.drag-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    imgDragMode = btn.dataset.mode;
+    document.getElementById('imgDragHint').textContent = imgDragMode === 'caption'
+      ? '🖱️ 드래그로 자막 위치 이동 · 새 이미지를 여기로 끌어놓으면 교체돼요'
+      : '🖱️ 드래그로 사진 위치 이동 · 확대는 위 슬라이더로 조절하세요';
+  });
+});
+
+// 캔버스를 드래그하면 자막 위치(tx, ty, 0~1 비율) 또는 사진 위치(panX, panY)를 옮길 수 있습니다.
 (function setupCaptionDrag() {
   const canvas = document.getElementById('imgPreviewCanvas');
   let dragging = false;
-  function moveTo(clientX, clientY) {
+  let lastX = 0, lastY = 0;
+  function moveCaptionTo(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     imgState.tx = Math.min(0.95, Math.max(0.05, (clientX - rect.left) / rect.width));
     imgState.ty = Math.min(0.95, Math.max(0.05, (clientY - rect.top) / rect.height));
     drawImagePreview();
   }
+  // 화면상 드래그 이동량(px)을 정사각형 캔버스(IMG_SQUARE) 기준 픽셀로 환산해
+  // panX/panY(0~1, 이미지가 확대된 상태에서 정사각형 중심에 오는 지점)에 반영합니다.
+  function panPhotoBy(dxClient, dyClient) {
+    const img = imgState.rawImage;
+    if (!img) return;
+    const rect = canvas.getBoundingClientRect();
+    const toBaked = canvas.width / rect.width;
+    const baseScale = Math.max(IMG_SQUARE / img.width, IMG_SQUARE / img.height);
+    const scale = baseScale * (imgState.zoom || 1);
+    const w = img.width * scale, h = img.height * scale;
+    imgState.panX = Math.min(1, Math.max(0, imgState.panX - (dxClient * toBaked) / w));
+    imgState.panY = Math.min(1, Math.max(0, imgState.panY - (dyClient * toBaked) / h));
+    bakeSquareImage();
+    drawImagePreview();
+  }
   canvas.addEventListener('pointerdown', (e) => {
     if (!imgState.image) return;
     dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
     canvas.setPointerCapture(e.pointerId);
-    moveTo(e.clientX, e.clientY);
+    if (imgDragMode === 'caption') moveCaptionTo(e.clientX, e.clientY);
   });
-  canvas.addEventListener('pointermove', (e) => { if (dragging) moveTo(e.clientX, e.clientY); });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    if (imgDragMode === 'caption') {
+      moveCaptionTo(e.clientX, e.clientY);
+    } else {
+      panPhotoBy(e.clientX - lastX, e.clientY - lastY);
+      lastX = e.clientX; lastY = e.clientY;
+    }
+  });
   canvas.addEventListener('pointerup', () => { dragging = false; });
   canvas.addEventListener('pointercancel', () => { dragging = false; });
 
