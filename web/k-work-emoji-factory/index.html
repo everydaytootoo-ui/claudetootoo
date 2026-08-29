@@ -27,6 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<!-- Pretendard: 무료 상업적 이용 가능(SIL OFL 1.1) 한글 폰트, 공식 배포 CDN -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -317,7 +319,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
       <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">⏱️</span>
-        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">10초 완성</p>
+        <p class="text-xs font-bold text-gray-800 dark:text-gray-100">무료 제작 10초 완성</p>
       </div>
       <div class="feature-chip bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 px-2 py-1.5">
         <span class="feature-icon">😊</span>
@@ -377,7 +379,7 @@
             <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
             <div id="fontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
               <button data-font="gothic" class="gen-font-btn">고딕</button>
-              <button data-font="black" class="gen-font-btn active">블랙한</button>
+              <button data-font="black" class="gen-font-btn active">Pretendard</button>
               <button data-font="dohyeon" class="gen-font-btn">두헌</button>
               <button data-font="jua" class="gen-font-btn">주아</button>
               <button data-font="gungseo" class="gen-font-btn">궁서체</button>
@@ -394,11 +396,11 @@
 
             <div class="grid grid-cols-2 gap-3 mt-4">
               <div>
-                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                <label for="genTextColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">글자색</label>
                 <input id="genTextColor" type="color" value="#22d3ee" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
               </div>
               <div>
-                <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">배경색</label>
+                <label for="genBgColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">배경색</label>
                 <input id="genBgColor" type="color" value="#0b1021" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
               </div>
             </div>
@@ -443,7 +445,7 @@
               <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">폰트</label>
               <div id="imgFontTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
                 <button data-font="gothic" class="img-font-btn active">고딕</button>
-                <button data-font="black" class="img-font-btn">블랙한</button>
+                <button data-font="black" class="img-font-btn">Pretendard</button>
                 <button data-font="dohyeon" class="img-font-btn">두헌</button>
                 <button data-font="jua" class="img-font-btn">주아</button>
                 <button data-font="gungseo" class="img-font-btn">궁서체</button>
@@ -458,11 +460,11 @@
 
               <div class="grid grid-cols-2 gap-3 mt-4">
                 <div>
-                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">글자색</label>
+                  <label for="imgTextColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">글자색</label>
                   <input id="imgTextColor" type="color" value="#ffffff" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
                 </div>
                 <div>
-                  <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block">외곽선색</label>
+                  <label for="imgOutlineColor" class="text-xs font-bold text-gray-500 dark:text-gray-400 block cursor-pointer">외곽선색</label>
                   <input id="imgOutlineColor" type="color" value="#000000" class="mt-1 w-full h-9 rounded border border-gray-300 dark:border-gray-700 bg-transparent cursor-pointer" />
                 </div>
               </div>
@@ -666,10 +668,21 @@
 <div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 z-[1000] bg-gray-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-lg"></div>
 
 <style>
-  .gen-style-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
-  .gen-style-btn.active { @apply bg-brand text-white border-brand; }
-  .gen-font-btn, .img-font-btn { @apply text-xs font-bold py-2 rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-brand transition; }
-  .gen-font-btn.active, .img-font-btn.active { @apply bg-gray-800 text-white border-gray-800 dark:bg-emerald-600 dark:border-emerald-600; }
+  /* 폰트/스타일 선택 버튼 — Tailwind CDN의 커스텀 팔레트 @apply 해석에 기대지 않고
+     항상 확실하게 보이도록 순수 CSS로 색상을 직접 지정함 (viewer feedback: 글자색이 안 보임) */
+  .gen-style-btn, .gen-font-btn, .img-font-btn {
+    font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 6px;
+    border: 1px solid #C9D4CC; background: #F7FAF8; color: #54685C; cursor: pointer; transition: all .15s ease;
+  }
+  .gen-style-btn:hover, .gen-font-btn:hover, .img-font-btn:hover { border-color: #107C41; }
+  .gen-style-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
+  .gen-font-btn.active, .img-font-btn.active { background: #283730; color: #ffffff; border-color: #283730; }
+  html.dark .gen-style-btn, html.dark .gen-font-btn, html.dark .img-font-btn {
+    background: #1b2620; color: #C9D4CC; border-color: #2c3a33;
+  }
+  html.dark .gen-style-btn:hover, html.dark .gen-font-btn:hover, html.dark .img-font-btn:hover { border-color: #34d399; }
+  html.dark .gen-style-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
+  html.dark .gen-font-btn.active, html.dark .img-font-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
   .gen-download-btn, .img-download-btn { @apply text-white text-xs font-bold px-3 py-2.5 rounded flex-1 min-w-[130px] hover:brightness-110 transition; }
   .modal-dl-btn { @apply w-full text-white text-sm font-bold py-2.5 rounded hover:brightness-110 transition text-left px-4; }
   /* 텍스트/이미지 모드 버튼을 각각 고유 색(인디고/마젠타)으로 구분해
@@ -707,7 +720,7 @@
    ========================================================= */
 const FONTS = {
   gothic:  '"Noto Sans KR", sans-serif',
-  black:   '"Black Han Sans", sans-serif',
+  black:   '"Pretendard", "Noto Sans KR", sans-serif', // 이모지용으로 너무 두꺼운 Black Han Sans 대신 Pretendard 사용 (viewer feedback)
   dohyeon: '"Do Hyeon", sans-serif',
   jua:     '"Jua", sans-serif',
   gungseo: '"Nanum Brush Script", cursive',
