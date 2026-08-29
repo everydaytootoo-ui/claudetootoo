@@ -332,9 +332,8 @@
             </label>
 
             <div class="mt-5 flex flex-wrap gap-2">
-              <button data-size="128" data-name="slack" class="gen-download-btn bg-[#4A154B]">Slack 128px 다운로드</button>
+              <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
               <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
-              <button data-size="128" data-name="discord" class="gen-download-btn bg-[#5865F2]">Discord 128px 다운로드</button>
               <button data-size="500" data-name="kakao" class="gen-download-btn bg-[#3C1E1E]">카톡 500px 다운로드</button>
               <button id="genCopyBtn" class="gen-download-btn bg-gray-700">📋 클립보드 복사</button>
             </div>
@@ -388,9 +387,8 @@
               <button id="imgChangeBtn" class="text-xs font-bold text-gray-400 hover:text-brand dark:hover:text-emerald-400 underline mt-2">🔄 다른 이미지로 변경</button>
 
               <div class="mt-5 flex flex-wrap gap-2">
-                <button data-size="128" data-name="slack" class="img-download-btn bg-[#4A154B]">Slack 128px 다운로드</button>
+                <button data-size="128" data-name="slack-discord" class="img-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px 다운로드</button>
                 <button data-size="256" data-name="teams" class="img-download-btn bg-[#464EB8]">Teams 256px 다운로드</button>
-                <button data-size="128" data-name="discord" class="img-download-btn bg-[#5865F2]">Discord 128px 다운로드</button>
                 <button data-size="500" data-name="kakao" class="img-download-btn bg-[#3C1E1E]">카톡 500px 다운로드</button>
                 <button id="imgCopyBtn" class="img-download-btn bg-gray-700">📋 클립보드 복사</button>
               </div>
@@ -469,9 +467,8 @@
         <canvas id="modalCanvas" width="280" height="280" class="w-full h-full"></canvas>
       </div>
       <div class="w-full space-y-2">
-        <button data-size="128" data-label="Slack" class="modal-dl-btn bg-[#4A154B]">🔵 Slack용 다운로드 (128×128 PNG)</button>
+        <button data-size="128" data-label="Slack·Discord" class="modal-dl-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">🔵 Slack·Discord용 다운로드 (128×128 PNG)</button>
         <button data-size="256" data-label="Teams" class="modal-dl-btn bg-[#464EB8]">🟣 Teams용 다운로드 (256×256 PNG)</button>
-        <button data-size="128" data-label="Discord" class="modal-dl-btn bg-[#5865F2]">🟪 Discord용 다운로드 (128×128 PNG)</button>
         <button data-size="500" data-label="Kakao" class="modal-dl-btn bg-[#3C1E1E]">🟡 카톡 짤용 다운로드 (500×500 PNG)</button>
         <button id="modalCopyBtn" class="w-full border-2 border-brand text-brand dark:text-emerald-400 dark:border-emerald-500 font-bold py-2.5 rounded text-sm hover:bg-brand-tint dark:hover:bg-brand-darker/40 transition">📋 클립보드에 이미지 복사</button>
       </div>
@@ -829,9 +826,8 @@ function buildEmojiCard(item, rank) {
 
   const badges = el('div', 'flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5');
   badges.innerHTML = `
-    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#4A154B]/10 text-[#4A154B] dark:bg-white/10 dark:text-purple-300 font-bold">Slack</span>
+    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#4A154B]/10 text-[#4A154B] dark:bg-white/10 dark:text-purple-300 font-bold">Slack·Discord</span>
     <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#464EB8]/10 text-[#464EB8] dark:bg-white/10 dark:text-indigo-300 font-bold">Teams</span>
-    <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#5865F2]/10 text-[#5865F2] dark:bg-white/10 dark:text-indigo-300 font-bold">Discord</span>
     <span class="text-[9px] px-1.5 py-0.5 rounded bg-kakao/40 text-[#3C1E1E] dark:bg-white/10 dark:text-yellow-300 font-bold">카톡</span>`;
   wrap.appendChild(badges);
 
