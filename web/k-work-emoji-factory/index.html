@@ -429,6 +429,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <input id="genTransparent" type="checkbox" class="rounded" /> 배경 투명 (PNG 스티커용)
             </label>
 
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 flex items-center justify-between">
+              <span>가로 폭</span>
+              <span id="genStretchXValue" class="text-gray-400 dark:text-gray-500 font-mono">100%</span>
+            </label>
+            <input id="genStretchX" type="range" min="80" max="150" step="1" value="100"
+              class="mt-1 w-full accent-brand cursor-pointer" />
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-2 flex items-center justify-between">
+              <span>세로 폭</span>
+              <span id="genStretchYValue" class="text-gray-400 dark:text-gray-500 font-mono">100%</span>
+            </label>
+            <input id="genStretchY" type="range" min="80" max="150" step="1" value="100"
+              class="mt-1 w-full accent-brand cursor-pointer" />
+
             <div class="mt-5 grid grid-cols-2 gap-2">
               <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px</button>
               <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px</button>
@@ -441,6 +454,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1">실시간 미리보기</p>
             <div class="checker w-full aspect-square rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2">
               <canvas id="genPreview" width="300" height="300" class="max-w-full max-h-full"></canvas>
+            </div>
+
+            <p class="text-xs font-bold text-gray-500 dark:text-gray-400 self-start mb-1 mt-4">💬 메신저에서 이렇게 보여요</p>
+            <div class="chat-mock-card w-full">
+              <div class="chat-mock-row">
+                <div class="chat-mock-avatar chat-mock-avatar-a">회</div>
+                <div>
+                  <div class="chat-mock-meta"><span class="chat-mock-name">김회피</span><span class="chat-mock-time">오후 5:58</span></div>
+                  <p class="chat-mock-text">오늘 칼퇴 가능?</p>
+                </div>
+              </div>
+              <div class="chat-mock-row">
+                <div class="chat-mock-avatar chat-mock-avatar-b">해</div>
+                <div>
+                  <div class="chat-mock-meta"><span class="chat-mock-name">김해피</span><span class="chat-mock-time">오후 5:59</span></div>
+                  <p class="chat-mock-text">커피나 마시러 가자...</p>
+                  <span class="chat-mock-reaction"><canvas id="genReactionPreview" width="48" height="48"></canvas>1</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -704,6 +736,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   html.dark .drag-mode-btn { background: #1b2620; color: #8fa398; border-color: #2c3a33; }
   html.dark .drag-mode-btn:hover { background: #223028; }
   html.dark .drag-mode-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
+  /* 실제 메신저 채팅창에서 제작한 이모지가 어떻게 보이는지 미리 보여주는 카드 */
+  .chat-mock-card { background: #F7F8F9; border: 1px solid #E4E7EB; border-radius: 10px; padding: 10px 12px; }
+  html.dark .chat-mock-card { background: #171f1a; border-color: #2c3a33; }
+  .chat-mock-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; }
+  .chat-mock-avatar { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #ffffff; }
+  .chat-mock-avatar-a { background: #107C41; }
+  .chat-mock-avatar-b { background: #F5A623; }
+  .chat-mock-meta { display: flex; align-items: baseline; gap: 6px; }
+  .chat-mock-name { font-size: 12px; font-weight: 800; color: #1F2937; }
+  html.dark .chat-mock-name { color: #E5E7EB; }
+  .chat-mock-time { font-size: 10px; color: #9CA3AF; }
+  .chat-mock-text { font-size: 13px; color: #374151; margin-top: 1px; }
+  html.dark .chat-mock-text { color: #C9D4CC; }
+  .chat-mock-reaction { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px 2px 2px; background: #ffffff; border: 1px solid #E4E7EB; border-radius: 999px; font-size: 11px; font-weight: 700; color: #54685C; }
+  html.dark .chat-mock-reaction { background: #223028; border-color: #2c3a33; color: #8fa398; }
+  .chat-mock-reaction canvas { width: 22px; height: 22px; border-radius: 5px; display: block; }
   /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
      다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
   .kakao-btn { color: #3C1E1E !important; }
@@ -1121,6 +1169,8 @@ function drawTextEmoji(ctx, size, opts) {
   const bgColor = opts.bgColor;
   const transparentBg = !!opts.transparentBg;
   const cx = size / 2, cy = size / 2;
+  const stretchX = (opts.stretchX || 100) / 100;
+  const stretchY = (opts.stretchY || 100) / 100;
 
   ctx.clearRect(0, 0, size, size);
 
@@ -1130,6 +1180,11 @@ function drawTextEmoji(ctx, size, opts) {
     roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
     ctx.fill();
   }
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(stretchX, stretchY);
+  ctx.translate(-cx, -cy);
 
   if (style === 'stamp') {
     ctx.save();
@@ -1216,6 +1271,8 @@ function drawTextEmoji(ctx, size, opts) {
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, 0, 0, size, size);
   }
+
+  ctx.restore();
 }
 
 function renderItemCanvas(item, size) {
@@ -1525,7 +1582,7 @@ const STYLE_DEFAULTS = {
   pixel:  { font:'black',   textColor:'#ffffff', bgColor:'#0b1021', transparentBg:true },
   motion: { font:'black',   textColor:'#22d3ee', bgColor:'#107C41', transparentBg:true },
 };
-let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false };
+let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false, stretchX: 100, stretchY: 100 };
 
 function applyStyleDefaults(style) {
   const d = STYLE_DEFAULTS[style];
@@ -1558,6 +1615,16 @@ document.getElementById('genText').addEventListener('input', drawGenPreview);
 document.getElementById('genTextColor').addEventListener('input', (e) => { genState.textColor = e.target.value; drawGenPreview(); });
 document.getElementById('genBgColor').addEventListener('input', (e) => { genState.bgColor = e.target.value; drawGenPreview(); });
 document.getElementById('genTransparent').addEventListener('change', (e) => { genState.transparentBg = e.target.checked; drawGenPreview(); });
+document.getElementById('genStretchX').addEventListener('input', (e) => {
+  genState.stretchX = parseInt(e.target.value, 10);
+  document.getElementById('genStretchXValue').textContent = genState.stretchX + '%';
+  drawGenPreview();
+});
+document.getElementById('genStretchY').addEventListener('input', (e) => {
+  genState.stretchY = parseInt(e.target.value, 10);
+  document.getElementById('genStretchYValue').textContent = genState.stretchY + '%';
+  drawGenPreview();
+});
 
 function currentGenItem() {
   return {
@@ -1567,12 +1634,17 @@ function currentGenItem() {
     textColor: genState.textColor,
     bgColor: genState.bgColor,
     transparentBg: genState.transparentBg,
+    stretchX: genState.stretchX,
+    stretchY: genState.stretchY,
   };
 }
 
 function drawGenPreview() {
   const canvas = document.getElementById('genPreview');
-  drawTextEmoji(canvas.getContext('2d'), canvas.width, currentGenItem());
+  const item = currentGenItem();
+  drawTextEmoji(canvas.getContext('2d'), canvas.width, item);
+  const reactionCanvas = document.getElementById('genReactionPreview');
+  drawTextEmoji(reactionCanvas.getContext('2d'), reactionCanvas.width, item);
 }
 
 document.querySelectorAll('.gen-download-btn').forEach(btn => {
