@@ -46,6 +46,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=Gugi&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
 <!-- Pretendard: 무료 상업적 이용 가능(SIL OFL 1.1) 한글 폰트, 공식 배포 CDN -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<!-- gif.js: 브라우저에서 캔버스 프레임을 애니메이션 GIF로 인코딩(모션 이모지 다운로드용) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -442,11 +444,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <input id="genStretchY" type="range" min="80" max="150" step="1" value="100"
               class="mt-1 w-full accent-brand cursor-pointer" />
 
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mt-4 block">모션 (GIF 다운로드)</label>
+            <div id="motionTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-1">
+              <button data-motion="none" class="gen-motion-btn active">🚫 없음</button>
+              <button data-motion="pop" class="gen-motion-btn">🎯 통통팝</button>
+              <button data-motion="shake" class="gen-motion-btn">💢 흔들림</button>
+              <button data-motion="holo" class="gen-motion-btn">🌈 홀로그램</button>
+              <button data-motion="marquee" class="gen-motion-btn">➡️ 흐름슬라이드</button>
+            </div>
+
             <div class="mt-5 grid grid-cols-2 gap-2">
               <button data-size="128" data-name="slack-discord" class="gen-download-btn bg-gradient-to-r from-[#4A154B] to-[#5865F2]">Slack·Discord 128px</button>
               <button data-size="256" data-name="teams" class="gen-download-btn bg-[#464EB8]">Teams 256px</button>
               <button data-size="500" data-name="kakao" class="gen-download-btn kakao-btn bg-kakao">카톡 500px</button>
               <button id="genCopyBtn" class="gen-download-btn bg-gray-700">📋 클립보드 복사</button>
+              <button id="genGifBtn" class="gen-download-btn hidden bg-gradient-to-r from-[#EC4899] to-[#8B5CF6]" style="grid-column: span 2;">🎬 움직이는 GIF 다운로드 (128px)</button>
             </div>
           </div>
 
@@ -691,18 +703,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <style>
   /* 폰트/스타일 선택 버튼 — Tailwind CDN의 커스텀 팔레트 @apply 해석에 기대지 않고
      항상 확실하게 보이도록 순수 CSS로 색상을 직접 지정함 (viewer feedback: 글자색이 안 보임) */
-  .gen-style-btn, .gen-font-btn, .img-font-btn {
+  .gen-style-btn, .gen-font-btn, .img-font-btn, .gen-motion-btn {
     font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 6px;
     border: 1px solid #C9D4CC; background: #F7FAF8; color: #54685C; cursor: pointer; transition: all .15s ease;
   }
-  .gen-style-btn:hover, .gen-font-btn:hover, .img-font-btn:hover { border-color: #107C41; }
-  .gen-style-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
+  .gen-style-btn:hover, .gen-font-btn:hover, .img-font-btn:hover, .gen-motion-btn:hover { border-color: #107C41; }
+  .gen-style-btn.active, .gen-motion-btn.active { background: #107C41; color: #ffffff; border-color: #107C41; }
   .gen-font-btn.active, .img-font-btn.active { background: #283730; color: #ffffff; border-color: #283730; }
-  html.dark .gen-style-btn, html.dark .gen-font-btn, html.dark .img-font-btn {
+  html.dark .gen-style-btn, html.dark .gen-font-btn, html.dark .img-font-btn, html.dark .gen-motion-btn {
     background: #1b2620; color: #C9D4CC; border-color: #2c3a33;
   }
-  html.dark .gen-style-btn:hover, html.dark .gen-font-btn:hover, html.dark .img-font-btn:hover { border-color: #34d399; }
-  html.dark .gen-style-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
+  html.dark .gen-style-btn:hover, html.dark .gen-font-btn:hover, html.dark .img-font-btn:hover, html.dark .gen-motion-btn:hover { border-color: #34d399; }
+  html.dark .gen-style-btn.active, html.dark .gen-motion-btn.active { background: #34d399; color: #08351C; border-color: #34d399; }
   html.dark .gen-font-btn.active, html.dark .img-font-btn.active { background: #059669; color: #ffffff; border-color: #059669; }
   /* 다운로드/복사 버튼 — flex-wrap 대신 2열 그리드로 가지런히 배치하고, 글자 크기·굵기를
      키워 가독성을 높임 (viewer feedback: 갤러리 공유 버튼 삭제 대신 다운로드/복사 버튼을
@@ -1202,27 +1214,16 @@ function hslToHex(h, s, l) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-function drawTextEmoji(ctx, size, opts) {
-  const text = opts.text || '텍스트';
-  const style = opts.style || 'bold';
-  const fam = FONTS[opts.font] || opts.font || FONTS.gothic;
-  const textColor = opts.textColor;
-  const bgColor = opts.bgColor;
-  const transparentBg = !!opts.transparentBg;
-  const cx = size / 2, cy = size / 2;
-  const stretchX = (opts.stretchX || 100) / 100;
-  const stretchY = (opts.stretchY || 100) / 100;
-
-  ctx.clearRect(0, 0, size, size);
-
+// Draws just the card background for a given style (used by both the static
+// renderer below and the GIF motion frames, which reuse it as a fixed
+// backdrop while only the text/sparkles animate on top).
+function drawCardBackground(ctx, size, { style, bgColor, transparentBg }) {
   const needsCard = style !== 'pixel' && style !== 'y2k' && (style === 'neon' || !transparentBg);
   if (needsCard) {
     ctx.fillStyle = style === 'neon' ? (bgColor || '#0b1021') : (bgColor || '#107C41');
     roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
     ctx.fill();
   }
-  // Y2K's card is drawn here (outside the stretch transform below) so the pastel
-  // background stays a clean rounded box instead of warping with 가로/세로 폭.
   if (style === 'y2k' && !transparentBg) {
     const baseHsl = hexToHsl(bgColor || '#BFE7FF');
     const bgGrad = ctx.createLinearGradient(0, 0, size, size);
@@ -1237,6 +1238,23 @@ function drawTextEmoji(ctx, size, opts) {
     roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.14);
     ctx.stroke();
   }
+}
+
+function drawTextEmoji(ctx, size, opts) {
+  const text = opts.text || '텍스트';
+  const style = opts.style || 'bold';
+  const fam = FONTS[opts.font] || opts.font || FONTS.gothic;
+  const textColor = opts.textColor;
+  const bgColor = opts.bgColor;
+  const transparentBg = !!opts.transparentBg;
+  const cx = size / 2, cy = size / 2;
+  const stretchX = (opts.stretchX || 100) / 100;
+  const stretchY = (opts.stretchY || 100) / 100;
+
+  ctx.clearRect(0, 0, size, size);
+  // Card is drawn here (outside the stretch transform below) so the
+  // background stays a clean rounded box instead of warping with 가로/세로 폭.
+  drawCardBackground(ctx, size, { style, bgColor, transparentBg });
 
   ctx.save();
   ctx.translate(cx, cy);
@@ -1425,8 +1443,7 @@ function getDownloadsCapability() {
   return downloadsCapabilityPromise;
 }
 
-async function downloadCanvas(canvas, filename) {
-  const blob = await canvasToBlob(canvas);
+async function downloadBlob(blob, filename) {
   const downloads = await getDownloadsCapability();
   if (downloads) {
     try {
@@ -1444,6 +1461,11 @@ async function downloadCanvas(canvas, filename) {
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
   showToast(`${filename} 다운로드 완료!`);
+}
+
+async function downloadCanvas(canvas, filename) {
+  const blob = await canvasToBlob(canvas);
+  await downloadBlob(blob, filename);
 }
 
 async function copyCanvasToClipboard(canvas) {
@@ -1654,7 +1676,7 @@ const STYLE_DEFAULTS = {
   pixel:  { font:'black',   textColor:'#ffffff', bgColor:'#0b1021', transparentBg:true },
   y2k:    { font:'jua',     textColor:'#FF8FD1', bgColor:'#BFE7FF', transparentBg:false },
 };
-let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false, stretchX: 100, stretchY: 100 };
+let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false, stretchX: 100, stretchY: 100, motion: 'none' };
 
 function applyStyleDefaults(style) {
   const d = STYLE_DEFAULTS[style];
@@ -1685,6 +1707,14 @@ document.querySelectorAll('.gen-font-btn').forEach(btn => {
     btn.classList.add('active');
     genState.font = btn.dataset.font;
     drawGenPreview();
+  });
+});
+document.querySelectorAll('.gen-motion-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gen-motion-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    genState.motion = btn.dataset.motion;
+    document.getElementById('genGifBtn').classList.toggle('hidden', genState.motion === 'none');
   });
 });
 document.getElementById('genText').addEventListener('input', drawGenPreview);
@@ -1738,6 +1768,136 @@ document.querySelectorAll('.gen-download-btn').forEach(btn => {
 });
 document.getElementById('genCopyBtn').addEventListener('click', () => {
   gatedAction(() => copyCanvasToClipboard(renderItemCanvas(currentGenItem(), 256)));
+});
+
+/* =========================================================
+   12b. 모션 GIF 생성 (Sheet 5 텍스트 생성기 모션 옵션)
+   ========================================================= */
+function easeOutBackJs(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  t = Math.min(t, 1);
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function easeOutElasticJs(t) {
+  t = Math.min(t, 1);
+  const c4 = (2 * Math.PI) / 3;
+  return t <= 0 ? 0 : t >= 1 ? 1 : Math.pow(2, -8 * t) * Math.sin((t * 8 - 0.75) * c4) + 1;
+}
+
+// GIF에는 실제 알파 투명도가 없어서(색상 키 방식만 지원) 모션 프레임은 항상
+// 불투명 배경으로 렌더링합니다 — 투명 PNG가 필요하면 기존 PNG 다운로드를 쓰면 됩니다.
+function buildMotionFrames(item, size, motion) {
+  const fps = 24;
+  const frameMs = Math.round(1000 / fps);
+  const frames = [];
+
+  if (motion === 'pop') {
+    const base = renderItemCanvas(item, size);
+    const growN = Math.round(650 / frameMs), holdN = Math.round(500 / frameMs);
+    for (let i = 0; i <= growN; i++) {
+      const scale = Math.max(0.05, easeOutElasticJs(i / growN));
+      const c = document.createElement('canvas'); c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.translate(size/2, size/2); ctx.scale(scale, scale); ctx.translate(-size/2, -size/2);
+      ctx.drawImage(base, 0, 0);
+      frames.push({ canvas: c, delay: frameMs });
+    }
+    for (let i = 0; i < holdN; i++) frames.push({ canvas: base, delay: frameMs });
+
+  } else if (motion === 'shake') {
+    const base = renderItemCanvas(item, size);
+    const n = Math.round(900 / frameMs);
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const dx = Math.sin(t * 34) * size * 0.045 * Math.exp(-t * 4.2);
+      const c = document.createElement('canvas'); c.width = size; c.height = size;
+      c.getContext('2d').drawImage(base, dx, 0);
+      frames.push({ canvas: c, delay: frameMs });
+    }
+    frames.push({ canvas: base, delay: 400 });
+
+  } else if (motion === 'holo') {
+    const base = renderItemCanvas(item, size);
+    const n = Math.round(1400 / frameMs);
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('canvas'); c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.filter = `hue-rotate(${Math.round((i / n) * 360)}deg)`;
+      ctx.drawImage(base, 0, 0);
+      frames.push({ canvas: c, delay: frameMs });
+    }
+
+  } else if (motion === 'marquee') {
+    const bg = document.createElement('canvas'); bg.width = size; bg.height = size;
+    const bgCtx = bg.getContext('2d');
+    drawCardBackground(bgCtx, size, { style: item.style, bgColor: item.bgColor, transparentBg: false });
+    if (item.style === 'pixel') {
+      // drawCardBackground skips pixel (its card lives inside drawTextEmoji's own
+      // offscreen render), so fall back to a plain fill for the marquee backdrop.
+      bgCtx.fillStyle = item.bgColor || '#0b1021';
+      roundRect(bgCtx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
+      bgCtx.fill();
+    }
+    const fam = FONTS[item.font] || item.font || FONTS.gothic;
+    const fontSize = Math.floor(size * 0.34);
+    bgCtx.font = `900 ${fontSize}px ${fam}`;
+    const textWidth = bgCtx.measureText(item.text).width;
+    const travel = size + textWidth;
+    const n = Math.round(2200 / frameMs);
+    for (let i = 0; i < n; i++) {
+      const x = size + textWidth/2 - (i / n) * travel;
+      const c = document.createElement('canvas'); c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(bg, 0, 0);
+      ctx.save();
+      roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
+      ctx.clip();
+      ctx.font = `900 ${fontSize}px ${fam}`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = item.textColor || '#ffffff';
+      ctx.fillText(item.text, x, size/2);
+      ctx.restore();
+      frames.push({ canvas: c, delay: frameMs });
+    }
+  }
+  return frames;
+}
+
+function generateGif(item, size, motion) {
+  const frames = buildMotionFrames(item, size, motion);
+  return new Promise((resolve, reject) => {
+    if (!frames.length) { reject(new Error('no frames')); return; }
+    const gif = new GIF({
+      workers: 2,
+      quality: 10,
+      width: size,
+      height: size,
+      workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+    });
+    frames.forEach(f => gif.addFrame(f.canvas, { copy: true, delay: f.delay }));
+    gif.on('finished', blob => resolve(blob));
+    gif.on('abort', () => reject(new Error('gif render aborted')));
+    gif.render();
+  });
+}
+
+document.getElementById('genGifBtn').addEventListener('click', () => {
+  if (typeof GIF === 'undefined') {
+    showToast('⚠️ GIF 기능을 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+    return;
+  }
+  gatedAction(() => {
+    const btn = document.getElementById('genGifBtn');
+    const item = { ...currentGenItem(), transparentBg: false };
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '🎬 GIF 만드는 중...';
+    showToast('🎬 움직이는 GIF를 만들고 있어요...');
+    generateGif(item, 128, genState.motion)
+      .then(blob => downloadBlob(blob, `${item.text.replace(/\n/g,' ')}_모션_128px.gif`))
+      .catch(() => showToast('⚠️ GIF 생성에 실패했어요. 다시 시도해주세요.'))
+      .finally(() => { btn.disabled = false; btn.textContent = originalLabel; });
+  });
 });
 
 /* =========================================================
