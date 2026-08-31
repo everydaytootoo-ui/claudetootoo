@@ -43,7 +43,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Nanum+Brush+Script&family=Gugi&family=IBM+Plex+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
 <!-- Pretendard: 무료 상업적 이용 가능(SIL OFL 1.1) 한글 폰트, 공식 배포 CDN -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
@@ -412,7 +412,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <button data-style="neon" class="gen-style-btn active">✨ 네온</button>
               <button data-style="bold" class="gen-style-btn">🅱️ 굵은고딕</button>
               <button data-style="pixel" class="gen-style-btn">👾 픽셀</button>
-              <button data-style="motion" class="gen-style-btn">💨 역동적</button>
+              <button data-style="y2k" class="gen-style-btn">💿 Y2K</button>
             </div>
 
             <div class="grid grid-cols-2 gap-3 mt-4">
@@ -463,14 +463,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div>
                   <div class="chat-mock-meta"><span class="chat-mock-name">김회피</span><span class="chat-mock-time">오후 5:58</span></div>
                   <p class="chat-mock-text">오늘 칼퇴 가능?</p>
+                  <span class="chat-mock-reaction"><canvas id="genReactionPreview" width="48" height="48"></canvas>1</span>
                 </div>
               </div>
               <div class="chat-mock-row">
                 <div class="chat-mock-avatar chat-mock-avatar-b">해</div>
                 <div>
                   <div class="chat-mock-meta"><span class="chat-mock-name">김해피</span><span class="chat-mock-time">오후 5:59</span></div>
-                  <p class="chat-mock-text">커피나 마시러 가자...</p>
-                  <span class="chat-mock-reaction"><canvas id="genReactionPreview" width="48" height="48"></canvas>1</span>
+                  <div class="chat-mock-sticker"><canvas id="genStickerPreview" width="200" height="200"></canvas></div>
                 </div>
               </div>
             </div>
@@ -752,6 +752,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   .chat-mock-reaction { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px 2px 2px; background: #ffffff; border: 1px solid #E4E7EB; border-radius: 999px; font-size: 11px; font-weight: 700; color: #54685C; }
   html.dark .chat-mock-reaction { background: #223028; border-color: #2c3a33; color: #8fa398; }
   .chat-mock-reaction canvas { width: 22px; height: 22px; border-radius: 5px; display: block; }
+  .chat-mock-sticker { margin-top: 4px; }
+  .chat-mock-sticker canvas { width: 68px; height: 68px; border-radius: 14px; display: block; }
   /* 카카오 브랜드 컬러(노란 배경)에 맞춰 어두운 글자색으로 — 어두운 배경+흰 글씨 조합은
      다크모드에서 카드 배경과 겹쳐 잘 안 보인다는 피드백을 반영했습니다. */
   .kakao-btn { color: #3C1E1E !important; }
@@ -786,7 +788,7 @@ const BUILTIN_EMOJI_DATA = [
   { id:'f11', text:'이불킥', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['이불킥','흑역사','부끄러움'], seedLikes:98, seedDownloads:70 },
   { id:'f12', text:'현타옴', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#475569', kw:['현타','현자타임','현타옴'], seedLikes:145, seedDownloads:100 },
   { id:'f13', text:'웃참실패', cat:'friend', style:'neon', font:'black', textColor:'#fde047', bgColor:'#0b1021', kw:['웃참실패','빵터짐','웃김'], seedLikes:88, seedDownloads:60 },
-  { id:'f14', text:'급발진', cat:'friend', style:'motion', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['급발진','당황','화들짝'], seedLikes:76, seedDownloads:52 },
+  { id:'f14', text:'급발진', cat:'friend', style:'y2k', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['급발진','당황','화들짝'], seedLikes:76, seedDownloads:52 },
   { id:'f15', text:'개웃김ㅋㅋ', cat:'friend', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#f59e0b', kw:['개웃김','ㅋㅋㅋ','웃김'], seedLikes:132, seedDownloads:95 },
   { id:'f16', text:'심쿵', cat:'friend', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['심쿵','설렘','두근'], seedLikes:60, seedDownloads:40 },
   { id:'f17', text:'멘붕', cat:'friend', style:'pixel', font:'black', textColor:'#ffffff', bgColor:'#1e1b4b', kw:['멘붕','멘탈붕괴','당황'], seedLikes:104, seedDownloads:72 },
@@ -823,14 +825,14 @@ const BUILTIN_EMOJI_DATA = [
   { id:'c4', text:'오늘도무사히', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['오늘도무사히','무사히','버티기'], seedLikes:74, seedDownloads:50, createdAt: Date.now() - 1000*60*60*8 },
   { id:'c5', text:'존버중', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#78350f', kw:['존버중','존버','버티기'], seedLikes:112, seedDownloads:80, createdAt: Date.now() - 1000*60*60*12 },
   { id:'c6', text:'반박시내말이맞음', cat:'free', style:'neon', font:'black', textColor:'#f472b6', bgColor:'#0b1021', kw:['반박시내말이맞음','반박불가'], seedLikes:200, seedDownloads:150, createdAt: Date.now() - 1000*60*60*20 },
-  { id:'c7', text:'정신줄놓음', cat:'free', style:'motion', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['정신줄놓음','멘붕','정신없음'], seedLikes:66, seedDownloads:45, createdAt: Date.now() - 1000*60*60*30 },
+  { id:'c7', text:'정신줄놓음', cat:'free', style:'y2k', font:'jua', textColor:'#ef4444', transparentBg:true, kw:['정신줄놓음','멘붕','정신없음'], seedLikes:66, seedDownloads:45, createdAt: Date.now() - 1000*60*60*30 },
   { id:'c8', text:'텅장', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['텅장','텅빈통장','월급'], seedLikes:150, seedDownloads:105, createdAt: Date.now() - 1000*60*60*36 },
   { id:'c9', text:'커피가필요해', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#92400e', kw:['커피가필요해','카페인','커피'], seedLikes:88, seedDownloads:62, createdAt: Date.now() - 1000*60*60*48 },
   { id:'c10', text:'살려주세요', cat:'free', style:'neon', font:'black', textColor:'#f87171', bgColor:'#0b1021', kw:['살려주세요','힘듦','도와줘'], seedLikes:96, seedDownloads:68, createdAt: Date.now() - 1000*60*60*55 },
   { id:'c11', text:'현생살기힘듦', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['현생살기힘듦','현생','힘듦'], seedLikes:70, seedDownloads:48, createdAt: Date.now() - 1000*60*60*60 },
   { id:'c12', text:'유급휴가주세요', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#0f766e', kw:['유급휴가주세요','휴가','유급휴가'], seedLikes:118, seedDownloads:84, createdAt: Date.now() - 1000*60*60*70 },
   { id:'c13', text:'상사눈치', cat:'free', style:'pixel', font:'black', textColor:'#ffffff', bgColor:'#1e1b4b', kw:['상사눈치','눈치보기','상사'], seedLikes:82, seedDownloads:56, createdAt: Date.now() - 1000*60*60*80 },
-  { id:'c14', text:'팀장님오셨다', cat:'free', style:'motion', font:'jua', textColor:'#facc15', transparentBg:true, kw:['팀장님오셨다','상사출현','비상'], seedLikes:128, seedDownloads:90, createdAt: Date.now() - 1000*60*60*90 },
+  { id:'c14', text:'팀장님오셨다', cat:'free', style:'y2k', font:'jua', textColor:'#facc15', transparentBg:true, kw:['팀장님오셨다','상사출현','비상'], seedLikes:128, seedDownloads:90, createdAt: Date.now() - 1000*60*60*90 },
   { id:'c15', text:'몰래딴짓중', cat:'free', style:'neon', font:'black', textColor:'#a78bfa', bgColor:'#0b1021', kw:['몰래딴짓중','딴짓','땡땡이'], seedLikes:56, seedDownloads:38, createdAt: Date.now() - 1000*60*60*100 },
   { id:'c16', text:'점심메뉴고민', cat:'free', style:'stamp', font:'dohyeon', textColor:'#C0392B', transparentBg:true, kw:['점심메뉴고민','점심','메뉴고민'], seedLikes:44, seedDownloads:30, createdAt: Date.now() - 1000*60*60*110 },
   { id:'c17', text:'금요일이좋아', cat:'free', style:'bold', font:'jua', textColor:'#ffffff', bgColor:'#107C41', kw:['금요일이좋아','불금','금요일'], seedLikes:210, seedDownloads:160, createdAt: Date.now() - 1000*60*60*120 },
@@ -1174,7 +1176,7 @@ function drawTextEmoji(ctx, size, opts) {
 
   ctx.clearRect(0, 0, size, size);
 
-  const needsCard = style !== 'pixel' && (style === 'neon' || !transparentBg);
+  const needsCard = style !== 'pixel' && style !== 'y2k' && (style === 'neon' || !transparentBg);
   if (needsCard) {
     ctx.fillStyle = style === 'neon' ? (bgColor || '#0b1021') : (bgColor || '#107C41');
     roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.09);
@@ -1232,23 +1234,46 @@ function drawTextEmoji(ctx, size, opts) {
     ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
   }
 
-  else if (style === 'motion') {
-    ctx.strokeStyle = textColor || '#22d3ee'; ctx.globalAlpha = 0.35; ctx.lineWidth = size*0.012;
-    for (let i=0;i<6;i++){
-      const y = size*0.15 + i*size*0.13;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size*0.35, y); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.84, size*0.86, fam, 1.08);
+  else if (style === 'y2k') {
+    const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+    bgGrad.addColorStop(0, '#BFE7FF');
+    bgGrad.addColorStop(0.45, '#DFD1FF');
+    bgGrad.addColorStop(1, '#FFD3EE');
+    ctx.fillStyle = bgGrad;
+    roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = size*0.02;
+    roundRect(ctx, size*0.03, size*0.03, size*0.94, size*0.94, size*0.14);
+    ctx.stroke();
+
+    const hasGugi = document.fonts.check('10px "Gugi"');
+    const yfam = hasGugi ? '"Gugi"' : fam;
+    const { lines, lineHeight } = fitMultilineText(ctx, text, size*0.78, size*0.62, yfam, 1.15);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.save();
-    ctx.transform(1, 0, -0.18, 1, size*0.04, 0);
     const ys = lineCenters(cy, lines.length, lineHeight);
-    [ [size*0.05, 0.18, '#94a3b8'], [size*0.025, 0.35, textColor || '#22d3ee'], [0, 1, '#111827'] ].forEach(([dx, a, c]) => {
-      ctx.globalAlpha = a; ctx.fillStyle = c;
-      ys.forEach((y, i) => ctx.fillText(lines[i], cx - dx, y));
-    });
-    ctx.restore();
+
+    const textGrad = ctx.createLinearGradient(cx - size*0.35, cy - size*0.25, cx + size*0.35, cy + size*0.25);
+    textGrad.addColorStop(0, '#FF8FD1');
+    textGrad.addColorStop(0.32, '#8FD9FF');
+    textGrad.addColorStop(0.64, '#C6A6FF');
+    textGrad.addColorStop(1, '#FFE08A');
+
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = size * 0.035;
+    ctx.strokeStyle = '#ffffff';
+    ys.forEach((y, i) => ctx.strokeText(lines[i], cx, y));
+    ctx.fillStyle = textGrad;
+    ys.forEach((y, i) => ctx.fillText(lines[i], cx, y));
+
+    ctx.fillStyle = '#ffffff';
+    ctx.globalAlpha = 0.9;
+    ctx.font = `${Math.floor(size*0.09)}px Arial`;
+    ctx.fillText('✦', size*0.18, size*0.22);
+    ctx.font = `${Math.floor(size*0.13)}px Arial`;
+    ctx.fillText('✧', size*0.82, size*0.80);
+    ctx.font = `${Math.floor(size*0.06)}px Arial`;
+    ctx.fillText('✦', size*0.80, size*0.20);
     ctx.globalAlpha = 1;
   }
 
@@ -1580,18 +1605,22 @@ const STYLE_DEFAULTS = {
   neon:   { font:'black',   textColor:'#22d3ee', bgColor:'#0b1021', transparentBg:false },
   bold:   { font:'jua',     textColor:'#ffffff', bgColor:'#107C41', transparentBg:false },
   pixel:  { font:'black',   textColor:'#ffffff', bgColor:'#0b1021', transparentBg:true },
-  motion: { font:'black',   textColor:'#22d3ee', bgColor:'#107C41', transparentBg:true },
+  y2k:    { font:'jua',     textColor:'#FF8FD1', bgColor:'#BFE7FF', transparentBg:false },
 };
 let genState = { style: 'neon', font: 'black', textColor: '#22d3ee', bgColor: '#0b1021', transparentBg: false, stretchX: 100, stretchY: 100 };
 
 function applyStyleDefaults(style) {
   const d = STYLE_DEFAULTS[style];
   genState = { ...genState, style, ...d };
-  document.getElementById('genTextColor').value = d.textColor;
-  document.getElementById('genBgColor').value = d.bgColor;
+  const textColorInput = document.getElementById('genTextColor');
+  const bgColorInput = document.getElementById('genBgColor');
+  textColorInput.value = d.textColor;
+  bgColorInput.value = d.bgColor;
+  textColorInput.disabled = style === 'y2k';
+  bgColorInput.disabled = style === 'y2k';
   const cb = document.getElementById('genTransparent');
   cb.checked = d.transparentBg;
-  cb.disabled = style === 'neon';
+  cb.disabled = style === 'neon' || style === 'y2k';
   document.querySelectorAll('.gen-font-btn').forEach(b => b.classList.toggle('active', b.dataset.font === d.font));
 }
 
@@ -1645,6 +1674,8 @@ function drawGenPreview() {
   drawTextEmoji(canvas.getContext('2d'), canvas.width, item);
   const reactionCanvas = document.getElementById('genReactionPreview');
   drawTextEmoji(reactionCanvas.getContext('2d'), reactionCanvas.width, item);
+  const stickerCanvas = document.getElementById('genStickerPreview');
+  drawTextEmoji(stickerCanvas.getContext('2d'), stickerCanvas.width, item);
 }
 
 document.querySelectorAll('.gen-download-btn').forEach(btn => {
